@@ -1,0 +1,222 @@
+
+	include "nesdefs.dasm"
+
+;;;;; VARIABLES
+
+lvlptr	= $0
+Flags	= $f
+
+px0	= $20
+px1	= $21
+px2	= $22
+vx0	= $23
+vx1	= $24
+vx2	= $25
+ax0	= $26
+ax1	= $27
+ax2	= $28
+
+py0	= $29
+py1	= $2A
+py2	= $2B
+vy0	= $2C
+vy1	= $2D
+vy2	= $2E
+ay0	= $2F
+ay1	= $30
+ay2	= $31
+
+oldpx0  = $32
+oldpx1  = $33
+oldpx2  = $34
+oldvx0  = $35
+oldvx1  = $36
+oldvx2  = $37
+oldax0  = $38
+oldax1  = $39
+oldax2  = $3A
+
+oldpy0  = $3B
+oldpy1  = $3C
+oldpy2  = $3D
+oldvy0  = $3E
+oldvy1  = $3F
+oldvy2  = $40
+olday0  = $41
+olday1  = $42
+olday2  = $43
+
+lvl	= $a
+lvldat	= $80
+
+;; Physics Constants
+GRAVITY	        = $002000
+MAX_FALL	= $056010
+JUMP_FORCE	= $fffb13
+WALK_ACCEL	= $001680
+MAX_WALK	= $026000
+PASSIVE_DECEL	= $002040
+
+	org $0
+
+;;;;; NES CARTRIDGE HEADER
+
+	NES_HEADER 0,2,1,0 ; mapper 0, 2 PRGs, 1 CHR, horiz. mirror
+
+;;;;; START OF CODE
+
+Start:
+; wait for PPU warmup; clear CPU RAM
+	NES_INIT	; set up stack pointer, turn off PPU
+        jsr WaitSync	; wait for VSYNC
+        jsr ClearRAM	; clear RAM
+        jsr WaitSync	; wait for VSYNC (and PPU warmup)
+; set palette
+        jsr LoadPallete
+	
+        lda #0
+        sta PPU_SCROLL
+        sta PPU_SCROLL
+        
+        
+        jsr WaitSync
+        lda #0
+        sta OAM_ADDR
+        sta lvl
+	sta lvlptr
+        lda #$a0
+        sta lvlptr+1
+        jsr LoadLevel
+        jsr RenderLevel
+
+        
+        lda #$80
+        sta PPU_CTRL
+        lda #$1e	; A = $08
+        sta PPU_MASK	; enable rendering 
+        
+        lda #0
+        sta PPU_ADDR
+        sta PPU_ADDR       
+        ; sprite setup
+	ldx #1
+        stx $201
+        inx
+        stx $205
+	inx
+        stx $209
+        inx
+        stx $20D
+        inx
+        stx $211
+        
+        lda #$10
+        sta $201
+        lda #0
+        sta $202
+        
+        lda #80
+        sta px0
+        lda #60
+        sta py0
+        
+        lda #$0
+        sta px1
+        sta py1
+
+	lda #$0
+        sta vx1
+        
+        lda #$0
+        sta vy0
+        
+
+.endless
+        ldy py0
+        dey
+        dey
+        sty $200     
+        ldy px0
+        sty $203
+
+              
+
+        
+        jmp .endless
+
+
+
+NMIHandler:	; 60 times a second
+	lda #02
+        sta PPU_OAM_DMA
+	
+	include "readpad.asm"
+	include "physics.asm"
+
+        rti
+        
+        
+        
+        
+LoadPallete:
+	PPU_SETADDR $3f00
+        ldx #$0
+.ld_l   lda Pallete,x
+        sta PPU_DATA
+        inx
+        cpx #$20
+        bne .ld_l
+        rts
+
+Pallete:
+	.hex 3b
+        .hex 0b1a07 00
+        .hex 0b1a07 00
+        .hex 0b1a07 00
+        .hex 0b1a07 3b
+        .hex 04130d 00
+        .hex 000000 00
+        .hex 000000 00
+        .hex 000000 00
+	org $a000
+Level:
+	.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $d1, $26, %11100000, $20, $f4, $82, %11010000
+        .byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61, $84, $74, $86, $16, $0
+        
+
+;;;;; COMMON SUBROUTINES
+
+NegativeAclX:
+	clc
+        lda ax2
+        eor #$ff
+        adc #1
+        sta ax2
+        lda ax1
+        eor #$ff
+        adc #0
+        sta ax1
+        lda ax0
+        eor #$ff
+        adc #0
+        sta ax0
+        rts
+        
+
+	include "collision.asm"
+        
+	
+	include "level.asm"
+
+	include "nesppu.dasm"	
+	
+        
+	org $b000       
+        include "sinetable.lst"
+
+;;;;; CPU VECTORS
+
+	NES_VECTORS
+
+CHR:
+	incbin "chars.chr"
