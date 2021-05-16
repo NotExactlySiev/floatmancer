@@ -134,7 +134,7 @@ Start:
         sta hookpx
         sta hookpy
         sta angle0
-        lda #$1
+        lda #$2
         sta omega0
    	lda #40
         sta radius
