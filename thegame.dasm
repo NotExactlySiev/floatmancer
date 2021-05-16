@@ -4,6 +4,8 @@
 ;;;;; VARIABLES
 
 lvlptr	= $0
+sinptr	= $2
+
 Flags	= $f
 
 px0	= $20
@@ -137,13 +139,11 @@ Start:
    	lda #40
         sta radius
    
-
-.endless
-
-
-              
-
+	lda #0
+        sta omega1
+        sta omega2
         
+.endless
         jmp .endless
 
 
@@ -222,8 +222,8 @@ NegativeAclX:
 	include "nesppu.dasm"	
 	
         
-	org $b000       
-        include "sinetable.lst"
+	org $b480       
+        include "sinetable.asm"
 
 ;;;;; CPU VECTORS
 
