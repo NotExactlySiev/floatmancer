@@ -26,25 +26,22 @@ ay0	= $2F
 ay1	= $30
 ay2	= $31
 
-oldpx0  = $32
-oldpx1  = $33
-oldpx2  = $34
-oldvx0  = $35
-oldvx1  = $36
-oldvx2  = $37
-oldax0  = $38
-oldax1  = $39
-oldax2  = $3A
+angle0	= $32
+angle1	= $33
+angle2	= $34
+omega0	= $35
+omega1	= $36
+omega2	= $37
+relpx0	= $38
+relpx1	= $39
+relpy0	= $3A
+relpy1	= $3B
+radius	= $3C
+hookpx	= $3D
+hookpy	= $3E
+phase	= $3F	; 0 ground, 1 normal air, 2 searching, 3 transition1, 4 transition2, 5 hook mode
 
-oldpy0  = $3B
-oldpy1  = $3C
-oldpy2  = $3D
-oldvy0  = $3E
-oldvy1  = $3F
-oldvy2  = $40
-olday0  = $41
-olday1  = $42
-olday2  = $43
+; $40-$5F are the same from last frame
 
 lvl	= $a
 lvldat	= $80
@@ -129,15 +126,20 @@ Start:
         
         lda #$0
         sta vy0
-        
+   
+	
+        lda #$80
+        sta hookpx
+        sta hookpy
+        sta angle0
+        lda #$1
+        sta omega0
+   	lda #40
+        sta radius
+   
 
 .endless
-        ldy py0
-        dey
-        dey
-        sty $200     
-        ldy px0
-        sty $203
+
 
               
 
@@ -147,11 +149,20 @@ Start:
 
 
 NMIHandler:	; 60 times a second
-	lda #02
+	ldy py0
+        dey
+        dey
+        sty $200     
+        ldy px0
+        sty $203
+        
+        lda #02
         sta PPU_OAM_DMA
 	
 	include "readpad.asm"
-	include "physics.asm"
+	;include "physics.asm"
+
+	include "hookmode.asm"
 
         rti
         
