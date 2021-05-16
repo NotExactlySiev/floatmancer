@@ -128,7 +128,7 @@ Start:
         sta vy0
    
 	
-        lda #$80
+        lda #$8B
         sta hookpx
         sta hookpy
         sta angle0
