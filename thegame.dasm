@@ -4,7 +4,15 @@
 ;;;;; VARIABLES
 
 lvlptr	= $0
-sinptr	= $2
+
+func0	= $2
+func1	= $3
+func2	= $4
+func3	= $5
+func4	= $6
+func5	= $7
+func6	= $8
+func7	= $9
 
 Flags	= $f
 
@@ -222,6 +230,9 @@ NegativeAclX:
 	include "collision.asm"
         
 	
+	include "math.asm"
+
+        
 	include "level.asm"
 
 	include "nesppu.dasm"	
