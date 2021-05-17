@@ -1,12 +1,12 @@
-
-	lda #10
+HookMode: subroutine
+	lda #30
         sta func2
         
         lda angle0
-        sta func0
-        lda angle1
         clc
         adc #$40
+        sta func0
+        lda angle1
 	sta func1
         jsr CalcSin
         
@@ -57,6 +57,8 @@
         
         lda func6
         sta relpy0
+        lda func7
+        sta relpy1
         
         lda angle0
         clc
@@ -69,14 +71,50 @@
         
         lda func6
         sta relpx0
-
+	lda func7
+        sta relpx1
 
 
         lda relpy0
         clc
         adc hookpy
         sta py0
+        lda relpy1
+        sta py1
+        
 	lda relpx0
         clc
         adc hookpx
         sta px0		; rel x and y are inverted!!
+        lda relpx1
+        sta px1
+        
+        rts
+
+Release: subroutine
+	sec
+        lda px2
+        sbc px2+$20
+        sta vx2
+        lda px1
+        sbc px1+$20
+        sta vx1
+        lda px0
+        sbc px0+$20
+        sta vx0
+        
+        sec
+        lda py2
+        sbc py2+$20
+        sta vy2
+        lda py1
+        sbc py1+$20
+        sta vy1
+        lda py0
+        sbc py0+$20
+        sta vy0
+        
+        lda #1
+        sta phase
+        
+        rts

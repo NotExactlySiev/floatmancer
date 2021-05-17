@@ -25,6 +25,12 @@
 	and #$1
         beq .nB
         
+        lda phase
+        cmp #5
+        bne .nB
+        jsr Release
+
+        
 .nB
 	lda JOYPAD1
 	and #$1

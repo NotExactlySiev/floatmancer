@@ -150,10 +150,13 @@ Start:
         sta omega1
         sta omega2
         
-        lda #$0
+        lda #$6
         sta angle0
         sta angle1
         sta angle2
+        
+        lda #5
+        sta phase
         
 .endless
         jmp .endless
@@ -170,12 +173,27 @@ NMIHandler:
         
         lda #02
         sta PPU_OAM_DMA
-	
+ 
 	include "readpad.asm"
-	;include "physics.asm"
+
+	ldx #$1f
+.copyold
+	lda $20,x
+        sta $40,x
+        dex
+        bpl .copyold
+
+	lda phase
+        cmp #$05
+        bne .n5
+	jsr HookMode
+.n5	cmp #$01
+	bne .n1
+        jsr NormalMode
+.n1
 
 
-	include "hookmode.asm"
+
 
         rti
         
@@ -228,8 +246,8 @@ NegativeAclX:
         
 
 	include "collision.asm"
-        
-	
+        include "physics.asm"
+	include "hookmode.asm"     
 	include "math.asm"
 
         
