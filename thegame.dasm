@@ -134,14 +134,18 @@ Start:
         sta hookpx
         sta hookpy
         sta angle0
-        lda #$1
-        sta omega0
+
    	lda #50
         sta radius
-   
-	lda #$1
+   	lda #0
+        sta omega0
         sta omega1
         sta omega2
+        
+        lda #$0
+        sta angle0
+        sta angle1
+        sta angle2
         
 .endless
         jmp .endless

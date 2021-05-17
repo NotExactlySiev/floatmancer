@@ -1,4 +1,8 @@
-	clc
+	
+        
+        
+        
+        clc
         lda angle2
         adc omega2
         sta angle2
@@ -54,7 +58,7 @@ SinCos:			; look up angles for sin and cos with sign bit after
         adc #1
         sta $24,x
         lda $23,x
-        eor #$ff
+        eor #$7f
         adc #0
         sta $23,x
 .check2
@@ -62,25 +66,17 @@ SinCos:			; look up angles for sin and cos with sign bit after
 	lda $23,x
         cmp #$40
         bne .nright
-        
         lda radius
         sta relpx0,x
         jmp .lookupover
         
 .nright
-
         lda radius
         clc
         adc #$b0
         sta sinptr+1
 
-	clc
-        lda $24,x
-        adc #$20
-        sta $24,x
-        lda $23,x
-        adc #0
-        sta $23,x
+	lda $23,x
         
         clc
         asl
@@ -132,12 +128,16 @@ SinCos:			; look up angles for sin and cos with sign bit after
         bpl .midway
 
 
+        
+
+
+
 
         lda relpy0
         clc
         adc hookpy
-        sta py0
+        sta px0
 	lda relpx0
         clc
         adc hookpx
-        sta px0
+        sta py0		; rel x and y are inverted!!
