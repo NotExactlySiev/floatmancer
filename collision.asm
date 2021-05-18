@@ -1,38 +1,43 @@
-CheckCollision:		; check for collision, loads $2 and $3 for x and y
-        lda $3
-        lsr
-        lsr
-        lsr
-        lsr
-        lsr
-        lsr
-        ora #$20
-        sta PPU_ADDR
+CheckCollision:		; check for collision, 0-1 -> y,x
+        ldx #0
+        
+.checkrect        
+        lda $c0,x
+        bne .ndone
+        lda #0
+        sta func2
+        rts
+.ndone
 
-        lsr $2
-        lsr $2
-        lsr $2
+	lda func0
+        clc
+        cmp $c0,x
+        bcc .not1
+	inx 
+        lda func1
+        clc
+        cmp $c0,x
+        bcc .not2
+        inx
         
-        lda $3
-        asl
-        asl
-        and #$e0
-        ora $2
-        sta PPU_ADDR
+        lda $c0,x
+        clc
+        cmp func0
+        bcc .not3
+        inx
+        lda $c0,x
+        clc
+        cmp func1
+        bcc .not4
         
-        lda PPU_DATA
+        lda #1
+        sta func2
+        rts
         
-        beq .nsolid
-        cmp #$10
-        bcs .nsolid
-	lda #1
-	jmp .cend
-.nsolid lda #0
-        
-        
-        
-.cend   sta $2
-	lda #0
-        sta PPU_ADDR
-        sta PPU_ADDR
-	rts
+
+.not1	inx
+.not2	inx
+.not3	inx
+.not4	inx
+
+	jmp .checkrect

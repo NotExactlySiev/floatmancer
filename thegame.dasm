@@ -49,7 +49,7 @@ relpy0	= $3B
 relpy1	= $3C
 hookpx	= $3D
 hookpy	= $3E
-phase	= $3F	; 0 ground, 1 normal air, 2 searching, 3 transition1, 4 transition2, 5 hook mode
+phase	= $3F	; 0 normal, 2 searching, 3 transition1, 4 transition2, 5 hook mode
 
 ; $40-$5F are the same from last frame
 
@@ -145,10 +145,8 @@ Start:
 
    	lda #50
         sta radius
-   	lda #0
+	lda #0
         sta omega0
-        sta omega1
-        sta omega2
         
         lda #$6
         sta angle0
@@ -164,7 +162,8 @@ Start:
 
 
 NMIHandler:
-	ldy py0
+     
+        ldy py0
         dey
         dey
         sty $200     
@@ -173,8 +172,7 @@ NMIHandler:
         
         lda #02
         sta PPU_OAM_DMA
- 
-	include "readpad.asm"
+        
 
 	ldx #$1f
 .copyold
@@ -184,15 +182,18 @@ NMIHandler:
         bpl .copyold
 
 	lda phase
+        bne .n0
+        jsr NormalMode
+        jmp .physdone
+.n0
         cmp #$05
         bne .n5
 	jsr HookMode
-.n5	cmp #$01
-	bne .n1
-        jsr NormalMode
-.n1
+        jmp .physdone
+.n5	
 
-
+.physdone
+	include "readpad.asm"
 
 
         rti

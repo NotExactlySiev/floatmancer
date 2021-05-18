@@ -273,24 +273,12 @@ DrawDirt:
         lda $32
         sta $35
         
-        ldx #0
-.search lda $c0,x
-        beq .foundempty
-        inx
-        inx
-        inx
-        inx
-        jmp .search
-.foundempty
         lda $80,y
         sta $4
-        sta $c0,x
-        inx
         sta $30
         iny
         lda $80,y
         sta $5
-        sta $c0,x
         sta $31
         iny
         lda $80,y
@@ -313,6 +301,58 @@ DrawDirt:
         sta $8
         sta $9
                 
+        ; convert and put it in the collision table
+        ldx #0
+.search lda $c0,x
+        beq .foundempty
+        inx
+        inx
+        inx
+        inx
+        jmp .search
+.foundempty
+        
+        lda $4
+        clc
+        asl
+        asl
+        asl
+        sta $20
+        lda $5
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        ora $20
+        sta $20
+        
+        lda $5
+        and #$1f
+        sta $21
+        
+        lda $6
+        clc
+        adc $21
+        sta $23
+        
+        lda $7
+        clc
+        adc $20
+        sta $22
+        
+        lda $20
+        sta $c0,x
+        inx
+        lda $21
+        sta $c0,x
+        inx
+        lda $22
+        sta $c0,x
+        inx
+        lda $23
+        sta $c0,x
+        
         
         
 DrawRect:

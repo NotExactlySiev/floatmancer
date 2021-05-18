@@ -114,7 +114,7 @@ Release: subroutine
         sbc py0+$20
         sta vy0
         
-        lda #1
+        lda #0
         sta phase
         
         rts
