@@ -56,7 +56,6 @@
 	and #$1
         beq .nLeft
         
-        
 	lda #<(-WALK_ACCEL)
         sta ax2
         lda #>(-WALK_ACCEL)
@@ -66,7 +65,7 @@
         
 	jmp .flag
         
-        
+
 .nLeft
 	lda JOYPAD1
 	and #$1
@@ -82,6 +81,7 @@
 .flag	lda #$3
 	ora Flags
         sta Flags
+
 
 .nRight
         

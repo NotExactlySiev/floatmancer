@@ -57,13 +57,13 @@ lvl	= $a
 lvldat	= $80
 
 ;; Physics Constants
-GRAVITY	        = $002000
+GRAVITY	        = $004b00
 MAX_FALL	= $056010
 JUMP_FORCE	= $fffb13
-WALK_ACCEL	= $001680
-MAX_WALK	= $026000
-PASSIVE_DECEL	= $002040
-MARGIN		= $20
+WALK_ACCEL	= $006a80
+MAX_WALK	= $01a000
+PASSIVE_DECEL	= $003040
+MARGIN		= $8
 WIDTH		= $5
 HEIGHT		= $7
 
@@ -165,9 +165,11 @@ Start:
 
 
 NMIHandler:
+
         lda #$00
         sta PPU_CTRL
-     
+        
+     	; Update the PPU in VBlank
         ldy py0
         dey
         sty $200     
@@ -177,7 +179,7 @@ NMIHandler:
         lda #02
         sta PPU_OAM_DMA
         
-
+	; Backup variables from last frame
 	ldx #$1f
 .copyold
 	lda $20,x
@@ -185,6 +187,7 @@ NMIHandler:
         dex
         bpl .copyold
 
+	; Do physics calculations based on mode
 	lda phase
         bne .n0
         jsr NormalMode
@@ -197,6 +200,8 @@ NMIHandler:
 .n5	
 
 .physdone
+
+	; Read controller
 	include "readpad.asm"
 
 
@@ -255,7 +260,6 @@ NegativeAclX:
         rts
         
 
-	include "collision.asm"
         include "physics.asm"
 	include "hookmode.asm"     
 	include "math.asm"

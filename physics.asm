@@ -10,6 +10,55 @@ NormalMode: subroutine
         ora Flags
         sta Flags
 
+	;;; MOVEMENT FLAGS
+
+	lda #$fd
+        and Flags
+        sta Flags
+
+        lda vx0
+        bne .yesv
+        lda vx1
+        bne .yesv
+        lda vx2
+        bne .yesv
+        
+        lda ax0
+        bne .yesa
+        lda ax1
+        bne .yesa
+        lda ax2
+        bne .yesa
+        jmp .no
+
+.yesv	lda vx0
+	jmp .side
+
+.yesa	lda ax0
+        
+.side	
+	bmi .sideleft
+	lda #$ef
+        and Flags
+        sta Flags
+        jmp .sidedone
+.sideleft
+	lda #$10
+        ora Flags
+        sta Flags
+.sidedone
+	lda #$02
+	ora Flags
+        sta Flags
+
+.no
+
+	;;; COLLISION
+	
+
+	lda vy0
+        bmi .up
+.down
 
 	lda py1
         clc
@@ -63,12 +112,124 @@ NormalMode: subroutine
         and #$f8
         sta py0
 
+	jmp .colvdone
+
+.up
+
+
+
+
+.colvdone
 .colgrounddone
 
 
 
 
+        lda #$2
+        bit Flags
+        beq .colhdone        
 
+	lda #$10
+        bit Flags
+	bne .cleft
+.cright
+	lda px1
+        clc
+        adc #MARGIN
+        lda px0
+        adc #4
+        lsr
+        lsr
+        lsr
+        sta func1
+        jmp .colhxset
+.cleft
+/*
+        lda px1
+        clc
+        adc #<($0100-MARGIN)
+        lda px0
+        adc #>($0100-MARGIN)
+        lsr
+        lsr
+        lsr
+	sta func1
+*/
+
+	lda px0
+        lsr
+        lsr
+        lsr
+        sta func1
+        
+.colhxset
+	lda py0
+        lsr
+        lsr
+        lsr
+        sta func0
+        
+        jsr CheckCollision
+        lda func2
+        sta func3
+        
+        lda py0
+        clc
+        adc #8
+        lsr
+        lsr
+        lsr
+        sta func0
+
+	jsr CheckCollision
+        
+        lda func2	; bottom - top
+        bne .hbottomblock
+        jmp .colhdone
+.hbottomblock
+        lda func3
+        bne .hbothblock
+  	jmp .colhdone
+.hbothblock
+	lda vx0
+        bpl .pushleft
+        lda px0
+        clc
+        adc #$8
+        sta px0
+.pushleft
+	lda px0
+        and #$f8
+        sta px0
+        
+
+	lda #0
+        sta ax0
+        sta ax1
+        sta ax2
+        sta vx0
+        sta vx1
+        sta vx2
+        sta px1
+        sta px2
+        
+        ; push player out of the wall
+        
+        
+  
+.colhdone
+
+
+
+
+
+
+
+
+
+
+
+	;; MOVEMENT
 
 	lda #$1         ; do passive deceleration if not actively controlled
         bit Flags
@@ -100,9 +261,7 @@ NormalMode: subroutine
         sta ax0
         sta ax1
         sta ax2
-        lda #$fd
-        and Flags
-        sta Flags
+
         
         jmp .end
 
@@ -200,3 +359,47 @@ SetVelPos:
 .nolimit
 
 	rts
+        
+CheckCollision:		; check for collision, 0-1 -> y,x
+        ldx #0
+        
+.checkrect        
+        lda $c0,x
+        bne .ndone
+        lda #0
+        sta func2
+        rts
+.ndone
+
+	lda func0
+        clc
+        cmp $c0,x
+        bcc .not1
+	inx 
+        lda func1
+        clc
+        cmp $c0,x
+        bcc .not2
+        inx
+        
+        lda $c0,x
+        clc
+        cmp func0
+        bcc .not3
+        inx
+        lda $c0,x
+        clc
+        cmp func1
+        bcc .not4
+        
+        lda #1
+        sta func2
+        rts
+        
+
+.not1	inx
+.not2	inx
+.not3	inx
+.not4	inx
+
+	jmp .checkrect
