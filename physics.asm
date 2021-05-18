@@ -40,6 +40,9 @@ NormalMode: subroutine
         sta vy2
         sta py1
         sta py2
+        lda py0
+        and #$f8
+        sta py0
 
 .air	lda px0
 	lsr
@@ -90,6 +93,9 @@ NormalMode: subroutine
         sta ax0
         sta ax1
         sta ax2
+        lda px0
+        and #$f8
+        sta px0
 .hfree
 
 

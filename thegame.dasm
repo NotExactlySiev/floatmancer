@@ -162,6 +162,8 @@ Start:
 
 
 NMIHandler:
+        lda #$00
+        sta PPU_CTRL
      
         ldy py0
         dey
@@ -196,6 +198,9 @@ NMIHandler:
 	include "readpad.asm"
 
 
+	lda #$80
+        sta PPU_CTRL
+	lda PPU_STATUS
         rti
         
         
