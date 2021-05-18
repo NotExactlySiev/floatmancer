@@ -11,23 +11,42 @@ NormalMode: subroutine
         sta Flags
 
 
-	lda py0
-        lsr
-        lsr
-        lsr
+	lda py1
         clc
-        adc #1
+        adc #MARGIN
+        lda py0
+        adc #$8
+        lsr
+        lsr
+        lsr
         sta func0
+        
         lda px0
+        clc
+        adc #2
+        lsr
+        lsr
+        lsr
+        sta func1
+
+        jsr CheckCollision
+	lda func2
+        bne .nair
+        
+        lda px0
+        clc
+        adc #WIDTH-1
         lsr
         lsr
         lsr
         sta func1
         
         jsr CheckCollision
-
 	lda func2
-        beq .air
+        bne .nair
+        jmp .colgrounddone
+        
+.nair        
         lda #$bf
         and Flags
         sta Flags
@@ -40,63 +59,11 @@ NormalMode: subroutine
         sta vy2
         sta py1
         sta py2
-        lda py0
+	lda py0
         and #$f8
         sta py0
 
-.air	lda px0
-	lsr
-        lsr
-        lsr
-	sta func1
-	
-	lda py0
-	clc
-        adc vy0
-        lsr
-        lsr
-        lsr
-        sta func0
-        
-        jsr CheckCollision
-	lda func2
-        beq .vfree
-	lda #0
-        sta ay0
-        sta ay1
-        sta ay2
-        sta vy0
-        sta vy1
-        sta vy2
-.vfree
-
-        lda py0
-        lsr
-        lsr
-        lsr
-        sta func0
-        
-	lda px0
-	clc
-        adc vx0
-        lsr
-        lsr
-        lsr
-        sta func1
-        jsr CheckCollision
-	lda func2
-        beq .hfree
-      	lda #0
-        sta vx0
-        sta vx1
-        sta vx2
-        sta ax0
-        sta ax1
-        sta ax2
-        lda px0
-        and #$f8
-        sta px0
-.hfree
+.colgrounddone
 
 
 
