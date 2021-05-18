@@ -165,16 +165,18 @@ Start:
 
 
 NMIHandler:
-
-        lda #$00
-        sta PPU_CTRL
-        
      	; Update the PPU in VBlank
         ldy py0
         dey
         sty $200     
         ldy px0
         sty $203
+
+        lda #$00
+        ldx PPU_STATUS
+        sta PPU_CTRL
+        
+
         
         lda #02
         sta PPU_OAM_DMA
@@ -204,10 +206,9 @@ NMIHandler:
 	; Read controller
 	include "readpad.asm"
 
-
 	lda #$80
+        ldx PPU_STATUS
         sta PPU_CTRL
-	lda PPU_STATUS
         rti
         
         
