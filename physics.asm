@@ -156,7 +156,11 @@ NormalMode: subroutine
 	sta func1
 */
 
+	lda px1
+        sec
+        sbc #MARGIN
 	lda px0
+        sbc #0
         lsr
         lsr
         lsr
