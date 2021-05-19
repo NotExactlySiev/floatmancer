@@ -74,6 +74,10 @@
 	lda #>((-WALK_ACCEL)>>8)
         sta ax0
         
+        lda #$40
+        ora $202
+        sta $202
+        
 	jmp .flag
         
 
@@ -88,6 +92,10 @@
         sta ax1  
 	lda #>(WALK_ACCEL>>8)
         sta ax0
+        
+	lda #$bf
+        and $202
+        sta $202
 
 .flag	lda #$3
 	ora Flags

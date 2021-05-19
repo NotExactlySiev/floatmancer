@@ -54,7 +54,7 @@ NormalMode: subroutine
 .no
 
 	;;; COLLISION
-	
+
 
 	lda vy0
         bmi .up
@@ -65,29 +65,21 @@ NormalMode: subroutine
         adc #MARGIN
         lda py0
         adc #$8
-        lsr
-        lsr
-        lsr
         sta func0
         
         lda px0
         clc
-        adc #2
-        lsr
-        lsr
-        lsr
+        adc #3
         sta func1
 
         jsr CheckCollision
 	lda func2
         bne .nair
-        
+
         lda px0
         clc
-        adc #WIDTH-1
-        lsr
-        lsr
-        lsr
+        adc #5
+
         sta func1
         
         jsr CheckCollision
@@ -114,13 +106,13 @@ NormalMode: subroutine
 
 	jmp .colvdone
 
+.colgrounddone
 .up
 
 
 
 
 .colvdone
-.colgrounddone
 
 
 
@@ -137,40 +129,22 @@ NormalMode: subroutine
         clc
         adc #MARGIN
         lda px0
-        adc #4
-        lsr
-        lsr
-        lsr
+        adc #7
         sta func1
         jmp .colhxset
 .cleft
-/*
-        lda px1
-        clc
-        adc #<($0100-MARGIN)
-        lda px0
-        adc #>($0100-MARGIN)
-        lsr
-        lsr
-        lsr
-	sta func1
-*/
 
 	lda px1
-        sec
-        sbc #MARGIN
+        clc
+        adc #<($0100-MARGIN)
 	lda px0
-        sbc #0
-        lsr
-        lsr
-        lsr
+        adc #>($0100-MARGIN)
         sta func1
         
 .colhxset
 	lda py0
-        lsr
-        lsr
-        lsr
+        clc
+        adc #1
         sta func0
         
         jsr CheckCollision
@@ -180,9 +154,6 @@ NormalMode: subroutine
         lda py0
         clc
         adc #8
-        lsr
-        lsr
-        lsr
         sta func0
 
 	jsr CheckCollision
@@ -193,19 +164,27 @@ NormalMode: subroutine
 .hbottomblock
         lda func3
         bne .hbothblock
-  	jmp .colhdone
+  	jmp .colhdone			; change these parts because other combinations aren't needed
 .hbothblock
-	lda vx0
-        bpl .pushleft
-        lda px0
-        clc
-        adc #$8
-        sta px0
+
+	lda #$10
+        bit Flags
+	bne .pushright
 .pushleft
 	lda px0
         and #$f8
+        clc
+        adc #1
         sta px0
-        
+	jmp .pushdone
+
+.pushright
+	lda px0
+        and #$f8
+        clc
+        adc #7
+        sta px0
+.pushdone       
 
 	lda #0
         sta ax0
@@ -216,16 +195,13 @@ NormalMode: subroutine
         sta vx2
         sta px1
         sta px2
-        
+
+
         ; push player out of the wall
         
         
   
 .colhdone
-
-
-	
-	
 
 
 
@@ -419,6 +395,18 @@ SetVelPos:
 	rts
         
 CheckCollision:		; check for collision, 0-1 -> y,x
+        lda func0
+        lsr
+        lsr
+        lsr
+        sta func6
+        
+        lda func1
+        lsr
+        lsr
+        lsr
+        sta func7
+        
         ldx #0
         
 .checkrect        
@@ -429,12 +417,12 @@ CheckCollision:		; check for collision, 0-1 -> y,x
         rts
 .ndone
 
-	lda func0
+	lda func6
         clc
         cmp $c0,x
         bcc .not1
 	inx 
-        lda func1
+        lda func7
         clc
         cmp $c0,x
         bcc .not2
@@ -442,12 +430,12 @@ CheckCollision:		; check for collision, 0-1 -> y,x
         
         lda $c0,x
         clc
-        cmp func0
+        cmp func6
         bcc .not3
         inx
         lda $c0,x
         clc
-        cmp func1
+        cmp func7
         bcc .not4
         
         lda #1
