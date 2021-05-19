@@ -14,6 +14,7 @@ func5	= $7
 func6	= $8
 func7	= $9
 
+jtimer	= $e ; jump timer
 Flags	= $f
 
 px0	= $20
@@ -57,12 +58,13 @@ lvl	= $a
 lvldat	= $80
 
 ;; Physics Constants
-GRAVITY	        = $004b00
+GRAVITY	        = $006000
 MAX_FALL	= $056010
-JUMP_FORCE	= $fffb13
+JUMP_FORCE	= $030000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $01a000
 PASSIVE_DECEL	= $003040
+MAX_JUMP	= 9
 MARGIN		= $8
 WIDTH		= $5
 HEIGHT		= $7

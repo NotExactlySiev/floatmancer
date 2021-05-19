@@ -3,7 +3,7 @@
         sta ax1
         sta ax0
 
-	lda #$FE
+	lda #$FA
         and Flags
         sta Flags
 
@@ -18,9 +18,20 @@
         and #$1
         beq .nA
 
+	lda #$4
+        ora Flags
+        sta Flags
         
+        inc jtimer
         
-.nA
+        jmp .A
+        
+.nA	lda #0
+	sta jtimer
+        lda #$f7
+        and Flags
+        sta Flags
+.A
 	lda JOYPAD1
 	and #$1
         beq .nB

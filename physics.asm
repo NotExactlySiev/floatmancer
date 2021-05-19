@@ -224,26 +224,45 @@ NormalMode: subroutine
 .colhdone
 
 
+	
+	
 
 
 
 
+	;;;; MOVEMENT
+        lda #$40
+        bit Flags
+        bne .air
+        ;; Ground Rules
+        
+        ; Ground Jump
+        
+        lda #$8
+        bit Flags
+        bne .nochange
+        lda jtimer
+        beq .nochange
+        cmp #3
+        bcs .nochange
+        lda #$8
+        ora Flags
+        sta Flags	; set to jumping if on frame 1 or 2 of pressing jump
+        
+        
+.nochange
 
-
-
-
-
-	;; MOVEMENT
-
+        ; Ground Deceleration
+        
+        
+        bne .air
 	lda #$1         ; do passive deceleration if not actively controlled
         bit Flags
         bne .end
         lda #$2
         bit Flags
         beq .end
-        lda #$40
-        bit Flags
-        bne .end
+
         
         lda vx0
         bpl .decelok
@@ -283,7 +302,42 @@ NormalMode: subroutine
 
 .end
 
-        
+
+	jmp .airdone
+
+.air
+	
+	; Air Rules
+
+	lda #$8
+        bit Flags
+        beq .nochange2
+	lda jtimer
+        beq .jdone
+        cmp #MAX_JUMP
+        bcs .jdone
+	jmp .nochange2
+.jdone
+	lda #$f7	; end jumping if B released or max jump time reached
+        and Flags
+        sta Flags
+
+.nochange2
+
+.airdone
+
+
+	lda #$8			; finally set variables if jumping
+        bit Flags
+        beq .nojump
+	lda #<(-JUMP_FORCE)
+        sta vy2
+        lda #>(-JUMP_FORCE)
+        sta vy1
+        lda #>((-JUMP_FORCE)>>8)
+        sta vy0
+
+.nojump
 
 	ldx #9
 SetVelPos:
