@@ -95,3 +95,69 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         sta func6                
 .positive        
 	rts
+
+; for pytanlookups, 0-1 legs (and row,col), 2-3 tableptrs, 4 result
+
+CalcAtan:
+	lda func0
+        clc
+        cmp func1
+        bcs .reverse
+	bcc .correct
+
+CalcRadius: 
+	lda func0
+        bpl .xokr
+	eor #$ff
+        clc
+        adc #1
+.xokr	sta func0
+
+	lda func1
+        bpl .yokr
+        eor #$ff
+        clc
+        adc #1
+.yokr	sta func1
+
+	lda func0
+        clc
+        cmp func1
+        bcs .correct
+.reverse
+	lda func0
+        tay
+        lda func1
+        tax
+        jmp PyTanLookup
+.correct
+	lda func0
+        tax
+        lda func1
+        tay
+
+PyTanLookup: ; now x is row, y is col
+	dex
+        dey
+        txa
+        lsr
+        lsr
+        ora #$f0
+        sta func3
+        txa
+        ror
+        ror
+        ror
+        and #$c0
+        sta func2
+        tya
+        ora func2
+        sta func2
+        
+        ldy #0
+        lda (func2),y
+        sta func4
+        rts
+        
+        
+	

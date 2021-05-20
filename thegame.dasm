@@ -127,9 +127,9 @@ Start:
         lda #0
         sta $202
         
-        lda #80
+        lda #40
         sta px0
-        lda #60
+        lda #20
         sta py0
         
         lda #$0
@@ -158,7 +158,7 @@ Start:
         sta angle1
         sta angle2
         
-        lda #5
+        lda #0
         sta phase
         
 .endless
@@ -240,7 +240,7 @@ Pallete:
 Level:
 	.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         .byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
-        ;.byte $84, $74, $86, $16
+        .byte $85, $eb, $86, $16
         .byte $0
         
 
@@ -272,7 +272,11 @@ NegativeAclX:
 
 	include "nesppu.dasm"	
 	
-        include "sinetable.asm"
+        ; math look up tables
+        org $b000
+        include "sinetable.asm"    
+	include "pythtantable.asm"
+
 
 ;;;;; CPU VECTORS
 

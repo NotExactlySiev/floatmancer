@@ -91,6 +91,7 @@ HookMode: subroutine
         
         rts
 
+
 Release: subroutine
 	sec
         lda px2
@@ -117,4 +118,38 @@ Release: subroutine
         lda #0
         sta phase
         
+        rts
+        
+Attach: subroutine
+	; first you must find the hook but that's for later
+        
+        lda px0
+        sec
+        sbc hookpx
+        sta relpx0
+        lda px1
+        sta relpx1
+        
+        lda py0
+        sec
+        sbc hookpy
+        sta relpy0
+        lda py1
+        sta relpy1
+        
+        lda relpx0
+        sta func0
+        lda relpy0
+        sta func1
+        jsr CalcRadius
+        lda func4
+        clc
+        cmp #63
+        bcc .close
+        rts
+.close  sta radius
+        lda #0
+        sta angle0
+        lda #5
+        sta phase
         rts

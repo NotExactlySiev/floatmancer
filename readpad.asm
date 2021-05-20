@@ -24,25 +24,32 @@
         
         inc jtimer
         
-        jmp .A
+        jmp .Aend
         
 .nA	lda #0
 	sta jtimer
         lda #$f7
         and Flags
         sta Flags
-.A
+.Aend
 	lda JOYPAD1
 	and #$1
         beq .nB
         
         lda phase
-        cmp #5
-        bne .nB
-        jsr Release
-
+        cmp #0
+        bne .Bend
+        jsr Attach
         
-.nB
+        
+        jmp .Bend
+.nB	
+	lda phase
+        cmp #5
+        bne .Bend
+        jsr Release
+	
+.Bend
 	lda JOYPAD1
 	and #$1
         beq .nSel
