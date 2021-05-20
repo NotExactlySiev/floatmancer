@@ -157,6 +157,29 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
 	lda tmp2
         sta radius
 
+        and #$fe	; check if close enough
+        clc
+        cmp #60
+        bcc .close
+        rts
+.close  
+
+        lda px0+$20
+        sec
+        sbc hookpx
+        sta relpx0+$20
+        sta func0
+        
+        lda py0+$20
+        sec
+        sbc hookpy
+        sta relpy0+$20
+        sta func1
+        
+        jsr CalcAtan
+        lda func6
+        sta angle0+$20
+        
 
 	lda px0
         sec
@@ -174,17 +197,22 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         lda py1
         sta relpy1
         
-        lda radius
-        and #$fe
-        clc
-        cmp #60
-        bcc .close
-        rts
-.close  	
-
+	
 	jsr CalcAtan
 	lda func6
         sta angle0  
+        
+	sec
+        sbc angle0+$20
+        sta omega0
+        lda #0
+        sta omega1
+        sta omega2
+        
+        
+        
+        
+        
         
         lda #5
         sta phase
