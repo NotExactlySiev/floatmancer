@@ -88,16 +88,13 @@ DrawBlock: subroutine
         lsr
         lsr
         ora $4
-        sec
-        sbc #$4 ; hook center offset
         sta $4
+        
         lda $5
         clc
         asl
         asl
         asl
-        sec
-        sbc #4 ; hook center offset
         sta $5
         
        

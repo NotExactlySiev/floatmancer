@@ -120,10 +120,45 @@ Release: subroutine
         
         rts
         
-Attach: subroutine
-	
-        ; first you must find the hook but that's for later
+Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
+	lda #$ff
+        sta tmp2
+        ldx #0
+.nexthook        
+	lda $f0,x
+        beq .out
+	sta tmp0
+	inx
+        lda $f0,x
+        sta tmp1
+	inx
+        
+        lda py0
+        sec
+        sbc tmp0
+        sta func0       
         lda px0
+        sec
+        sbc tmp1
+        sta func1
+        
+        jsr CalcRadius
+        
+        lda func6
+        cmp tmp2
+        bcs .nexthook
+        sta tmp2
+    	lda tmp0
+        sta hookpy
+        lda tmp1
+        sta hookpx
+	jmp .nexthook
+.out
+	lda tmp2
+        sta radius
+
+
+	lda px0
         sec
         sbc hookpx
         sta relpx0
@@ -137,22 +172,17 @@ Attach: subroutine
         lda py1
         sta relpy1
         
-        lda relpx0
-        sta func0
-        lda relpy0
-        sta func1
-        jsr CalcRadius
-        lda func6
+        lda radius
         and #$fe
         clc
         cmp #60
         bcc .close
         rts
-.close  sta radius
-
-	
+.close  	
 	lda #0
         sta angle0
+        
+        
         lda #5
         sta phase
         rts

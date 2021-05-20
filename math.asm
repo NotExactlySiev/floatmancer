@@ -99,6 +99,9 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
 ; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6 result
 
 CalcRadius: subroutine
+	txa
+        pha
+
 	lda func0
         bpl .pos0
         eor #$ff
@@ -124,20 +127,22 @@ CalcRadius: subroutine
         bcc .reverse
         stx func2
         sty func3
-        jmp PyTanLookup
+        jmp PyLookup
 .reverse
 	dex
         dey
 	stx func3
         sty func2
         
-PyTanLookup:
+PyLookup:
 	lda func3
 	clc
-        cmp #$64
+        cmp #$62
         bcc .colok
 	lda #$ff
         sta func6
+        pla
+        tax
         rts
 .colok	
 	lda func2
@@ -146,7 +151,9 @@ PyTanLookup:
         bcc .rowok       
         lda #$ff
         sta func6
-        rts      
+        pla
+        tax
+        rts    
 .rowok  
 
 	lsr
@@ -165,5 +172,9 @@ PyTanLookup:
         lda (func4),y
         sta func6
 
+	pla
+        tax
         rts
+
+CalcAtan: subroutine	; 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6 result
 	

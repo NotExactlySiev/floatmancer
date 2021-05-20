@@ -14,6 +14,11 @@ func5	= $7
 func6	= $8
 func7	= $9
 
+tmp0	= $a
+tmp1	= $b
+tmp2	= $c
+tmp3	= $d
+
 jtimer	= $e ; jump timer
 Flags	= $f
 
@@ -62,7 +67,7 @@ GRAVITY	        = $006000
 MAX_FALL	= $056010
 JUMP_FORCE	= $030000
 WALK_ACCEL	= $006a80
-MAX_WALK	= $01a000
+MAX_WALK	= $015000
 PASSIVE_DECEL	= $003040
 MAX_JUMP	= 9
 MARGIN		= $8
@@ -127,9 +132,9 @@ Start:
         lda #0
         sta $202
         
-        lda #40
-        sta px0
         lda #20
+        sta px0
+        lda #130
         sta py0
         
         lda #$0
@@ -143,9 +148,9 @@ Start:
         sta vy0
    
 	
-        lda #$5c
+        lda #$58
         sta hookpx
-        lda #$7c
+        lda #$78
         sta hookpy
 
    	lda #50
