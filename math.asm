@@ -96,68 +96,74 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
 .positive        
 	rts
 
-; for pytanlookups, 0-1 legs (and row,col), 2-3 tableptrs, 4 result
+; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6 result
 
-CalcAtan:
+CalcRadius: subroutine
 	lda func0
-        clc
-        cmp func1
-        bcs .reverse
-	bcc .correct
-
-CalcRadius: 
-	lda func0
-        bpl .xokr
-	eor #$ff
-        clc
-        adc #1
-.xokr	sta func0
-
-	lda func1
-        bpl .yokr
+        bpl .pos0
         eor #$ff
         clc
         adc #1
-.yokr	sta func1
+.pos0	sta func0
 
-	lda func0
+	cmp #$
+        
+
+	lda func1
+        bpl .pos1
+	eor #$ff
         clc
-        cmp func1
-        bcs .correct
-.reverse
-	lda func0
-        tay
-        lda func1
-        tax
-        jmp PyTanLookup
-.correct
-	lda func0
-        tax
-        lda func1
-        tay
+        adc #1
+.pos1	sta func1
 
-PyTanLookup: ; now x is row, y is col
+        
+        ldx func0
+        ldy func1
+        clc
+        cpx func1
+        bcc .reverse
+        stx func2
+        sty func3
+        jmp PyTanLookup
+.reverse
 	dex
         dey
-        txa
-        lsr
+	stx func3
+        sty func2
+        
+PyTanLookup:
+	lda func3
+	clc
+        cmp #$64
+        bcc .colok
+	lda #$ff
+        sta func6
+        rts
+.colok	
+	lda func2
+        clc
+        cmp #$62
+        bcc .rowok       
+        lda #$ff
+        sta func6
+        rts      
+.rowok  
+
+	lsr
         lsr
         ora #$f0
-        sta func3
-        txa
+        sta func5
+        lda func2
+        and #$3
         ror
         ror
         ror
-        and #$c0
-        sta func2
-        tya
-        ora func2
-        sta func2
+        ora func3
+        sta func4
         
         ldy #0
-        lda (func2),y
-        sta func4
+        lda (func4),y
+        sta func6
+
         rts
-        
-        
 	

@@ -143,10 +143,10 @@ Start:
         sta vy0
    
 	
-        lda #$8B
+        lda #$5c
         sta hookpx
+        lda #$7c
         sta hookpy
-        sta angle0
 
    	lda #50
         sta radius

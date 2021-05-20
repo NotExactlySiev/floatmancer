@@ -77,33 +77,42 @@ DrawBlock: subroutine
         rts
 .hook   
         clc
-        asl $4
-        asl $4
-        asl $4
+        lda $4
+        ror
+        ror
+        ror
+        and #$c0
+        sta $4
         lda $5
-        lsr
-        lsr
-        lsr
+        and #$e0
         lsr
         lsr
         ora $4
-        and #$1f
+        sec
+        sbc #$4 ; hook center offset
         sta $4
         lda $5
-        and #$1f
+        clc
+        asl
+        asl
+        asl
+        sec
+        sbc #4 ; hook center offset
         sta $5
+        
+       
         ldx #0
-.find   lda $c0,x
+.find   lda $f0,x
         beq .empty
         inx
         inx
         jmp .find
 
 .empty  lda $4
-        sta $c0,x
+        sta $f0,x
         inx
         lda $5
-        sta $c0,x
+        sta $f0,x
         rts
 
 

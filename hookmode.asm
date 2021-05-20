@@ -121,8 +121,8 @@ Release: subroutine
         rts
         
 Attach: subroutine
-	; first you must find the hook but that's for later
-        
+	
+        ; first you must find the hook but that's for later
         lda px0
         sec
         sbc hookpx
@@ -142,13 +142,16 @@ Attach: subroutine
         lda relpy0
         sta func1
         jsr CalcRadius
-        lda func4
+        lda func6
+        and #$fe
         clc
-        cmp #63
+        cmp #60
         bcc .close
         rts
 .close  sta radius
-        lda #0
+
+	
+	lda #0
         sta angle0
         lda #5
         sta phase
