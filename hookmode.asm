@@ -162,6 +162,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sec
         sbc hookpx
         sta relpx0
+        sta func0
         lda px1
         sta relpx1
         
@@ -169,6 +170,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sec
         sbc hookpy
         sta relpy0
+        sta func1
         lda py1
         sta relpy1
         
@@ -179,9 +181,10 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         bcc .close
         rts
 .close  	
-	lda #0
-        sta angle0
-        
+
+	jsr CalcAtan
+	lda func6
+        sta angle0  
         
         lda #5
         sta phase

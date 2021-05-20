@@ -137,7 +137,7 @@ CalcRadius: subroutine
 PyLookup:
 	lda func3
 	clc
-        cmp #$62
+        cmp #62
         bcc .colok
 	lda #$ff
         sta func6
@@ -147,7 +147,7 @@ PyLookup:
 .colok	
 	lda func2
         clc
-        cmp #$62
+        cmp #62
         bcc .rowok       
         lda #$ff
         sta func6
@@ -176,5 +176,110 @@ PyLookup:
         tax
         rts
 
-CalcAtan: subroutine	; 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6 result
+CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
+	txa
+        pha
+        
+        lda #0
+        sta func7
+        
+        lda func0
+        bpl .horok
+        eor #$ff
+        clc
+        adc #1
+        sta func0
+        lda #$40
+        sta func7     
+.horok
+
+	lda func1
+        bpl .verok
+	eor #$ff
+        clc
+        adc #1
+        sta func1
+        lda #$20
+        ora func7
+        sta func7
+.verok
+
+	lda func1
+	cmp func0
+        bne .n45
+        lda #$20
+        sta func6
+        bne .lookupdone
+.n45        
+        bcs .orderok
+        sta func2
+        lda func0
+        sta func3
+        lda #$10
+        ora func7
+        sta func7
+        jmp .orderdone
+.orderok
+	sta func2
+        lda func1
+        sta func3
+.orderdone
 	
+        dec func2
+        bne .nright
+	lda #$40
+        sta func6
+        bne .lookupdone
+.nright
+        dec func3
+	bne .nzero
+        lda #$0
+        sta func6
+        beq .lookupdone
+.nzero        
+
+
+	lda func2
+        lsr
+        lsr
+        ora #$f0
+        sta func5
+        lda func2
+        and #$3
+        ror
+        ror
+        ror
+        ora func3
+        sta func4
+        
+        ldy #0
+        lda (func4),y
+
+.lookupdone
+
+        asl func7
+        bpl .nmirrorh
+	eor #$7f
+        clc
+        adc #1
+.nmirrorh
+
+	asl func7
+        bpl .nmirrorv
+        eor #$ff
+        clc
+        adc #1
+.nmirrorv
+
+	asl func7
+        bmi .nmirrorxy
+        eor #$3f
+        clc
+        adc #1
+.nmirrorxy
+
+	sta func6
+        
+        pla
+        tax
+        rts
