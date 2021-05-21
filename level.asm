@@ -58,46 +58,17 @@ DrawBlock: subroutine
         iny
         sty $3
 
-        lda $4
-        and #$03
-        ora #$20
-        sta PPU_ADDR
-        lda $5
-        sta PPU_ADDR
-
-        lda $4
-        lsr
-        lsr
-        and #$0f
-        ora #$20
-        sta PPU_DATA
-
-        cmp #$21
-        beq .hook
-        rts
-.hook   
-        clc
-        lda $4
-        ror
-        ror
-        ror
-        and #$c0
-        sta $4
-        lda $5
-        and #$e0
-        lsr
-        lsr
-        ora $4
-        sta $4
+	ldy #0
+.findoam
+	lda $0280,y
+        beq .oamempty
+        iny
+        iny
+        iny
+        iny
+        jmp .findoam
         
-        lda $5
-        clc
-        asl
-        asl
-        asl
-        sta $5
-        
-       
+.oamempty       
         ldx #0
 .find   lda $f0,x
         beq .empty
@@ -105,10 +76,38 @@ DrawBlock: subroutine
         inx
         jmp .find
 
-.empty  lda $4
+.empty  
+	lda $4
+        clc
+        asl
+        asl
+        asl
+        sta $0280,y
+        clc
+        adc #4
         sta $f0,x
-        inx
+        
+        iny
         lda $5
+        rol
+        rol
+        rol
+        rol
+        and #$7
+        ora #$80
+        sta $0280,y
+        iny	; temporary. do stuff here later
+        iny
+        inx
+        
+        lda $5
+        clc
+        asl
+        asl
+        asl
+        sta $0280,y
+        clc
+        adc #4
         sta $f0,x
         rts
 

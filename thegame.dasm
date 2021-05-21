@@ -69,13 +69,14 @@ JUMP_FORCE	= $030000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003040
+HOOK_SWING	= 20
 MAX_JUMP	= 9
 MARGIN		= $8
 WIDTH		= $5
 HEIGHT		= $7
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
-
+LEVEL_HEAD	= $98
 	org $0
 
 ;;;;; NES CARTRIDGE HEADER
@@ -103,7 +104,7 @@ Start:
         sta OAM_ADDR
         sta lvl
 	sta lvlptr
-        lda #$90
+        lda #LEVEL_HEAD
         sta lvlptr+1
         jsr LoadLevel
         jsr RenderLevel
@@ -178,15 +179,14 @@ NMIHandler:
 
         
         
-        ldy py0
-        dey
-        sty $200     
-        ldy px0
-        sty $203
-
-
-        
-
+        lda py0
+        sec
+        sbc #4
+        sta $200     
+        lda px0
+        sec
+        sbc #4
+        sta $203
         
         lda #02
         sta PPU_OAM_DMA
@@ -275,12 +275,12 @@ NegativeAclX:
         
         
         
-	org $9000
+	org LEVEL_HEAD<<8
 Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $22, $22, $55, $22, $38, $55, $85, $8e
+        .byte $22, $22, $55, $22, $38, $55, $8a, $0e
         .byte $0
         
 

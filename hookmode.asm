@@ -1,5 +1,5 @@
 HookMode: subroutine
-	lda #30
+	lda #HOOK_SWING
         sta func2
         
         lda angle0
