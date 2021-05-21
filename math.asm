@@ -193,6 +193,9 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         pha
         
         lda #0
+        sta func7
+        
+        lda #0
         sta tmp3
         
         lda func0
