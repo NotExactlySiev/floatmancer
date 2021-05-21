@@ -115,8 +115,12 @@ Release: subroutine
         sbc py0+$20
         sta vy0
         
+        
         lda #0
         sta phase
+        sta ax0
+        sta ax1
+        sta ax2
         
         rts
         

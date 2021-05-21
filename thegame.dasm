@@ -173,21 +173,27 @@ Start:
 
 NMIHandler:
      	; Update the PPU in VBlank
+        lda #$00
+        ldx PPU_STATUS
+        sta PPU_CTRL
+        
+        
         ldy py0
         dey
         sty $200     
         ldy px0
         sty $203
 
-        lda #$00
-        ldx PPU_STATUS
-        sta PPU_CTRL
+
         
 
         
         lda #02
         sta PPU_OAM_DMA
-        
+	
+        ; Read controller
+	include "readpad.asm" 
+ 
 	; Backup variables from last frame
 	ldx #$1f
 .copyold
@@ -210,8 +216,7 @@ NMIHandler:
 
 .physdone
 
-	; Read controller
-	include "readpad.asm"
+
 
 	lda #$80
         ldx PPU_STATUS
@@ -246,7 +251,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $22, $22, $55, $22, $38, $55, $85, $2e
+        .byte $22, $22, $55, $22, $38, $55, $85, $8e
         .byte $0
         
 
