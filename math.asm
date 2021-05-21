@@ -57,7 +57,7 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
 .nright ; else
         lda func2
         clc
-        adc #$b0
+        adc #SIN_HEAD
         sta func5
 
 	lda func0
@@ -165,7 +165,7 @@ PyLookup:
 
 	lsr
         lsr
-        ora #$f0
+        ora #PYTAN_HEAD
         sta func5
         lda func2
         and #$3
@@ -249,7 +249,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
 	lda func2
         lsr
         lsr
-        ora #$f0
+        ora #PYTAN_HEAD
         sta func5
         lda func2
         and #$3

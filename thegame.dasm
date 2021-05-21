@@ -73,6 +73,8 @@ MAX_JUMP	= 9
 MARGIN		= $8
 WIDTH		= $5
 HEIGHT		= $7
+SIN_HEAD	= $a0
+PYTAN_HEAD	= $e0
 
 	org $0
 
@@ -101,7 +103,7 @@ Start:
         sta OAM_ADDR
         sta lvl
 	sta lvlptr
-        lda #$a0
+        lda #$90
         sta lvlptr+1
         jsr LoadLevel
         jsr RenderLevel
@@ -247,17 +249,7 @@ Pallete:
         .hex 000000 00
         .hex 000000 00
         .hex 000000 00
-	org $a000
-Level:
-	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
-        ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
-        ;.byte $85, $eb, $86, $16
-        .byte $22, $22, $55, $22, $38, $55, $85, $8e
-        .byte $0
         
-
-;;;;; COMMON SUBROUTINES
-
 NegativeAclX:
 	clc
         lda ax2
@@ -277,15 +269,27 @@ NegativeAclX:
 
         include "physics.asm"
 	include "hookmode.asm"     
-	include "math.asm"
-
-        
+	include "math.asm"       
 	include "level.asm"
+	include "nesppu.dasm"	        
+        
+        
+        
+	org $9000
+Level:
+	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
+        ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
+        ;.byte $85, $eb, $86, $16
+        .byte $22, $22, $55, $22, $38, $55, $85, $8e
+        .byte $0
+        
 
-	include "nesppu.dasm"	
+;;;;; COMMON SUBROUTINES
+
+
 	
         ; math look up tables
-        org $b000
+        org $a000
         include "sinetable.asm"    
 	include "pythtantable.asm"
 
