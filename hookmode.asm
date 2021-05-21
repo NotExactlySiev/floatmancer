@@ -183,6 +183,8 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         jsr CalcAtan
         lda func6
         sta angle0+$20
+        lda func7
+        sta angle1+$20
         
 
 	lda px0
@@ -205,18 +207,15 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
 	jsr CalcAtan
 	lda func6
         sta angle0  
+        lda func7
+        sta angle1
         
 	sec
+        sbc angle1+$20
+        sta omega1
+        lda angle0
         sbc angle0+$20
         sta omega0
-        lda #0
-        sta omega1
-        sta omega2
-        
-        
-        
-        
-        
         
         lda #5
         sta phase

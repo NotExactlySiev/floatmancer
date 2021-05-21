@@ -103,7 +103,7 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
 .positive        
 	rts
 
-; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6 result
+; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6-7 result
 
 CalcRadius: subroutine
 	txa
@@ -163,32 +163,37 @@ PyLookup:
         rts    
 .rowok  
 
-	lsr
+	lda func2
         lsr
         ora #PYTAN_HEAD
         sta func5
         lda func2
-        and #$3
+        and #$1
         ror
         ror
         ror
         ora func3
+        clc
+        asl
         sta func4
         
         ldy #0
         lda (func4),y
         sta func6
+        iny
+        lda (func4),y
+        sta func7
 
 	pla
         tax
         rts
 
-CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
+CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
 	txa
         pha
         
         lda #0
-        sta func7
+        sta tmp3
         
         lda func0
         bpl .horok
@@ -197,7 +202,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
         adc #1
         sta func0
         lda #$40
-        sta func7     
+        sta tmp3     
 .horok
 
 	lda func1
@@ -207,8 +212,8 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
         adc #1
         sta func1
         lda #$20
-        ora func7
-        sta func7
+        ora tmp3
+        sta tmp3
 .verok
 
 	lda func1
@@ -223,8 +228,8 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
         lda func0
         sta func3
         lda #$10
-        ora func7
-        sta func7
+        ora tmp3
+        sta tmp3
         jmp .orderdone
 .orderok
 	sta func2
@@ -248,44 +253,64 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6 result, 7 flags
 
 	lda func2
         lsr
-        lsr
         ora #PYTAN_HEAD
         sta func5
         lda func2
-        and #$3
+        and #$1
         ror
         ror
         ror
         ora func3
+        clc
+        asl
         sta func4
         
         ldy #0
         lda (func4),y
+        sta func6
+        iny
+        lda (func4),y
+        sta func7
 
 .lookupdone
 
-        asl func7
+        asl tmp3
         bpl .nmirrorh
-	eor #$7f
+	eor #$ff
         clc
         adc #1
+        sta func7
+        lda func6
+        eor #$7f
+	adc #0
+        sta func6
+
 .nmirrorh
 
-	asl func7
+	asl tmp3
         bpl .nmirrorv
+        lda func7
+       	eor #$ff
+        clc
+        adc #1
+        sta func7
+        lda func6
+        eor #$ff
+	adc #0
+        sta func6
+.nmirrorv
+
+	asl tmp3
+        bmi .nmirrorxy
         eor #$ff
         clc
         adc #1
-.nmirrorv
-
-	asl func7
-        bmi .nmirrorxy
+        sta func7
+        lda func6
         eor #$3f
-        clc
-        adc #1
+	adc #0
+        sta func6
 .nmirrorxy
-
-	sta func6
         
         pla
         tax
