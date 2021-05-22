@@ -115,8 +115,6 @@ CalcRadius: subroutine
         clc
         adc #1
 .pos0	sta func0
-
-	cmp #$
         
 
 	lda func1
@@ -134,14 +132,14 @@ CalcRadius: subroutine
         bcc .reverse
         stx func2
         sty func3
-        jmp PyLookup
+        jmp .fixdone
 .reverse
 	dex
         dey
 	stx func3
         sty func2
         
-PyLookup:
+.fixdone
 	lda func3
 	clc
         cmp #62
@@ -163,26 +161,7 @@ PyLookup:
         rts    
 .rowok  
 
-	lda func2
-        lsr
-        ora #PYTAN_HEAD
-        sta func5
-        lda func2
-        and #$1
-        ror
-        ror
-        ror
-        ora func3
-        clc
-        asl
-        sta func4
-        
-        ldy #0
-        lda (func4),y
-        sta func6
-        iny
-        lda (func4),y
-        sta func7
+	jsr PyTanLookup
 
 	pla
         tax
@@ -194,7 +173,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         
         lda #0
         sta func7
-        
+                
         lda #0
         sta tmp3
         
@@ -219,13 +198,33 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         sta tmp3
 .verok
 
+	; check for special cases before swapping
 	lda func1
 	cmp func0
         bne .n45
         lda #$20
         sta func6
         bne .lookupdone
-.n45        
+.n45     
+        dec func0
+        bpl .nright
+	lda #$40
+        sta func6
+        lda #$10
+        ora tmp3
+        sta tmp3
+        bne .lookupdone
+.nright
+        dec func1
+	bpl .nzero
+        lda #$0
+        sta func6
+        lda #$10
+        ora tmp3
+        sta tmp3
+        beq .lookupdone
+.nzero     
+
         bcs .orderok
         sta func2
         lda func0
@@ -235,45 +234,14 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         sta tmp3
         jmp .orderdone
 .orderok
-	sta func2
-        lda func1
-        sta func3
+	sta func3
+        lda func0
+        sta func2
 .orderdone
 	
-        dec func2
-        bne .nright
-	lda #$40
-        sta func6
-        bne .lookupdone
-.nright
-        dec func3
-	bne .nzero
-        lda #$0
-        sta func6
-        beq .lookupdone
-.nzero        
 
+	jsr PyTanLookup
 
-	lda func2
-        lsr
-        ora #PYTAN_HEAD
-        sta func5
-        lda func2
-        and #$1
-        ror
-        ror
-        ror
-        ora func3
-        clc
-        asl
-        sta func4
-        
-        ldy #0
-        lda (func4),y
-        sta func6
-        iny
-        lda (func4),y
-        sta func7
 
 .lookupdone
 
@@ -317,4 +285,29 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         
         pla
         tax
+        rts
+        
+        
+PyTanLookup: subroutine
+	lda func2
+        lsr
+        ora #PYTAN_HEAD
+        sta func5
+        lda func2
+        and #$1
+        clc
+        ror
+        ror
+        ror
+        ora func3
+        clc
+        asl
+        sta func4
+        
+        ldy #0
+        lda (func4),y
+        sta func6
+        iny
+        lda (func4),y
+        sta func7
         rts

@@ -101,7 +101,9 @@ NormalMode: subroutine
         sta py1
         sta py2
 	lda py0
-        and #$fc
+        and #$f8
+        clc
+        adc #4
         sta py0
 
 	jmp .colvdone
