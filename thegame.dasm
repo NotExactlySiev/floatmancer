@@ -181,7 +181,7 @@ NMIHandler:
         
         lda py0
         sec
-        sbc #4
+        sbc #5
         sta $200     
         lda px0
         sec
@@ -280,7 +280,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $22, $22, $55, $22, $38, $55, $8a, $0e
+        .byte $22, $22, $55, $22, $38, $55, $8a, $0e, $22, $67, $2f, %11100000
         .byte $0
         
 
@@ -289,7 +289,7 @@ Level:
 
 	
         ; math look up tables
-        org $a000
+        org SIN_HEAD<<8
         include "sinetable.asm"    
 	include "pythtantable.asm"
 

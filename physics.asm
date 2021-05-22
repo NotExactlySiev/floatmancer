@@ -64,12 +64,12 @@ NormalMode: subroutine
         clc
         adc #MARGIN
         lda py0
-        adc #$8
+        adc #$4
         sta func0
         
         lda px0
         clc
-        adc #3
+        adc #2
         sta func1
 
         jsr CheckCollision
@@ -77,8 +77,8 @@ NormalMode: subroutine
         bne .nair
 
         lda px0
-        clc
-        adc #5
+        sec
+        sbc #2
 
         sta func1
         
@@ -101,7 +101,7 @@ NormalMode: subroutine
         sta py1
         sta py2
 	lda py0
-        and #$f8
+        and #$fc
         sta py0
 
 	jmp .colvdone
@@ -129,22 +129,22 @@ NormalMode: subroutine
         clc
         adc #MARGIN
         lda px0
-        adc #7
+        adc #3
         sta func1
         jmp .colhxset
 .cleft
 
 	lda px1
-        clc
-        adc #<($0100-MARGIN)
+        sec
+        sbc #MARGIN
 	lda px0
-        adc #>($0100-MARGIN)
+        sbc #3
         sta func1
         
 .colhxset
 	lda py0
-        clc
-        adc #1
+        sec
+        sbc #3
         sta func0
         
         jsr CheckCollision
@@ -153,7 +153,7 @@ NormalMode: subroutine
         
         lda py0
         clc
-        adc #8
+        adc #4
         sta func0
 
 	jsr CheckCollision
@@ -174,7 +174,7 @@ NormalMode: subroutine
 	lda px0
         and #$f8
         clc
-        adc #1
+        adc #5
         sta px0
 	jmp .pushdone
 
@@ -182,7 +182,7 @@ NormalMode: subroutine
 	lda px0
         and #$f8
         clc
-        adc #7
+        adc #3
         sta px0
 .pushdone       
 
