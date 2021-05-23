@@ -57,8 +57,6 @@ HookMode: subroutine
         
         lda func6
         sta relpy0
-        lda func7
-        sta relpy1
         
         lda angle0
         clc
@@ -71,23 +69,17 @@ HookMode: subroutine
         
         lda func6
         sta relpx0
-	lda func7
-        sta relpx1
-
 
         lda relpy0
         clc
         adc hookpy
         sta py0
-        lda relpy1
-        sta py1
-        
+
 	lda relpx0
         clc
         adc hookpx
         sta px0		; rel x and y are inverted!!
-        lda relpx1
-        sta px1
+
         
         rts
 
@@ -192,16 +184,12 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sbc hookpx
         sta relpx0
         sta func0
-        lda px1
-        sta relpx1
         
         lda py0
         sec
         sbc hookpy
         sta relpy0
         sta func1
-        lda py1
-        sta relpy1
         
 	
 	jsr CalcAtan

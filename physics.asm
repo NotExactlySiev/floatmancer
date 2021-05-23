@@ -412,7 +412,7 @@ CheckCollision:		; check for collision, 0-1 -> y,x
         ldx #0
         
 .checkrect        
-        lda $c0,x
+        lda collist,x
         bne .ndone
         lda #0
         sta func2
@@ -421,21 +421,21 @@ CheckCollision:		; check for collision, 0-1 -> y,x
 
 	lda func6
         clc
-        cmp $c0,x
+        cmp collist,x
         bcc .not1
 	inx 
         lda func7
         clc
-        cmp $c0,x
+        cmp collist,x
         bcc .not2
         inx
         
-        lda $c0,x
+        lda collist,x
         clc
         cmp func6
         bcc .not3
         inx
-        lda $c0,x
+        lda collist,x
         clc
         cmp func7
         bcc .not4

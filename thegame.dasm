@@ -18,9 +18,12 @@ tmp0	= $a
 tmp1	= $b
 tmp2	= $c
 tmp3	= $d
+tmp4	= $e
+tmp5	= $f
 
-jtimer	= $e ; jump timer
-Flags	= $f
+lvl	= $10
+jtimer	= $11 ; jump timer
+Flags	= $12
 
 px0	= $20
 px1	= $21
@@ -49,18 +52,20 @@ omega0	= $35
 omega1	= $36
 omega2	= $37
 relpx0	= $38
-relpx1	= $39
+relpy0	= $39
 radius	= $3A
-relpy0	= $3B
-relpy1	= $3C
-hookpx	= $3D
-hookpy	= $3E
+hookpx	= $3B
+hookpy	= $3C
+scroll	= $3D
+screen	= $3E
 phase	= $3F	; 0 normal, 2 searching, 3 transition1, 4 transition2, 5 hook mode
 
 ; $40-$5F are the same from last frame
 
-lvl	= $a
-lvldat	= $80
+lvldat	= $60
+
+objlist	= $80
+collist	= $a8
 
 ;; Physics Constants
 GRAVITY	        = $006000
@@ -68,8 +73,8 @@ MAX_FALL	= $056010
 JUMP_FORCE	= $030000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
-PASSIVE_DECEL	= $003040
-HOOK_SWING	= 50
+PASSIVE_DECEL	= $003540
+HOOK_SWING	= 60
 MAX_JUMP	= 9
 MARGIN		= $8
 WIDTH		= $5
@@ -77,6 +82,10 @@ HEIGHT		= $7
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
 LEVEL_HEAD	= $98
+SCROLL_THOLD	= 60
+SCREEN_HEIGHT	= 240
+SCREEN_WIDTH	= 256
+
 	org $0
 
 ;;;;; NES CARTRIDGE HEADER
@@ -146,6 +155,8 @@ Start:
 
 	lda #$0
         sta vx1
+        sta vx0
+        sta vx2
         
         lda #$0
         sta vy0
@@ -167,6 +178,8 @@ Start:
         sta angle2
         
         lda #0
+        sta screen
+        sta scroll
         sta phase
         
 .endless
@@ -176,8 +189,10 @@ Start:
 
 NMIHandler:
      	; Update the PPU in VBlank
-
-        
+        lda #0
+        sta PPU_SCROLL
+        lda scroll
+        sta PPU_SCROLL
         
         lda py0
         sec
@@ -220,7 +235,9 @@ NMIHandler:
 .physdone
 
 
+	include "scroll.asm"
 
+NMIEnd:
 	lda #$80
         ldx PPU_STATUS
         sta PPU_CTRL
@@ -269,8 +286,9 @@ NegativeAclX:
 
         include "physics.asm"
 	include "hookmode.asm"     
-	include "math.asm"       
+	include "math.asm"
 	include "level.asm"
+        
 	include "nesppu.dasm"	        
         
         
@@ -280,7 +298,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $22, $22, $55, $22, $38, $55, $8a, $0e, $22, $67, $2f, %11100000
+        .byte $87, $0b, $87, $13, $1b, $6, $f4
         .byte $0
         
 

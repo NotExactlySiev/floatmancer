@@ -21,7 +21,7 @@ RenderLevel: subroutine
       	ldy #0
         sty $3
 NextItem:
-        lda $80,y
+        lda lvldat,y
         bne .nend
         ldx #$0f
 .clean  sta $10,x
@@ -50,10 +50,10 @@ NextItem:
         rts
 
 DrawBlock: subroutine
-        lda $80,y
+        lda lvldat,y
         sta $4
         iny
-        lda $80,y
+        lda lvldat,y
         sta $5
         iny
         sty $3
@@ -113,7 +113,7 @@ DrawBlock: subroutine
 
 
 DrawInner:
-        lda $80,y
+        lda lvldat,y
         sta $19
         
         ; set sides right away
@@ -264,51 +264,8 @@ DrawInner:
 
 
 DrawDirt:
-        lda $33
-        sta $36
-        lda $34
-        sta $37
-        lda $35
-        sta $38
-        
-        lda $30
-        sta $33
-        lda $31
-        sta $34
-        lda $32
-        sta $35
-        
-        lda $80,y
-        sta $4
-        sta $30
-        iny
-        lda $80,y
-        sta $5
-        sta $31
-        iny
-        lda $80,y
-        sta $32
-        and #$0f
-        sta $6
-        lda $80,y
-        lsr
-        lsr
-        lsr
-        lsr
-        sta $7
-        iny
-        sty $3
-        
-        lda #$00
-        sta $9
-        
-        lda #$0f
-        sta $8
-        sta $9
-                
-        ; convert and put it in the collision table
         ldx #0
-.search lda $c0,x
+.search lda collist,x
         beq .foundempty
         inx
         inx
@@ -316,87 +273,114 @@ DrawDirt:
         inx
         jmp .search
 .foundempty
-        
-        lda $4
-        clc
-        asl
-        asl
-        asl
-        sta $20
-        lda $5
-        lsr
-        lsr
-        lsr
-        lsr
-        lsr
-        ora $20
-        sta $20
-        
-        lda $5
-        and #$1f
-        sta $21
-        
-        lda $6
-        clc
-        adc $21
-        sta $23
-        
-        lda $7
-        clc
-        adc $20
-        sta $22
-        
-        lda $20
-        sta $c0,x
-        inx
-        lda $21
-        sta $c0,x
-        inx
-        lda $22
-        sta $c0,x
-        inx
-        lda $23
-        sta $c0,x
-        
-        
-        
-DrawRect:
 
-	ldy $7
-.cube	lda $4
+        lda lvldat,y
+        sta func0
+        sta collist,x
+
+	iny
+        inx
+        lda lvldat,y
+        sta func1
+	sta collist,x
+
+	iny		; repeat here. loop it
+	lda lvldat,y
+        lsr
+        lsr
+        lsr
+        lsr
+        sta func2
+	dex
+        clc
+	adc collist,x
+        inx
+        inx
+        sta collist,x
+
+        lda lvldat,y
+	and #$0f
+        sta func3
+        dex
+        clc
+        adc collist,x
+        inx
+        inx
+        sta collist,x
+
+        iny
+        tya
+        pha
+        
+        lda #$0f
+        sta func4
+        
+        lda #$00
+        sta func5
+
+        
+DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onflags, t1 block
+
+	lda func0
+        cmp #30
+        bcc .screen0
+        sec
+        adc #$22	; ready for shifting to become ppu 2000 or 2800
+.screen0
+	clc
+        ror
+        ror
+        ror
+        ror
+        sta func6
+	and #$e0
+        ora func1
+        sta func7
+        lda func6
+        rol
+        and #$0f
+        ora #$20
+        sta func6
+
+	ldy func2
+
+
+.cube      
+        lda func6
         sta PPU_ADDR
-        lda $5
+        lda func7
         sta PPU_ADDR
         lda #0
-        cpy #0		; setting two high bits of a
+
+	cpy #0		; setting two high bits of on flags
         bne .yntop
         lda #$4
         jmp .ydone
-.yntop	cpy $7
+.yntop	cpy func2
 	bne .ydone
         lda #$8
-.ydone	sta $a
+.ydone	sta tmp0
         
-        ldx $6
+        ldx func3
         
-.row    lda $a		; setting two low bits of a
+.row    lda tmp0		; setting two low bits of on flags
 	and #$fc
         cpx #0
 	bne .xnleft
 	ora #$1
         jmp .xdone
-.xnleft	cpx $6
+.xnleft	cpx func3
 	bne .xdone
         ora #$02
-.xdone	sta $a
+.xdone	sta tmp0
 
-	and $8
+	and func4
         bne .nzero
         lda #$3
-        bit $a
+        bit tmp0
         beq .nincor
         lda #$c
-        bit $a
+        bit tmp0
         beq .nincor
         jmp .midway
         
@@ -407,25 +391,24 @@ DrawRect:
         
         ; if corner and sides not set, convert to inner
 .midway lda #$08
-        bit $a
+        bit tmp0
         beq .fzero
 .fone   lda #$0f
-	eor $a
+	eor tmp0
         asl
         asl
         eor #$13
 	jmp .fdone
 .fzero	lda #$08
 	clc
-	adc $a
-.fdone	sta $b
-	ora $9
+	adc tmp0
+.fdone	sta tmp1
+	ora func5
         cmp #$0f
         bne .nincor
-        lda $b
+        lda tmp1
         bne .nzero	; jump if defined!
 		
-        bne .nzero
 .nincor	lda #0
 .nzero
 	clc
@@ -434,15 +417,24 @@ DrawRect:
 	dex
         bpl .row
         
+        lda func7
         clc
-        lda #$20
-        adc $5
-        sta $5
-        lda $4
+        adc #$20
+        sta func7
+        lda func6
         adc #0
-        sta $4
+        
+        cmp #$24
+        bcc .nscreen1
+        cmp #$28
+        bcs .nscreen1
+        lda #$28
+.nscreen1
+        sta func6      
+        
         dey
         bpl .mback      
         
-        ldy $3
+        pla
+        tay
 	rts

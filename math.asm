@@ -223,7 +223,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         ora tmp3
         sta tmp3
         beq .lookupdone
-.nzero     
+.nzero
 
         bcs .orderok
         sta func2
