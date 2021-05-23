@@ -1,6 +1,8 @@
 
 	include "nesdefs.dasm"
 
+; maybe change the item types 00 for objects 10 for dirt
+
 ;;;;; VARIABLES
 
 lvlptr	= $0
@@ -280,7 +282,34 @@ NegativeAclX:
 	include "level.asm"
         
 	include "nesppu.dasm"	        
+
+DrawObjects: subroutine
+	ldx #0
+        lda objlist,x
+                
+        iny
+        lda $5
+        rol
+        rol
+        rol
+        rol
+        and #$7
+        ora #$80
+        sta $0280,y
+        iny	; temporary. do stuff here later
+        iny
+        inx
         
+        lda $5
+        clc
+        asl
+        asl
+        asl
+        sta $0280,y
+        clc
+        adc #4
+        rts
+
         
         
 	org LEVEL_HEAD<<8

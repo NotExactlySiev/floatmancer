@@ -19,12 +19,11 @@ LoadLevel: subroutine
 
 RenderLevel: subroutine
       	ldy #0
-        sty $3
 NextItem:
         lda lvldat,y
         bne .nend
         ldx #$0f
-.clean  sta $10,x
+.clean  sta $10,x	; do i HAVE to clean?
         dex
         bpl .clean
         rts        
@@ -40,14 +39,11 @@ NextItem:
 .nfill  cmp #$80
         bne .nblock
         jsr DrawBlock
-        ldy $3
         jmp NextItem
 .nblock
         iny
         jmp NextItem
-        lda #0
 
-        rts
 
 DrawBlock: subroutine
         lda lvldat,y
@@ -56,21 +52,12 @@ DrawBlock: subroutine
         lda lvldat,y
         sta $5
         iny
-        sty $3
+        tya
+        pha
 
-	ldy #0
-.findoam
-	lda $0280,y
-        beq .oamempty
-        iny
-        iny
-        iny
-        iny
-        jmp .findoam
-        
-.oamempty       
+
         ldx #0
-.find   lda $f0,x
+.find   lda objlist,x
         beq .empty
         inx
         inx
@@ -78,37 +65,13 @@ DrawBlock: subroutine
 
 .empty  
 	lda $4
-        clc
-        asl
-        asl
-        asl
-        sta $0280,y
-        clc
-        adc #4
-        sta $f0,x
-        
-        iny
-        lda $5
-        rol
-        rol
-        rol
-        rol
-        and #$7
-        ora #$80
-        sta $0280,y
-        iny	; temporary. do stuff here later
-        iny
+        sta objlist,x
         inx
+	lda $5
+        sta objlist,x
         
-        lda $5
-        clc
-        asl
-        asl
-        asl
-        sta $0280,y
-        clc
-        adc #4
-        sta $f0,x
+        pla
+        tay
         rts
 
 
@@ -328,7 +291,7 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
         adc #$22	; ready for shifting to become ppu 2000 or 2800
 .screen0
 	clc
-        ror
+        ror		; this should be a subroutie 0-1 -> 6-7
         ror
         ror
         ror
