@@ -35,7 +35,7 @@ ax0	= $26
 ax1	= $27
 ax2	= $28
 
-py0	= $29
+py0	= $29 ; in relation to other objects on the screen, doesn't account for scroll
 py1	= $2A
 py2	= $2B
 vy0	= $2C
@@ -58,7 +58,7 @@ hookpx	= $3B
 hookpy	= $3C
 scroll	= $3D
 screen	= $3E
-phase	= $3F	; 0 normal, 2 searching, 3 transition1, 4 transition2, 5 hook mode
+;phase	= $3F	; 0 normal, 2 searching, 3 transition1, 4 transition2, 5 hook mode
 
 ; $40-$5F are the same from last frame
 
@@ -144,9 +144,9 @@ Start:
         lda #0
         sta $202
         
-        lda #20
+        lda #70
         sta px0
-        lda #130
+        lda #150
         sta py0
         
         lda #$0
@@ -161,11 +161,6 @@ Start:
         lda #$0
         sta vy0
    
-	
-        lda #$58
-        sta hookpx
-        lda #$78
-        sta hookpy
 
    	lda #50
         sta radius
@@ -180,7 +175,6 @@ Start:
         lda #0
         sta screen
         sta scroll
-        sta phase
         
 .endless
         jmp .endless
@@ -221,17 +215,13 @@ NMIHandler:
         bpl .copyold
 
 	; Do physics calculations based on mode
-	lda phase
-        bne .n0
+	lda #$80
+        bit Flags
+        bne .hook
         jsr NormalMode
         jmp .physdone
-.n0
-        cmp #$05
-        bne .n5
+.hook
 	jsr HookMode
-        jmp .physdone
-.n5	
-
 .physdone
 
 
@@ -298,7 +288,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $87, $0b, $87, $13, $1b, $6, $f4
+        .byte $87, $0b, $87, $13, $b, $6, $f4
         .byte $0
         
 

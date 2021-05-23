@@ -36,27 +36,28 @@
 	and #$1
         beq .nB
         		
-.B	lda #$80
+.B	lda #$20
 	bit Flags
-        bne .nattach
-	lda phase
-        cmp #5
         beq .nattach
+	lda #$80
+        bit Flags
+        bne .nattach
         
         jsr Attach
 
 
 .nattach
-	lda #$80
+	lda #$20
         ora Flags
         sta Flags        
         jmp .Bend
 
 .nB	
-	lda #$80
+	lda #$20
         bit Flags
         beq .nrelease
-	lda phase
+	lda #$80
+        bit Flags
         beq .nrelease
         
         jsr Release

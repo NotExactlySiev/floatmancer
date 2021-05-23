@@ -109,10 +109,13 @@ Release: subroutine
         
         
         lda #0
-        sta phase
         sta ax0
         sta ax1
         sta ax2
+        
+        lda #$7f
+        and Flags
+        sta Flags
         
         rts
         
@@ -205,6 +208,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sbc angle0+$20
         sta omega0
         
-        lda #5
-        sta phase
+        lda #$80
+        ora Flags
+        sta Flags
         rts

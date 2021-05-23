@@ -349,9 +349,6 @@ SetVelPos:
 .pdone
 	; this part could be better
         
-	lda phase
-        bne .nolimit
-
 	lda vx0
         bpl .mright
 .mleft	cmp #>((-MAX_WALK)>>8)
@@ -392,7 +389,6 @@ SetVelPos:
         sta vx2
 
 .mhend
-.nolimit
 
 	rts
         
