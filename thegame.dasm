@@ -59,8 +59,7 @@ radius	= $3A
 hookpx	= $3B
 hookpy	= $3C
 scroll	= $3D
-screen	= $3E
-;phase	= $3F	; 0 normal, 2 searching, 3 transition1, 4 transition2, 5 hook mode
+realpy0	= $3F
 
 ; $40-$5F are the same from last frame
 
@@ -175,8 +174,9 @@ Start:
         sta angle2
         
         lda #0
-        sta screen
         sta scroll
+        jsr UpdateSprites
+
         
 .endless
         jmp .endless
@@ -189,7 +189,6 @@ NMIHandler:
         sta PPU_SCROLL
         lda scroll
         sta PPU_SCROLL
-        
         lda py0
         sec
         sbc #5
@@ -226,6 +225,7 @@ NMIHandler:
 	jsr HookMode
 .physdone
 
+        inc scroll
 
 	include "scroll.asm"
 
@@ -317,7 +317,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $87, $0b, $87, $13, $b, $6, $f4
+        .byte $87, $0b, $87, $36, $b, $6, $f4
         .byte $0
         
 

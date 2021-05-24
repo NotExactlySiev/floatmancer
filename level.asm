@@ -286,10 +286,10 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
 
 	lda func0
         cmp #30
-        bcc .screen0
+        bcc .screen
         sec
         adc #$22	; ready for shifting to become ppu 2000 or 2800
-.screen0
+.screen
 	clc
         ror		; this should be a subroutie 0-1 -> 6-7
         ror
@@ -401,3 +401,50 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
         pla
         tay
 	rts
+        
+UpdateSprites: subroutine
+
+	; code to clear oam before drawing
+
+
+
+	ldx #0 ; object list
+        ldy #0 ; oam
+.next
+	lda objlist,x
+        bne .draw
+	rts
+.draw	and #$3f
+        sec
+        asl
+        asl
+        asl
+        sbc scroll
+        bpl .notthisone
+        lda #$ff
+.notthisone   
+        sta $210,y
+        inx
+        iny
+        lda objlist,x
+        rol
+        rol
+        rol
+        rol
+        and #$7
+        clc
+        adc #$20
+        sta $210,y
+        iny
+        iny
+        lda objlist,x
+        and #$1f
+        clc
+        asl
+        asl
+        asl
+        sta $210,y
+        inx
+        iny
+        jmp .next
+        
