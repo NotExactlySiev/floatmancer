@@ -415,14 +415,18 @@ UpdateSprites: subroutine
         bne .draw
 	rts
 .draw	and #$3f
-        sec
         asl
         asl
         asl
-        sbc scroll
-        bpl .notthisone
+        
+        cmp scroll
+        bcs .onscreen
         lda #$ff
-.notthisone   
+        jmp .setattr
+.onscreen
+	sec
+        sbc scroll
+.setattr
         sta $210,y
         inx
         iny

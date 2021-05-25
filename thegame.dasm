@@ -173,7 +173,7 @@ Start:
         sta angle1
         sta angle2
         
-        lda #0
+        lda #$0
         sta scroll
         jsr UpdateSprites
 
@@ -226,8 +226,15 @@ NMIHandler:
 .physdone
 
         inc scroll
+        lda scroll
+        cmp #$f0
+        bcc .less
+        lda #0
+        sta scroll
+.less
 
 	include "scroll.asm"
+        
 
 NMIEnd:
 	lda #$80
@@ -317,7 +324,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $87, $0b, $87, $36, $b, $6, $f4
+        .byte $87, $0b, $87, $36, $b, $6, $f4, 40, 4, $33
         .byte $0
         
 
