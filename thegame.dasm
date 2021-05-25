@@ -147,7 +147,7 @@ Start:
         
         lda #70
         sta px0
-        lda #150
+        lda #70
         sta py0
         
         lda #$0
@@ -225,13 +225,16 @@ NMIHandler:
 	jsr HookMode
 .physdone
 
-        inc scroll
-        lda scroll
-        cmp #$f0
-        bcc .less
-        lda #0
-        sta scroll
-.less
+
+	lda py0
+        clc
+        adc scroll
+        bcc .ndeath
+	cmp #$df
+        bcc .ndeath
+        brk
+
+.ndeath
 
 	include "scroll.asm"
         
@@ -324,7 +327,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $87, $0b, $87, $36, $b, $6, $f4, 40, 4, $33
+        .byte $87, $0b, $87, $36, $b, $6, $f4, 40, 4, $33, 29, 2, $88
         .byte $0
         
 

@@ -64,6 +64,9 @@ NormalMode: subroutine
         clc
         adc #MARGIN
         lda py0
+        clc
+        adc scroll
+        clc
         adc #$4
         sta func0
         

@@ -406,7 +406,7 @@ UpdateSprites: subroutine
 
 	; code to clear oam before drawing
 
-
+	
 
 	ldx #0 ; object list
         ldy #0 ; oam
