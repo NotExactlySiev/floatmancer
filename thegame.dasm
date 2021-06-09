@@ -173,7 +173,7 @@ Start:
         sta angle1
         sta angle2
         
-        lda #$0
+        lda #0
         sta scroll
         jsr UpdateSprites
 
@@ -187,9 +187,25 @@ NMIHandler:
      	; Update the PPU in VBlank
         lda #0
         sta PPU_SCROLL
+        
+        ldx #$00
         lda scroll
+        cmp #240
+        bcc .notend
+        lda #0
+        ldx #$02
+
+.notend
         sta PPU_SCROLL
+        stx PPU_CTRL
+        
         lda py0
+        clc
+        adc scroll
+        lda py0
+        bcc .topscreen
+	adc #7
+.topscreen
         sec
         sbc #5
         sta $200     
@@ -201,8 +217,7 @@ NMIHandler:
         lda #02
         sta PPU_OAM_DMA
 	
-        lda #$00
-        sta PPU_CTRL
+
         
         ; Read controller
 	include "readpad.asm" 
@@ -239,10 +254,16 @@ NMIHandler:
 	include "scroll.asm"
         
 
-NMIEnd:
-	lda #$80
-        ldx PPU_STATUS
-        sta PPU_CTRL
+NMIEnd:        
+        ldx #$80
+        lda scroll
+        cmp #240
+        bcc .notend2
+        ldx #$82
+.notend2
+	ldy PPU_STATUS
+        stx PPU_CTRL
+        
         rti
         
         
@@ -327,7 +348,7 @@ Level:
 	;.byte $20, $83, $6f, $21, $06, $65, %11010000, $20, $71, $66, %11100000, $20, $f4, $82, %11010000
         ;.byte $21, $55, $25, %11000000, $21, $d5, $15, %11100100, $22, $43, $63, $22, $2f, $61
         ;.byte $85, $eb, $86, $16
-        .byte $87, $0b, $87, $36, $b, $6, $f4, 40, 4, $33, 29, 2, $88
+        .byte $87, $0b, $87, $36, $b, $5, $24, 20, 12, $23, 40, 24, $26, 54, 2, $1f
         .byte $0
         
 

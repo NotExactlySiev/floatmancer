@@ -64,9 +64,6 @@ NormalMode: subroutine
         clc
         adc #MARGIN
         lda py0
-        clc
-        adc scroll
-        clc
         adc #$4
         sta func0
         
@@ -103,12 +100,22 @@ NormalMode: subroutine
         sta vy2
         sta py1
         sta py2
-	lda py0
+	
+        lda scroll
+        and #$7
+        sta tmp0
+        
+        lda py0
+        sec
+        sbc tmp0
         and #$f8
+        clc
+        adc tmp0
         clc
         adc #4
         sta py0
-
+        
+        
 	jmp .colvdone
 
 .colgrounddone
@@ -395,9 +402,11 @@ SetVelPos:
 
 	rts
         
-CheckCollision:		; check for collision, 0-1 -> y,x
+CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid or not
         lda func0
-        lsr
+        clc
+        adc scroll
+        ror
         lsr
         lsr
         sta func6
