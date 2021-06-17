@@ -178,7 +178,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
 
         and #$fe	; check if close enough
         clc
-        cmp #60
+        cmp #HOOK_RANGE
         bcc .close
         rts
 .close  
@@ -213,6 +213,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sbc hookpy
         sta relpy0
         sta func1
+        
         
 	
 	jsr CalcAtan

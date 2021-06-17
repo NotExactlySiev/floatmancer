@@ -59,7 +59,6 @@ radius	= $3A
 hookpx	= $3B
 hookpy	= $3C
 scroll	= $3D
-realpy0	= $3F
 
 ; $40-$5F are the same from last frame
 
@@ -76,6 +75,7 @@ WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
 HOOK_SWING	= 60
+HOOK_RANGE	= 60
 MAX_JUMP	= 9
 MARGIN		= $8
 WIDTH		= $5
@@ -89,29 +89,33 @@ SCREEN_WIDTH	= 256
 
 	org $0
 
-;;;;; NES CARTRIDGE HEADER
-
+	;;; HEADER
+        
 	NES_HEADER 0,2,1,0 ; mapper 0, 2 PRGs, 1 CHR, horiz. mirror
 
-;;;;; START OF CODE
+
+	
+        ;;; INIT
 
 Start:
-; wait for PPU warmup; clear CPU RAM
-	NES_INIT	; set up stack pointer, turn off PPU
-        jsr WaitSync	; wait for VSYNC
-        jsr ClearRAM	; clear RAM
-        jsr WaitSync	; wait for VSYNC (and PPU warmup)
-; set palette
+	; wait for PPU warmup, clear CPU RAM
+	NES_INIT
+        jsr WaitSync
+        jsr ClearRAM
+        jsr WaitSync
+       
+       
+        ; ppu setup
         jsr LoadPallete
-	
+        
         lda #0
         sta PPU_SCROLL
         sta PPU_SCROLL
-        
-        
-        jsr WaitSync
+                      
         lda #0
         sta OAM_ADDR
+
+	; load level
         sta lvl
 	sta lvlptr
         lda #LEVEL_HEAD
@@ -119,32 +123,23 @@ Start:
         jsr LoadLevel
         jsr RenderLevel
 
-        
+        ; enable rendering, nmi
         lda #$80
         sta PPU_CTRL
-        lda #$1e	; A = $08
-        sta PPU_MASK	; enable rendering 
+        lda #$1e
+        sta PPU_MASK
         
         lda #0
         sta PPU_ADDR
         sta PPU_ADDR       
-        ; sprite setup
-	ldx #1
-        stx $201
-        inx
-        stx $205
-	inx
-        stx $209
-        inx
-        stx $20D
-        inx
-        stx $211
         
+        ; sprite setup        
         lda #$10
         sta $201
         lda #0
         sta $202
         
+        ; initial values
         lda #70
         sta px0
         lda #70
@@ -160,27 +155,18 @@ Start:
         sta vx2
         
         lda #$0
-        sta vy0
-   
+        sta vy0  
 
-   	lda #50
-        sta radius
-	lda #0
-        sta omega0
-        
-        lda #$6
-        sta angle0
-        sta angle1
-        sta angle2
-        
         lda #0
         sta scroll
         jsr UpdateSprites
 
-        
+
+
+	;;; MAIN GAME LOGIC
+
 .endless
         jmp .endless
-
 
 
 NMIHandler:
@@ -188,17 +174,18 @@ NMIHandler:
         lda #0
         sta PPU_SCROLL
         
+        ; disable nmi, set nametable
         ldx #$00
         lda scroll
         cmp #240
         bcc .notend
         lda #0
         ldx #$02
-
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
-        
+
+	; set hero sprite
         lda py0
         clc
         adc scroll
@@ -214,15 +201,14 @@ NMIHandler:
         sbc #4
         sta $203
         
+        ; draw sprites
         lda #02
         sta PPU_OAM_DMA
-	
-
-        
-        ; Read controller
+	       
+        ; read controller
 	include "readpad.asm" 
  
-	; Backup variables from last frame
+	; backup variables from last frame
 	ldx #$1f
 .copyold
 	lda $20,x
@@ -230,7 +216,7 @@ NMIHandler:
         dex
         bpl .copyold
 
-	; Do physics calculations based on mode
+	; do physics calculations based on mode
 	lda #$80
         bit Flags
         bne .hook
@@ -241,20 +227,11 @@ NMIHandler:
 .physdone
 
 
-	lda py0
-        clc
-        adc scroll
-        bcc .ndeath
-	cmp #$df
-        bcc .ndeath
-        brk
-
-.ndeath
-
+	; scroll the screen if needed
 	include "scroll.asm"
         
-
-NMIEnd:        
+NMIEnd:    
+	; enable nmi, set nametable
         ldx #$80
         lda scroll
         cmp #240
@@ -265,10 +242,12 @@ NMIEnd:
         stx PPU_CTRL
         
         rti
-        
-        
-        
-        
+
+
+
+
+        ;;; SUBROUTINES
+                
 LoadPallete:
 	PPU_SETADDR $3f00
         ldx #$0
@@ -279,17 +258,7 @@ LoadPallete:
         bne .ld_l
         rts
 
-Pallete:
-	.hex 3b
-        .hex 0b1a07 00
-        .hex 0b1a07 00
-        .hex 0b1a07 00
-        .hex 0b1a07 3b
-        .hex 04130d 00
-        .hex 000000 00
-        .hex 000000 00
-        .hex 000000 00
-        
+        ; reverses horizontal acceleration
 NegativeAclX:
 	clc
         lda ax2
@@ -312,7 +281,30 @@ NegativeAclX:
 	include "math.asm"
 	include "level.asm"
         
-	include "nesppu.dasm"	        
+ClearRAM: subroutine
+	lda #0
+        tax
+.clearRAM
+	sta $0,x	; clear $0-$ff
+        cpx #$fe	; last 2 bytes of stack?
+        bcs .skipStack	; don't clear it
+	sta $100,x	; clear $100-$1fd
+.skipStack
+	sta $200,x	; clear $200-$2ff
+	sta $300,x	; clear $300-$3ff
+	sta $400,x	; clear $400-$4ff
+	sta $500,x	; clear $500-$5ff
+	sta $600,x	; clear $600-$6ff
+	sta $700,x	; clear $700-$7ff
+        inx		; X = X + 1
+        bne .clearRAM	; loop 256 times
+        rts
+
+	; wait for VSYNC to start
+WaitSync:
+	bit PPU_STATUS
+	bpl WaitSync
+        rts
 
 DrawObjects: subroutine
 	ldx #0
@@ -341,27 +333,42 @@ DrawObjects: subroutine
         adc #4
         rts
 
-        
-        
+
+
+        ;;; DATA
+
+Pallete:
+	.hex 3b
+        .hex 0b1a07 00
+        .hex 0b1a07 00
+        .hex 0b1a07 00
+        .hex 0b1a07 3b
+        .hex 04130d 00
+        .hex 000000 00
+        .hex 000000 00
+        .hex 000000 00
+
 	org LEVEL_HEAD<<8
-Level:
-        .byte $87, $2b, $87, $36, $b, $5, $24, 20, 12, $23, 40, 24, $26, 54, 2, $1f
+        ;.byte $87, $2b, $87, $36, 20, 12, $23, 40, 24, $26, 54, 2, $1f, 23, 17, $23, 25, 22, $23
+        ;.byte 17, 10, $23,
+        .byte $bf, $2b, $b, $5, $24, 29, 18, $23
         .byte $0
         
 
-;;;;; COMMON SUBROUTINES
 
-
-	
         ; math look up tables
         org SIN_HEAD<<8
         include "sinetable.asm"    
 	include "pythtantable.asm"
 
 
-;;;;; CPU VECTORS
 
+	;;; VECTORS
+        
 	NES_VECTORS
 
+
+
+	;;; CHR ROM
 CHR:
 	incbin "chars.chr"

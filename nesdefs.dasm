@@ -80,7 +80,7 @@ NES_MIRR_QUAD	= 8
 	byte $4e,$45,$53,$1a ; header
 	byte .NES_PRG_BANKS
 	byte .NES_CHR_BANKS
-	byte .NES_MIRRORING|(.NES_MAPPER<<4)|2 ; RAM
+	byte .NES_MIRRORING|(.NES_MAPPER<<4) ; RAM
 	byte .NES_MAPPER&$f0
 	byte 0,0,0,0,0,0,0,0 ; reserved, set to zero
 	seg Code

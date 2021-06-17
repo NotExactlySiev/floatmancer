@@ -402,10 +402,16 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
         tay
 	rts
         
+	; handles scrolling the sprites on the screen. hero sprite handled seperately
 UpdateSprites: subroutine
 
-	; code to clear oam before drawing
-
+	; clear oam objects before drawing
+	lda #0
+        ldx #$10
+.clearoam
+        sta $0200,x
+        inx
+        bne .clearoam
 	
 
 	ldx #0 ; object list
