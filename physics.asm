@@ -55,16 +55,15 @@ NormalMode: subroutine
 
 	;;; COLLISION
 
-
 	lda vy0
         bmi .up
 .down
 
 	lda py1
         clc
-        adc #MARGIN
+        adc #$ff
         lda py0
-        adc #$4
+        adc #$7
         sta func0
         
         lda px0
@@ -114,7 +113,7 @@ NormalMode: subroutine
         clc
         adc #4
         sta py0
-        
+
         
 	jmp .colvdone
 

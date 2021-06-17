@@ -122,15 +122,35 @@ Release: subroutine
 Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
 	lda #$ff
         sta tmp2
-        ldx #0
+        ldx #1
 .nexthook        
-	lda $f0,x
-        beq .out
-	sta tmp0
-	inx
-        lda $f0,x
+	lda $210,x
+	beq .out
+        
+        cmp #$21
+        beq .ishook
+        inx
+        inx
+        inx
+        inx
+        jmp .nexthook
+        
+.ishook
+        
+        dex
+        lda $210,x
+        clc
+        adc #4
+        sta tmp0
+        inx
+        inx
+        inx
+        lda $210,x
+        clc
+        adc #4
         sta tmp1
-	inx
+        inx
+        inx
         
         lda py0
         sec
