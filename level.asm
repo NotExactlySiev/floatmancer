@@ -413,6 +413,9 @@ UpdateSprites: subroutine
         inx
         bne .clearoam
 	
+	lda scroll
+        lsr
+        sta tmp0
 
 	ldx #0 ; object list
         ldy #0 ; oam
@@ -420,20 +423,19 @@ UpdateSprites: subroutine
 	lda objlist,x
         bne .draw
 	rts
-.draw	and #$3f
+.draw	
+	clc
         asl
         asl
-        asl
-        
-        cmp scroll
-        bcs .onscreen
-        lda #$ff
-        jmp .setattr
-.onscreen
 	sec
-        sbc scroll
-.setattr
-        sta $210,y
+        sbc tmp0
+        cmp #120
+        bcc .onscreen
+        lda #$ff       
+.onscreen
+	clc
+	asl
+	sta $210,y
         inx
         iny
         lda objlist,x
