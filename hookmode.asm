@@ -73,14 +73,36 @@ HookMode: subroutine
         lda relpy0
         clc
         adc hookpy
-        sta py0
+        sta func0	; check for collision
 
 	lda relpx0
         clc
         adc hookpx
-        sta px0		; rel x and y are inverted!!
+        sta func1
 
-        
+	jsr CheckCollision
+        lda func2
+        bne .undo
+        lda func0
+        sta py0
+        lda func1
+        sta px0
+        rts
+.undo   
+	lda relpy0+$20
+        sta relpy0
+        lda relpx0+$20
+        sta relpx0
+        lda angle0+$20
+        sta angle0
+        lda angle1+$20
+        sta angle1
+        lda angle2+$20
+        sta angle2
+        lda #0
+        sta omega0
+        sta omega1
+        sta omega2
         rts
 
 

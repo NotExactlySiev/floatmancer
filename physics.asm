@@ -63,7 +63,7 @@ NormalMode: subroutine
         clc
         adc #$ff
         lda py0
-        adc #$7
+        adc #7
         sta func0
         
         lda px0
@@ -105,16 +105,15 @@ NormalMode: subroutine
         sta tmp0
         
         lda py0
-        sec
-        sbc tmp0
         and #$f8
-        clc
-        adc tmp0
+        
         clc
         adc #4
+        sec
+        sbc tmp0
         sta py0
 
-        
+
 	jmp .colvdone
 
 .colgrounddone
