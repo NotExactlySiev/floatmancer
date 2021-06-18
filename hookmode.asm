@@ -128,12 +128,13 @@ Release: subroutine
         lda py0
         sbc py0+$20
         sta vy0
-        
-        
+                
         lda #0
         sta ax0
         sta ax1
         sta ax2
+        ldx hookidx
+        sta $210,x
         
         lda #$7f
         and Flags
@@ -141,7 +142,7 @@ Release: subroutine
         
         rts
         
-Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
+Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
 	lda #$ff
         sta tmp2
         ldx #1
@@ -158,14 +159,15 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         jmp .nexthook
         
 .ishook
-        
+        ; TODO: maybe we don't need to load all this shit?
         dex
-        lda $210,x
+        lda $210,x	; load hook position and index
         clc
         adc #4
         sta tmp0
         inx
         inx
+        stx tmp3	; attributes byte
         inx
         lda $210,x
         clc
@@ -174,7 +176,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         inx
         inx
         
-        lda py0
+        lda py0		; calculate distance from hook
         sec
         sbc tmp0
         sta func0       
@@ -185,7 +187,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         
         jsr CalcRadius
         
-        lda func6
+        lda func6	; compare with the closest hook. replace if closer
         cmp tmp2
         bcs .nexthook
         sta tmp2
@@ -193,6 +195,8 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sta hookpy
         lda tmp1
         sta hookpx
+        lda tmp3
+        sta hookidx
 	jmp .nexthook
 .out
 	lda tmp2
@@ -205,7 +209,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         rts
 .close  
 
-        lda px0+$20
+        lda px0+$20	; attaching. calculate angle at t and t-dt, subtract to get omega
         sec
         sbc hookpx
         sta relpx0+$20
@@ -235,9 +239,7 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         sbc hookpy
         sta relpy0
         sta func1
-        
-        
-	
+        	
 	jsr CalcAtan
 	lda func6
         sta angle0  
@@ -250,6 +252,10 @@ Attach: subroutine	; 0-1 distances, 7 closest,  t0-t1 current hook
         lda angle0
         sbc angle0+$20
         sta omega0
+        
+        ldx hookidx
+        lda #2
+        sta $210,x
         
         lda #$80
         ora Flags

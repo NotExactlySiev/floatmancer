@@ -47,18 +47,19 @@ ay0	= $2F
 ay1	= $30
 ay2	= $31
 
-angle0	= $32
+angle0	= $32	; angle from the hook. 24 bit (should be 16?)
 angle1	= $33
 angle2	= $34
-omega0	= $35
+omega0	= $35	; angular momentum. 24 bit (should be 16?)
 omega1	= $36
 omega2	= $37
-relpx0	= $38
+relpx0	= $38	; x and y distance from the hook. 8 bit
 relpy0	= $39
-radius	= $3A
-hookpx	= $3B
+radius	= $3A	; radius from the hook. 8 bit (but actually 7)
+hookpx	= $3B	; hook pixel position. 8 bit
 hookpy	= $3C
-scroll	= $3D
+hookidx	= $3D	; hook index in oam dma
+scroll	= $3E	; screen scroll. [0, 240]
 
 ; $40-$5F are the same from last frame
 
