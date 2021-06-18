@@ -1,5 +1,6 @@
 NormalMode: subroutine
 
+	; reset vertical velocity and air flag, ready to update
 	lda #<(GRAVITY)
         sta ay2
         lda #>(GRAVITY)
@@ -11,7 +12,7 @@ NormalMode: subroutine
         sta Flags
 
 	;;; MOVEMENT FLAGS
-
+	; velocity is the movement direction. velocity zero? acceleration is movement direction
 	lda #$fd
         and Flags
         sta Flags
@@ -59,7 +60,8 @@ NormalMode: subroutine
         bmi .up
 .down
 
-	lda py1
+	;; DOWNWARDS AND GROUND COLLISION
+	lda py1		; check for bottom left and bottom right, collision if any are in solid block
         clc
         adc #$ff
         lda py0
@@ -71,17 +73,16 @@ NormalMode: subroutine
         adc #2
         sta func1
 
-        jsr CheckCollision
+        jsr CheckCollision	; BOTTOM RIGHT
 	lda func2
         bne .nair
 
         lda px0
         sec
         sbc #2
-
         sta func1
         
-        jsr CheckCollision
+        jsr CheckCollision	; BOTTOM LEFT
 	lda func2
         bne .nair
         jmp .colgrounddone
@@ -90,7 +91,40 @@ NormalMode: subroutine
         lda #$bf
         and Flags
         sta Flags
-        lda #0
+        jmp .resetvpos
+
+.colgrounddone
+.up
+	;; UPWARDS COLLISION
+	lda py1		; check for top left and top right, collision only if both are in solid block
+        sec
+        sbc #$ff
+        lda py0
+        sbc #4
+        sta func0
+        
+        lda px0
+        clc
+        adc #3
+        sta func1
+
+        jsr CheckCollision	; TOP RIGHT
+	lda func2
+        beq .colvdone
+
+        lda px0
+        sec
+        sbc #3
+
+        sta func1
+        
+        jsr CheckCollision	; TOP LEFT
+	lda func2
+        beq .colvdone
+        
+        
+.resetvpos		; if hit block from above or on ground, push character out into grid
+	lda #0
         sta ay0
         sta ay1
         sta ay2
@@ -105,37 +139,28 @@ NormalMode: subroutine
         sta tmp0
         
         lda py0
-        and #$f8
-        
         clc
-        adc #4
-        sec
+        adc tmp0
+        and #$f8
         sbc tmp0
+        adc #4
+        
         sta py0
-
-
-	jmp .colvdone
-
-.colgrounddone
-.up
-
-
-
 
 .colvdone
 
 
+	;; HORIZONTAL COLLISION
 
-
-        lda #$2
+        lda #$2		; no collision detection needed if hero is not moving horizontally
         bit Flags
-        beq .colhdone        
+        beq .colhdone
 
 	lda #$10
         bit Flags
 	bne .cleft
 .cright
-	lda px1
+	lda px1		; set for the left or right corners based on movement direction
         clc
         adc #MARGIN
         lda px0
@@ -151,33 +176,26 @@ NormalMode: subroutine
         sbc #3
         sta func1
         
-.colhxset
-	lda py0
+.colhxset		; horizontal collision if both corners are solid block
+	lda py0		
         sec
         sbc #3
         sta func0
         
-        jsr CheckCollision
+        jsr CheckCollision	; TOP left/right
         lda func2
-        sta func3
+        beq .colhdone
         
         lda py0
         clc
         adc #4
         sta func0
 
-	jsr CheckCollision
+	jsr CheckCollision	; BOTTOM left/right
+        lda func2
+        beq .colhdone
         
-        lda func2	; bottom - top
-        bne .hbottomblock
-        jmp .colhdone
-.hbottomblock
-        lda func3
-        bne .hbothblock
-  	jmp .colhdone			; change these parts because other combinations aren't needed
-.hbothblock
-
-	lda #$10
+	lda #$10		; push out into the grid
         bit Flags
 	bne .pushright
 .pushleft
@@ -195,7 +213,7 @@ NormalMode: subroutine
         adc #3
         sta px0
 .pushdone       
-
+				; stop hero, reset all vars
 	lda #0
         sta ax0
         sta ax1
@@ -205,24 +223,16 @@ NormalMode: subroutine
         sta vx2
         sta px1
         sta px2
-
-
-        ; push player out of the wall
-        
-        
   
 .colhdone
 
 
-
-
-	;;;; MOVEMENT
+	;; MOVEMENT
         lda #$40
-        bit Flags
+        bit Flags	; hero has different physics for air and ground
         bne .air
-        ;; Ground Rules
-        
-        ; Ground Jump
+
+        ; Ground Rules
         
         lda #$8
         bit Flags
@@ -325,6 +335,9 @@ NormalMode: subroutine
 
 .nojump
 
+
+	; Values have been adjusted. Finalizing physics calc
+
 	ldx #9
 SetVelPos:
 	clc
@@ -355,7 +368,7 @@ SetVelPos:
         jmp SetVelPos
         
 .pdone
-	; this part could be better
+	; TODO: this part could be better
         
 	lda vx0
         bpl .mright
@@ -397,14 +410,14 @@ SetVelPos:
         sta vx2
 
 .mhend
-
 	rts
-        
+
+
 CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid or not
-        lda func0
+        lda func0	; set pixel positions to grid positions. adjust for scrolling
         clc
         adc scroll
-        ror
+        ror		; nine bit addition result. throw away 0-2, keep carry
         lsr
         lsr
         sta func6
@@ -425,7 +438,7 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         rts
 .ndone
 
-	lda func6
+	lda func6	; check the tile with ALL of the collision blocks
         clc
         cmp collist,x
         bcc .not1
@@ -450,7 +463,6 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         sta func2
         rts
         
-
 .not1	inx
 .not2	inx
 .not3	inx
