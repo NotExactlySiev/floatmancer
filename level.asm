@@ -386,15 +386,14 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
         sta func7
         lda func6
         adc #0
-        
-        cmp #$24
-        bcc .nscreen1
-        cmp #$28
-        bcs .nscreen1
+
+	cmp #$24
+        bne .nchangescreen
         lda #$28
-.nscreen1
+.nchangescreen
         sta func6      
-        
+
+
         dey
         bpl .mback      
         
