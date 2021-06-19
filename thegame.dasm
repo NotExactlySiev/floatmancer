@@ -25,6 +25,7 @@ tmp5	= $f
 
 lvl	= $10
 jtimer	= $11 ; jump timer
+ftimer	= $13 ; frame timer
 
 ; set 1 variables
 ax0	= $20
@@ -207,6 +208,46 @@ NMIHandler:
         sec
         sbc #4
         sta $203
+        lda flags
+        eor #%11000000
+        and #%11000001
+        cmp #%11000001
+        bne .noanim
+        lda $201
+        cmp #$10	; if just started running, start at frame $12
+        bne .already
+        lda #$12
+        sta $201
+.already
+	dec ftimer
+        bne .sameframe
+        lda #6
+        sta ftimer
+        lda $201	; wrap around
+        clc
+        adc #1
+        cmp #$15
+        bne .nwrap
+        lda #$11
+.nwrap
+        
+        
+.sameframe
+
+	sta $201
+        lda #1
+        bit $201
+        bne .nobobbing
+        dec $200
+.nobobbing
+        
+        jmp .spritedone
+.noanim 
+	lda #$10
+        sta $201
+	lda #6
+        sta ftimer
+.spritedone
         
         ; draw sprites
         lda #02

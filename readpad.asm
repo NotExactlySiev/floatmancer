@@ -105,6 +105,27 @@
 .njumpstart
 
 	
+	;; Hooking
+        bit flags
+        bpl .nrelease
+        lda pad
+        eor #$ff
+        and #$40
+        beq .nrelease
+        ; release
+        jsr Release
+        
+        jmp .hookend
+.nrelease
 
+	; attach
+	lda pad
+        and padedge
+        and #$40
+        beq .hookend
+        
+        jsr Attach
+
+.hookend
 
 
