@@ -61,9 +61,10 @@ radius	= $39	; radius from the hook. 8 bit (but actually 7)
 hookpx	= $3A	; hook pixel position. 8 bit
 hookpy	= $3B
 
-scroll	= $3D	; screen scroll. [0, 240]
-flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | A pos edge | moving | active moving
-pad	= $3F
+scroll	= $3C	; screen scroll. [0, 240]
+flags	= $3D	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
+pad	= $3E
+padedge	= $3F
 
 BACKUP_OFFSET = $10
 

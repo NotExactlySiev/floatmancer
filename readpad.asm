@@ -2,7 +2,7 @@
         sta ax2
         sta ax1
         sta ax0
-
+        
 	lda #$FA
         and flags
         sta flags
@@ -12,99 +12,25 @@
         lda #0
         sta JOYPAD1
         
- 
-
-        lda JOYPAD1	; A
+        ; read pad data, xor with last frame's pad data to get edges
+        clc
+	ldx #8
+.readpad
+	asl pad
+        lda JOYPAD1
         and #$1
-        beq .nA
-
-	lda #$4
-        ora flags
-        sta flags
+        ora pad
+        sta pad
+        dex
+        bne .readpad
         
-        inc jtimer
-        
-        jmp .Aend
-        
-.nA	lda #0
-	sta jtimer
-        lda #$f7
-        and flags
-        sta flags
-.Aend
-	
-        
-        
-        
-        
-        lda JOYPAD1	; B
-	and #$1
-        beq .nB
-        		
-.B	lda #$20
-	bit flags
-        beq .nattach
-	lda #$80
-        bit flags
-        bne .nattach       
-        jsr Attach
-
-.nattach
-	lda #$20
-        ora flags
-        sta flags        
-        jmp .Bend
-
-.nB	
-	lda #$20
-        bit flags
-        beq .nrelease
-	lda #$80
-        bit flags
-        beq .nrelease
-        
-        jsr Release
-
-.nrelease
-	lda #$7f
-        and flags
-        sta flags
-.Bend
+	eor pad+BACKUP_OFFSET
+        sta padedge
 
 
-
-
-
-	lda JOYPAD1	; Select
-	and #$1
-        beq .nSel
-        
-.nSel
-
-
-	lda JOYPAD1	; Start
-	and #$1
-        beq .nStart
-        
-.nStart
-
-
-	lda JOYPAD1	; Up
-	and #$1
-        beq .nUp
-        
-.nUp
-
-
-	lda JOYPAD1	; Down
-	and #$1
-        beq .nDown
-        
-.nDown
-
-
-	lda JOYPAD1	; Left
-	and #$1
+	;; Walking
+	lda #2
+        bit pad
         beq .nLeft
         
 	lda #<(-WALK_ACCEL)
@@ -113,18 +39,14 @@
         sta ax1  
 	lda #>((-WALK_ACCEL)>>8)
         sta ax0
-        
         lda #$40
         ora $202
         sta $202
         
 	jmp .flag
 .nLeft
-
-
-
-	lda JOYPAD1	; Right
-	and #$1
+	lda #1
+        bit pad
         beq .nRight
 
 	lda #<(WALK_ACCEL)
@@ -133,7 +55,6 @@
         sta ax1  
 	lda #>(WALK_ACCEL>>8)
         sta ax0
-        
 	lda #$bf
         and $202
         sta $202
@@ -141,7 +62,49 @@
 .flag	lda #$3
 	ora flags
         sta flags
-
-
 .nRight
         
+	
+        ;; Jumping
+        lda pad
+        eor #$ff
+        and padedge
+        bmi .jumpend
+        lda jtimer
+        cmp #MAX_JUMP
+	beq .jumpend
+	jmp .njumpend
+.jumpend
+	lda #$f7
+        and flags
+        sta flags
+.njumpend
+
+
+        lda #$8
+        bit flags
+        beq .njumping
+        inc jtimer
+.njumping
+
+
+        lda pad
+        and padedge
+        bpl .njumpstart
+        bit flags
+        bvs .njumpstart
+	lda #$20
+        bit flags
+        bne .njumpstart
+        
+        lda #0
+        sta jtimer
+        lda #$8
+        ora flags
+        sta flags
+.njumpstart
+
+	
+
+
+

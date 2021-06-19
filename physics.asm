@@ -223,39 +223,22 @@ NormalMode: subroutine
 .colhdone
 
 
-	;; MOVEMENT
-        lda #$40
+	;;; MOVEMENT
         bit flags	; hero has different physics for air and ground
-        bne .air
-
-        ; Ground Rules
-        
+        bvs .air
         lda #$8
         bit flags
-        bne .nochange
-        lda jtimer
-        beq .nochange
-        cmp #3
-        bcs .nochange
-        lda #$8
-        ora flags
-        sta flags	; set to jumping if on frame 1 or 2 of pressing jump
-        
-        
-.nochange
-
-        ; Ground Deceleration
-        
-        
         bne .air
-	lda #$1         ; do passive deceleration if not actively controlled
+
+        ;; Ground Rules
+                
+      	lda #$1         ; do passive deceleration if not actively controlled
         bit flags
         bne .end
-        lda #$2
+        asl
         bit flags
         beq .end
-
-        
+       
         lda vx0
         bpl .decelok
 .left   cmp #>((-PASSIVE_DECEL)>>8)
@@ -276,8 +259,7 @@ NormalMode: subroutine
         sta ax0
         sta ax1
         sta ax2
-
-        
+       
         jmp .end
 
 .decelok
@@ -290,8 +272,7 @@ NormalMode: subroutine
         lda vx0
         bmi .right
         jsr NegativeAclX      	  
-.right 
-
+.right
 .end
 
 
@@ -299,24 +280,7 @@ NormalMode: subroutine
 
 .air
 	
-	; Air Rules
-
-	; jumping
-	lda #$8
-        bit flags
-        beq .nochange2
-	lda jtimer
-        beq .jdone
-        cmp #MAX_JUMP
-        bcs .jdone
-	jmp .nochange2
-.jdone
-	lda #$f7	; end jumping if B released or max jump time reached
-        and flags
-        sta flags
-
-.nochange2
-
+	;; Air Rules
 
 	lda #$8			; finally set variables if jumping
         bit flags
@@ -333,7 +297,7 @@ NormalMode: subroutine
 .airdone
 
 
-	; Values have been adjusted. Finalizing physics calc
+	;;; Values have been adjusted. Finalizing physics calc
 
 	ldx #3
 SetVelPos:
