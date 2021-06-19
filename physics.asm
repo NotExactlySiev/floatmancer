@@ -8,14 +8,14 @@ NormalMode: subroutine
 	lda #>(GRAVITY>>8)
         sta ay0
         lda #$40
-        ora Flags
-        sta Flags
+        ora flags
+        sta flags
 
 	;;; MOVEMENT FLAGS
 	; velocity is the movement direction. velocity zero? acceleration is movement direction
 	lda #$fd
-        and Flags
-        sta Flags
+        and flags
+        sta flags
 
         lda vx0
         bne .yesv
@@ -40,17 +40,17 @@ NormalMode: subroutine
 .side	
 	bmi .sideleft
 	lda #$ef
-        and Flags
-        sta Flags
+        and flags
+        sta flags
         jmp .sidedone
 .sideleft
 	lda #$10
-        ora Flags
-        sta Flags
+        ora flags
+        sta flags
 .sidedone
 	lda #$02
-	ora Flags
-        sta Flags
+	ora flags
+        sta flags
 
 .no
 
@@ -85,15 +85,14 @@ NormalMode: subroutine
         jsr CheckCollision	; BOTTOM LEFT
 	lda func2
         bne .nair
-        jmp .colgrounddone
+        jmp .colvdone
         
 .nair        
         lda #$bf
-        and Flags
-        sta Flags
+        and flags
+        sta flags
         jmp .resetvpos
 
-.colgrounddone
 .up
 	;; UPWARDS COLLISION
 	lda py1		; check for top left and top right, collision only if both are in solid block
@@ -121,8 +120,7 @@ NormalMode: subroutine
         jsr CheckCollision	; TOP LEFT
 	lda func2
         beq .colvdone
-        
-        
+                
 .resetvpos		; if hit block from above or on ground, push character out into grid
 	lda #0
         sta ay0
@@ -132,7 +130,6 @@ NormalMode: subroutine
         sta vy1
         sta vy2
         sta py1
-        sta py2
 	
         lda scroll
         and #$7
@@ -153,11 +150,11 @@ NormalMode: subroutine
 	;; HORIZONTAL COLLISION
 
         lda #$2		; no collision detection needed if hero is not moving horizontally
-        bit Flags
+        bit flags
         beq .colhdone
 
 	lda #$10
-        bit Flags
+        bit flags
 	bne .cleft
 .cright
 	lda px1		; set for the left or right corners based on movement direction
@@ -196,7 +193,7 @@ NormalMode: subroutine
         beq .colhdone
         
 	lda #$10		; push out into the grid
-        bit Flags
+        bit flags
 	bne .pushright
 .pushleft
 	lda px0
@@ -222,28 +219,27 @@ NormalMode: subroutine
         sta vx1
         sta vx2
         sta px1
-        sta px2
   
 .colhdone
 
 
 	;; MOVEMENT
         lda #$40
-        bit Flags	; hero has different physics for air and ground
+        bit flags	; hero has different physics for air and ground
         bne .air
 
         ; Ground Rules
         
         lda #$8
-        bit Flags
+        bit flags
         bne .nochange
         lda jtimer
         beq .nochange
         cmp #3
         bcs .nochange
         lda #$8
-        ora Flags
-        sta Flags	; set to jumping if on frame 1 or 2 of pressing jump
+        ora flags
+        sta flags	; set to jumping if on frame 1 or 2 of pressing jump
         
         
 .nochange
@@ -253,10 +249,10 @@ NormalMode: subroutine
         
         bne .air
 	lda #$1         ; do passive deceleration if not actively controlled
-        bit Flags
+        bit flags
         bne .end
         lda #$2
-        bit Flags
+        bit flags
         beq .end
 
         
@@ -305,8 +301,9 @@ NormalMode: subroutine
 	
 	; Air Rules
 
+	; jumping
 	lda #$8
-        bit Flags
+        bit flags
         beq .nochange2
 	lda jtimer
         beq .jdone
@@ -315,16 +312,14 @@ NormalMode: subroutine
 	jmp .nochange2
 .jdone
 	lda #$f7	; end jumping if B released or max jump time reached
-        and Flags
-        sta Flags
+        and flags
+        sta flags
 
 .nochange2
 
-.airdone
-
 
 	lda #$8			; finally set variables if jumping
-        bit Flags
+        bit flags
         beq .nojump
 	lda #<(-JUMP_FORCE)
         sta vy2
@@ -332,13 +327,15 @@ NormalMode: subroutine
         sta vy1
         lda #>((-JUMP_FORCE)>>8)
         sta vy0
-
 .nojump
+
+
+.airdone
 
 
 	; Values have been adjusted. Finalizing physics calc
 
-	ldx #9
+	ldx #3
 SetVelPos:
 	clc
 	lda vx2,x
@@ -352,9 +349,6 @@ SetVelPos:
         sta vx0,x
 
         clc
-        lda px2,x
-        adc vx2,x
-        sta px2,x
         lda px1,x
         adc vx1,x
         sta px1,x

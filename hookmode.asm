@@ -89,16 +89,14 @@ HookMode: subroutine
         sta px0
         rts
 .undo   
-	lda relpy0+$20
+	lda relpy0+BACKUP_OFFSET
         sta relpy0
-        lda relpx0+$20
+        lda relpx0+BACKUP_OFFSET
         sta relpx0
-        lda angle0+$20
+        lda angle0+BACKUP_OFFSET
         sta angle0
-        lda angle1+$20
+        lda angle1+BACKUP_OFFSET
         sta angle1
-        lda angle2+$20
-        sta angle2
         lda #0
         sta omega0
         sta omega1
@@ -108,25 +106,19 @@ HookMode: subroutine
 
 Release: subroutine
 	sec
-        lda px2
-        sbc px2+$20
-        sta vx2
         lda px1
-        sbc px1+$20
+        sbc px1+BACKUP_OFFSET
         sta vx1
         lda px0
-        sbc px0+$20
+        sbc px0+BACKUP_OFFSET
         sta vx0
         
         sec
-        lda py2
-        sbc py2+$20
-        sta vy2
         lda py1
-        sbc py1+$20
+        sbc py1+BACKUP_OFFSET
         sta vy1
         lda py0
-        sbc py0+$20
+        sbc py0+BACKUP_OFFSET
         sta vy0
                 
         lda #0
@@ -137,8 +129,8 @@ Release: subroutine
         sta $210,x
         
         lda #$7f
-        and Flags
-        sta Flags
+        and flags
+        sta flags
         
         rts
         
@@ -209,23 +201,23 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         rts
 .close  
 
-        lda px0+$20	; attaching. calculate angle at t and t-dt, subtract to get omega
+        lda px0+BACKUP_OFFSET	; attaching. calculate angle at t and t-dt, subtract to get omega
         sec
         sbc hookpx
-        sta relpx0+$20
+        sta relpx0+BACKUP_OFFSET
         sta func0
         
-        lda py0+$20
+        lda py0+BACKUP_OFFSET
         sec
         sbc hookpy
-        sta relpy0+$20
+        sta relpy0+BACKUP_OFFSET
         sta func1
         
         jsr CalcAtan
         lda func6
-        sta angle0+$20
+        sta angle0+BACKUP_OFFSET
         lda func7
-        sta angle1+$20
+        sta angle1+BACKUP_OFFSET
         
 
 	lda px0
@@ -247,10 +239,10 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sta angle1
         
 	sec
-        sbc angle1+$20
+        sbc angle1+BACKUP_OFFSET
         sta omega1
         lda angle0
-        sbc angle0+$20
+        sbc angle0+BACKUP_OFFSET
         sta omega0
         
         ldx hookidx
@@ -258,6 +250,6 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sta $210,x
         
         lda #$80
-        ora Flags
-        sta Flags
+        ora flags
+        sta flags
         rts

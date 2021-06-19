@@ -4,8 +4,8 @@
         sta ax0
 
 	lda #$FA
-        and Flags
-        sta Flags
+        and flags
+        sta flags
 
 	lda #1
 	sta JOYPAD1
@@ -14,13 +14,13 @@
         
  
 
-        lda JOYPAD1
+        lda JOYPAD1	; A
         and #$1
         beq .nA
 
 	lda #$4
-        ora Flags
-        sta Flags
+        ora flags
+        sta flags
         
         inc jtimer
         
@@ -29,65 +29,80 @@
 .nA	lda #0
 	sta jtimer
         lda #$f7
-        and Flags
-        sta Flags
+        and flags
+        sta flags
 .Aend
-	lda JOYPAD1	; B
+	
+        
+        
+        
+        
+        lda JOYPAD1	; B
 	and #$1
         beq .nB
         		
 .B	lda #$20
-	bit Flags
+	bit flags
         beq .nattach
 	lda #$80
-        bit Flags
-        bne .nattach
-        
+        bit flags
+        bne .nattach       
         jsr Attach
-
 
 .nattach
 	lda #$20
-        ora Flags
-        sta Flags        
+        ora flags
+        sta flags        
         jmp .Bend
 
 .nB	
 	lda #$20
-        bit Flags
+        bit flags
         beq .nrelease
 	lda #$80
-        bit Flags
+        bit flags
         beq .nrelease
         
         jsr Release
 
 .nrelease
 	lda #$7f
-        and Flags
-        sta Flags
-
+        and flags
+        sta flags
 .Bend
+
+
+
+
+
 	lda JOYPAD1	; Select
 	and #$1
         beq .nSel
         
 .nSel
+
+
 	lda JOYPAD1	; Start
 	and #$1
         beq .nStart
         
 .nStart
+
+
 	lda JOYPAD1	; Up
 	and #$1
         beq .nUp
         
 .nUp
+
+
 	lda JOYPAD1	; Down
 	and #$1
         beq .nDown
         
 .nDown
+
+
 	lda JOYPAD1	; Left
 	and #$1
         beq .nLeft
@@ -104,9 +119,10 @@
         sta $202
         
 	jmp .flag
-        
-
 .nLeft
+
+
+
 	lda JOYPAD1	; Right
 	and #$1
         beq .nRight
@@ -123,8 +139,8 @@
         sta $202
 
 .flag	lda #$3
-	ora Flags
-        sta Flags
+	ora flags
+        sta flags
 
 
 .nRight

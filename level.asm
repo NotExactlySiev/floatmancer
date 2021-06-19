@@ -434,7 +434,7 @@ UpdateSprites: subroutine
 .onscreen
 	clc
 	asl
-	sta $210,y
+	sta $210,y	; set y pos
         inx
         iny
         lda objlist,x
@@ -445,8 +445,16 @@ UpdateSprites: subroutine
         and #$7
         clc
         adc #$20
-        sta $210,y
+        sta $210,y	; set sprite index
         iny
+        bit flags
+        bpl .normalcolor
+        cpy hookidx
+        bne .normalcolor
+        lda #2
+        sta $210,y
+.normalcolor
+        
         iny
         lda objlist,x
         and #$1f
@@ -454,7 +462,7 @@ UpdateSprites: subroutine
         asl
         asl
         asl
-        sta $210,y
+        sta $210,y	; set x pos
         inx
         iny
         jmp .next
