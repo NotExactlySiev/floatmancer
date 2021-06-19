@@ -5,16 +5,14 @@
 
 ;;;;; VARIABLES
 
-lvlptr	= $0
-
-func0	= $2
-func1	= $3
-func2	= $4
-func3	= $5
-func4	= $6
-func5	= $7
-func6	= $8
-func7	= $9
+func0	= $0
+func1	= $1
+func2	= $2
+func3	= $3
+func4	= $4
+func5	= $5
+func6	= $6
+func7	= $7
 
 tmp0	= $a
 tmp1	= $b
@@ -23,9 +21,12 @@ tmp3	= $d
 tmp4	= $e
 tmp5	= $f
 
-lvl	= $10
-jtimer	= $11 ; jump timer
-ftimer	= $13 ; frame timer
+lvlptr	= $10
+lvl	= $12
+lvlsize	= $13
+
+jtimer	= $1e ; jump timer
+ftimer	= $1f ; frame timer
 
 ; set 1 variables
 ax0	= $20
@@ -91,7 +92,7 @@ SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
 LEVEL_HEAD	= $98
 
-SCROLL_THOLD	= 60
+SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
 SCREEN_WIDTH	= 256
 
@@ -111,8 +112,7 @@ Start:
         jsr WaitSync
         jsr ClearRAM
         jsr WaitSync
-       
-       
+           
         ; ppu setup
         jsr LoadPallete
         
@@ -148,15 +148,6 @@ Start:
         sta $202
         
         ; initial values
-        lda #140
-        sta px0
-        lda #124
-        sta py0
-        
-        lda #$0
-        sta px1
-        sta py1
-
 	lda #$0
         sta vx1
         sta vx0
@@ -165,8 +156,6 @@ Start:
         lda #$0
         sta vy0  
 
-        lda #40
-        sta scroll
         jsr UpdateSprites
 
   
@@ -208,11 +197,11 @@ NMIHandler:
         sec
         sbc #4
         sta $203
-        lda flags
+        lda flags	; RUNNING ANIMATION
         eor #%11000000
         and #%11000001
         cmp #%11000001
-        bne .noanim
+        bne .nrunning
         lda $201
         cmp #$10	; if just started running, start at frame $12
         bne .already
@@ -229,21 +218,26 @@ NMIHandler:
         cmp #$15
         bne .nwrap
         lda #$11
-.nwrap
-        
-        
+.nwrap        
 .sameframe
-
 	sta $201
         lda #1
         bit $201
         bne .nobobbing
         dec $200
-.nobobbing
-        
+.nobobbing      
         jmp .spritedone
-.noanim 
-	lda #$10
+.nrunning
+	
+        bit flags	; FALLING ANIMATION
+        bvc .nfalling
+        lda #$14
+        sta $201
+        bne .spritedone
+
+.nfalling
+
+	lda #$10	; IDLE ANIMATION
         sta $201
 	lda #6
         sta ftimer
@@ -395,11 +389,11 @@ Pallete:
         .hex 000000 00
 
 	org LEVEL_HEAD<<8
-        .byte $87, $2b, $87, $36, 20, 12, $23, 41, 24, $26, 23, 17, $23, 25, 22, $23
-        .byte 17, 10, $23
-        .byte $a2, $2b, $d, $5, $24, 27, 18, $73, $86, $26, 54, 1, $1e, 54, $f, $1f, $90, $34
-        .byte $0
-        
+        ; Level 1
+        .byte 32, $67, $87, $2b, $87, $36, 20, 12, $23, 41, 24, $26, 23, 17, $23, 25, 22, $23
+        .byte 17, 10, $23, $a2, $2b, $d, $5, $24, 27, 18, $73, 54, 1, $1e, 54, $f, $1f
+        ; Level 2
+        .byte $46, $67, $87, $2b, $87, 41, 24, $26
 
 
         ; math look up tables

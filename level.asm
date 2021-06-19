@@ -1,12 +1,37 @@
 LoadLevel: subroutine
-	
-        ldy #0
-.copy   lda (lvlptr),y
-        sta lvldat,y
-        beq .out
+	ldy #0          
+        tya
+        sta PPU_SCROLL
+        lda (lvlptr),y
+        lsr
+        lsr
+        ora (lvlptr),y
+        and #$f0
+        sta PPU_SCROLL
+        lda (lvlptr),y
+        and #$3f
+        sta lvlsize
+        
         iny
-        jmp .copy
-.out	tya
+        lda (lvlptr),y
+        and #$1f
+        asl
+        asl
+        asl
+        sta px0
+        lda (lvlptr),y
+        and #$e0
+        sta py0
+                
+        ldy lvlsize
+        iny
+        iny
+.copy   lda (lvlptr),y
+        sta lvldat-2,y
+        dey
+        bne .copy
+.out	
+	tya
 	sec
         adc lvlptr
         sta lvlptr
