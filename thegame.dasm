@@ -5,6 +5,7 @@
 
 ;;;;; VARIABLES
 
+; local variables
 func0	= $0
 func1	= $1
 func2	= $2
@@ -21,7 +22,6 @@ tmp3	= $b
 
 ; pointers
 lvlptr	= $c
-nlvlptr	= $e
 
 
 lvl	= $12
@@ -29,6 +29,13 @@ lvlsize	= $13
 
 jtimer	= $1e ; jump timer
 ftimer	= $1f ; frame timer
+
+; level generation variables
+blknum	= $20
+filbyte	= $21
+
+blkptr1	= $22
+blkptr2	= $23
 
 ; set 1 variables
 ax0	= $20
@@ -74,7 +81,7 @@ BACKUP_OFFSET = $10
 
 ; $40-$5F are the same from last frame
 
-lvldat	= $60
+lvldat	= $100
 objlist	= $80
 collist	= $a8
 
@@ -117,10 +124,6 @@ Start:
            
         ; ppu setup
         jsr LoadPallete
-        
-        lda #0        
-        ldx PPU_STATUS
-        sta PPU_CTRL
                       
         lda #0
         sta OAM_ADDR
@@ -395,30 +398,10 @@ Pallete:
         .hex 000000 00
 
 	org LEVEL_HEAD<<8
-        ; Block 3 bytes
-        ; Object 2 Bytes
-        ; Filler 1 Byte
         
-        ; Level 1
-        LEVEL_HEADER 6, 0, 5, 8
-        BLOCK 13, 6, 2, 2
-        BLOCK 15, 8, 2, 1
+	include "leveldata.asm"
+
         
-        LEVEL_HEADER 6, 1, 6, 14
-        BLOCK 17, 10, 2, 1
-        BLOCK 19, 12, 2, 1
-        
-        LEVEL_HEADER 6,1, 6, 14
-        BLOCK 21, 14, 2, 2
-        BLOCK 23, 16, 2, 1
-        
-        LEVEL_HEADER 6, 1, 6, 14
-        BLOCK 15, 3, 2, 1
-        BLOCK 15, 40, 2, 1
-        
-        LEVEL_HEADER 6, 2, 6, 14
-        BLOCK 28, 22, 2, 2
-        BLOCK 30, 24, 2, 2
                 
 
 

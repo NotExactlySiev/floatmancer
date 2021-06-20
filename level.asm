@@ -69,6 +69,9 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         dey
         dex
         bpl .copy
+	
+        lda #-1
+        sta blknum
 
 	rts
 
@@ -132,158 +135,101 @@ DrawBlock: subroutine
         rts
 
 
-DrawInner:
-        lda lvldat,y
-        sta $19
+DrawInner: subroutine
+        lda #0
+        sta func5
         
+        lda lvldat,y
+        sta filbyte
+                
         ; set sides right away
         and #$0f
-        sta $8
-        
-        sty $3
+        sta func4 
         
 	; load the two overlapping rects
-        lda $30
-        sta $a
-        lda $31
-        sta $b
-        lda $32
-        sta $c
+        lda filbyte
+        asl
+        asl
+        sta filbyte
         
-        ldx #0
-        lda #$20
-        bit $19
-        beq .nthree
-	ldx #3
-.nthree
-	lda $33,x
-        sta $d
-        lda $34,x
-        sta $e
-        lda $35,x
-        sta $f
-         
-	; y is always y2
-        lda $a
-        sta $4
-        lda $b
-        and #$e0
-        sta $5
- 
-        ; calculate first bit
-        lda $b
-        and #$1f
-        sta $10
-        lda $e
-        and #$1f
-        sta $11
-        cmp $10		; x1 - x2
-        bcc .sbit0
-.cbit0	ldy #$80
-	lda $e
-	jmp .b0done
-.sbit0	ldy #$00
-	lda $b
-.b0done	sty $9
-	and #$1f
-        clc
-        adc $5
-        sta $5
-        
-	; calculate second bit
-        lda $c
-        and #$0f
-        sta $14
-        clc
-        adc $10
-        sta $12
-        lda $f
-        and #$0f
-        sta $15
-        adc $11
-        sta $13
-        cmp $12		; x>1 - x>2
-        bcc .sbit1
-.cbit1	lda $14
-	tay
-        lda #0
-	jmp .b1done
-.sbit1	lda $13
-	sec
-        sbc $10
+        lda blknum	; put 1 in x, 2 in y
+        tax
+        dex
+        bit filbyte
+        bvc .oneback
+        dex
+.oneback
+        asl
+        asl
         tay
-        lda #$04
-.b1done	sty $6
-	ora $9
-        sta $9
-        
-        ; third bit is given
-        lda #$10
-        bit $19
-        bne .sbit2
-.cbit2	lda $c
-	and #$f0
-	lsr
-        lsr
-        lsr
-        lsr
-        sta $7
-        lda $9
-        lsr
-        lsr
-        ora $9
-        eor #$03
-        sta $9
-	jmp .b2done
-.sbit2	ldx #3
-.calcy	lda $a,x
-        clc
+        txa
         asl
         asl
-        asl
-        sta $10,x
-        lda $b,x
-        clc
-        rol
-        rol
-        rol
-        and #$07
-        ora $10,x
-        sta $10,x
-        dex
-        dex
-        dex
-        bpl .calcy
+        tax
         
-        lda $13
-        sec
-        sbc $10
-        sta $7
-        lda $f
-        and #$f0
-        lsr
-        lsr
-        lsr
-        lsr
-        sec
-        adc $7
-        adc #0
-        sta $7
+        ; y coordinate for the fill is always y2
+        lda collist,y
+        sta func0      
         
-        lda $9
-        lsr
-        lsr
-        eor #$3
-        ora $9
-        sta $9
-.b2done
+        inx
+        iny
+        
+        lda collist,y	; compare x2 and x1
+        cmp collist,x
+        bcs .x1first
+        lda #%10000000
+        ora func5
+        sta func5
+        lda collist,x
+.x1first
+        sta func1
         
         
+        inx
+        iny
+	
+        lda collist,y
+        cmp collist,x
+	bcc .ye2first
+        lda #%00110000	; later will be xor'd with a shifted one, setting the last two bits
+        ora func5
+        sta func5
+        lda collist,x
+.ye2first
+	sec
+        sbc func0
+        sta func2
         
+        inx
+        iny
+        
+        lda collist,y
+        cmp collist,x
+        bcc .xe2first
+        lda #%01000000
+        ora func5
+        sta func5
+	lda collist,x
+.xe2first
+	sec
+        sbc func1
+        sta func3
+ 
+	lda func5
+        lsr
+        lsr
+        eor func5
+        lsr
+        lsr
+        lsr
+        lsr
+        sta func5
+              
 	jmp DrawRect
 
 
 DrawDirt:
+        inc blknum
         ldx #0
 .search lda collist,x
         beq .foundempty
@@ -294,7 +240,7 @@ DrawDirt:
         jmp .search
 .foundempty
 
-        lda lvldat,y
+        lda lvldat,y	; put block data in collist
         sta func0
         sta collist,x
 
@@ -304,7 +250,7 @@ DrawDirt:
         sta func1
 	sta collist,x
 
-	iny		; repeat here. loop it
+	iny
 	lda lvldat,y
         lsr
         lsr
@@ -318,7 +264,7 @@ DrawDirt:
         inx
         sta collist,x
 
-        lda lvldat,y
+        lda lvldat,y	; pass level data for DrawRect function
 	and #$0f
         sta func3
         dex
@@ -332,15 +278,14 @@ DrawDirt:
         tya
         pha
         
-        lda #$0f
+        lda #$0f	; constant arguments for dirt block
         sta func4
         
         lda #$00
         sta func5
 
         
-DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onflags, t1 block
-
+DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onflags, t1 block
 	lda func0
         cmp #30
         bcc .screen
@@ -383,7 +328,7 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
         
         ldx func3
         
-.row    lda tmp0		; setting two low bits of on flags
+.row    lda tmp0	; setting two low bits of on flags
 	and #$fc
         cpx #0
 	bne .xnleft
@@ -437,14 +382,14 @@ DrawRect:	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onfl
 	dex
         bpl .row
         
-        lda func7
+        lda func7		; go to the next row
         clc
         adc #$20
         sta func7
         lda func6
         adc #0
 
-	cmp #$24
+	cmp #$24		; if entered nametable 2, jump straight to 3
         bne .nchangescreen
         lda #$28
 .nchangescreen
