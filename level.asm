@@ -136,7 +136,7 @@ DrawBlock: subroutine
 
 
 DrawInner: subroutine
-        lda #0
+        lda #%00110000
         sta func5
         
         lda lvldat,y
@@ -144,7 +144,10 @@ DrawInner: subroutine
                 
         ; set sides right away
         and #$0f
-        sta func4 
+        sta func4
+        
+        tya
+        pha
         
 	; load the two overlapping rects
         lda filbyte
@@ -192,7 +195,7 @@ DrawInner: subroutine
         cmp collist,x
 	bcc .ye2first
         lda #%00110000	; later will be xor'd with a shifted one, setting the last two bits
-        ora func5
+        eor func5
         sta func5
         lda collist,x
 .ye2first

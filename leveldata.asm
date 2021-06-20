@@ -6,9 +6,8 @@
         LEVEL_HEADER 9, 0, 5, 8
         BLK 13, 6, 6, 6
         BLK 17, 9, 6, 6
-        .byte %11000000
-        ;FIL 1, 1, 1, 0, 0, 0
-        OBJ 10, 15, 1
+        FIL 0, 0, 0, 0, 0, 0
+        OBJ 10, 19, 1
         
         ; Level 2
         LEVEL_HEADER 6, 1, 6, 14
