@@ -5,7 +5,7 @@
 
 ;;;;; VARIABLES
 
-; local variables
+;; LOCAL VARIABLES
 func0	= $0
 func1	= $1
 func2	= $2
@@ -21,14 +21,21 @@ tmp2	= $a
 tmp3	= $b
 
 ; pointers
-lvlptr	= $c
+lvlptr	= $C
+lvl	= $E
+lvlsize	= $F
 
+;; GAME VARIABLES
 
-lvl	= $12
-lvlsize	= $13
+pad	= $10
+padold	= $11
+padedge	= $12
 
-jtimer	= $1e ; jump timer
-ftimer	= $1f ; frame timer
+;; LEVEL VARIABLES
+
+jtimer	= $1E ; jump timer
+ftimer	= $1F ; frame timer
+
 
 ; level generation variables
 blknum	= $20
@@ -74,8 +81,8 @@ hookpy	= $3B
 
 scroll	= $3C	; screen scroll. [0, 240]
 flags	= $3D	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
-pad	= $3E
-padedge	= $3F
+
+
 
 BACKUP_OFFSET = $10
 
@@ -88,7 +95,7 @@ collist	= $a8
 ;; Physics Constants
 GRAVITY	        = $006000
 MAX_FALL	= $056010
-JUMP_FORCE	= $030000
+JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
@@ -99,7 +106,7 @@ MARGIN		= $8
 
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
-LEVEL_HEAD	= $98
+LEVEL_HEAD	= $90
 
 SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
@@ -171,7 +178,7 @@ Start:
 
 	;;; MAIN GAME LOGIC
 
-.endless
+.endless	
         jmp .endless
 
 
@@ -398,12 +405,7 @@ Pallete:
         .hex 000000 00
 
 	org LEVEL_HEAD<<8
-        
 	include "leveldata.asm"
-
-        
-                
-
 
         ; math look up tables
         org SIN_HEAD<<8

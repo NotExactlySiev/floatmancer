@@ -24,9 +24,11 @@
         dex
         bne .readpad
         
-	eor pad+BACKUP_OFFSET
+	eor padold
         sta padedge
 
+	lda pad
+        sta padold
 
 	;; Walking
 	lda #2
@@ -127,5 +129,33 @@
         jsr Attach
 
 .hookend
+	lda pad
+        and padedge
+        and #$20
+        beq .lvlend
+                
+        lda #$00
+        sta PPU_MASK
+        sta PPU_CTRL
+        jsr WaitSync
+        
+        jsr ClearLevel
+        
+        ldx lvl
+        inx
+        stx func0
+        jsr FindLevel
+        jsr LoadLevel
+        jsr RenderLevel
+	jsr UpdateSprites
+        
+        jsr WaitSync
 
-	
+        
+        
+        lda #$1e
+        sta PPU_MASK
+        lda #$80
+        sta PPU_CTRL
+        jmp NMIEnd
+.lvlend

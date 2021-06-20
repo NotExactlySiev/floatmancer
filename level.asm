@@ -30,8 +30,35 @@ FindLevel: subroutine ; find lvlptr for lvl at func0
         dex
         jmp .nextlevel        
 .out    
+	lda func0
+        sta lvl
 	rts
 	
+
+ClearLevel: subroutine
+	lda #$20
+        sta PPU_ADDR
+        lda #0
+        sta PPU_ADDR
+        
+        ldx #$ff
+.loop   
+	ldy #12
+.innerloop
+        sta PPU_DATA
+        dey
+        bne .innerloop        
+        dex
+        bne .loop
+        
+        ldx #$20
+.clearzp
+        sta $0,x
+        inx
+        bne .clearzp
+        rts
+        
+
 
 LoadLevel: subroutine	; load level data and metadata from level pointer
         ldy #0
@@ -82,10 +109,6 @@ NextItem:
         lda lvldat,y
         cpy lvlsize
         bne .nend
-        ldx #$0f
-.clean  sta $10,x	; do i HAVE to clean?
-        dex
-        bpl .clean
         rts        
 .nend   and #$c0
         bne .ndirt
