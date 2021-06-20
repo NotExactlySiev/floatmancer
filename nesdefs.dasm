@@ -116,6 +116,19 @@ NES_MIRR_QUAD	= 8
 	.word NMIHandler	; $fffe irq / brk
 	ENDM
 
+;;;;; LEVEL
+
+	MAC LEVEL_HEADER
+        .byte {2}<<6 | {1}-1
+        .byte {3}<<6 | {4}
+        ENDM
+
+	MAC BLOCK
+        .byte {1}
+        .byte {2}
+        .byte {3}<<4 | {4}
+        ENDM
+
 ;;;;; PPU_SETADDR <address> - set 16-bit PPU address
 
 	MAC PPU_SETADDR

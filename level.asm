@@ -1,16 +1,52 @@
-LoadLevel: subroutine
-	ldy #0          
-        tya
-        sta PPU_SCROLL
+FindLevel: subroutine ; find lvlptr for lvl at func0
+        ldy #0
+        ldx func0
+        txa
+        sec
+        sbc lvl
+        bpl .seekforward
+        ; if we're past the level, reset to level 0 and start the search
+        lda #<LEVEL_HEAD
+        sta lvlptr
+        lda #>LEVEL_HEAD
+        sta lvlptr+1
+        txa
+.seekforward
+	; otherwise only go forward by (target level - current level)
+        tax
+        
+.nextlevel
+	beq .out
+        lda (lvlptr),y
+        and #$3f
+        clc
+        adc #3
+        clc
+        adc lvlptr
+        sta lvlptr
+        lda lvlptr+1
+        adc #0
+        sta lvlptr+1
+        dex
+        jmp .nextlevel        
+.out    
+	rts
+	
+
+LoadLevel: subroutine	; load level data and metadata from level pointer
+        ldy #0
         lda (lvlptr),y
         lsr
         lsr
         ora (lvlptr),y
         and #$f0
-        sta PPU_SCROLL
+        sta scroll
+        
         lda (lvlptr),y
         and #$3f
-        sta lvlsize
+        tax
+        inx
+        stx lvlsize
         
         iny
         lda (lvlptr),y
@@ -22,30 +58,26 @@ LoadLevel: subroutine
         lda (lvlptr),y
         and #$e0
         sta py0
-                
+        
         ldy lvlsize
         iny
-        iny
+        ldx lvlsize
+        dex   
+        
 .copy   lda (lvlptr),y
-        sta lvldat-2,y
+        sta lvldat,x
         dey
-        bne .copy
-.out	
-	tya
-	sec
-        adc lvlptr
-        sta lvlptr
-        lda lvlptr+1
-        adc #0
-        sta lvlptr+1
-	rts
+        dex
+        bpl .copy
 
+	rts
 
 
 RenderLevel: subroutine
       	ldy #0
 NextItem:
         lda lvldat,y
+        cpy lvlsize
         bne .nend
         ldx #$0f
 .clean  sta $10,x	; do i HAVE to clean?

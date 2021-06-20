@@ -14,14 +14,16 @@ func5	= $5
 func6	= $6
 func7	= $7
 
-tmp0	= $a
-tmp1	= $b
-tmp2	= $c
-tmp3	= $d
-tmp4	= $e
-tmp5	= $f
+tmp0	= $8
+tmp1	= $9
+tmp2	= $a
+tmp3	= $b
 
-lvlptr	= $10
+; pointers
+lvlptr	= $c
+nlvlptr	= $e
+
+
 lvl	= $12
 lvlsize	= $13
 
@@ -116,9 +118,9 @@ Start:
         ; ppu setup
         jsr LoadPallete
         
-        lda #0
-        sta PPU_SCROLL
-        sta PPU_SCROLL
+        lda #0        
+        ldx PPU_STATUS
+        sta PPU_CTRL
                       
         lda #0
         sta OAM_ADDR
@@ -128,6 +130,10 @@ Start:
 	sta lvlptr
         lda #LEVEL_HEAD
         sta lvlptr+1
+        
+        lda #0
+        sta func0
+        jsr FindLevel
         jsr LoadLevel
         jsr RenderLevel
 
@@ -389,11 +395,31 @@ Pallete:
         .hex 000000 00
 
 	org LEVEL_HEAD<<8
+        ; Block 3 bytes
+        ; Object 2 Bytes
+        ; Filler 1 Byte
+        
         ; Level 1
-        .byte 32, $67, $87, $2b, $87, $36, 20, 12, $23, 41, 24, $26, 23, 17, $23, 25, 22, $23
-        .byte 17, 10, $23, $a2, $2b, $d, $5, $24, 27, 18, $73, 54, 1, $1e, 54, $f, $1f
-        ; Level 2
-        .byte $46, $67, $87, $2b, $87, 41, 24, $26
+        LEVEL_HEADER 6, 0, 5, 8
+        BLOCK 13, 6, 2, 2
+        BLOCK 15, 8, 2, 1
+        
+        LEVEL_HEADER 6, 1, 6, 14
+        BLOCK 17, 10, 2, 1
+        BLOCK 19, 12, 2, 1
+        
+        LEVEL_HEADER 6,1, 6, 14
+        BLOCK 21, 14, 2, 2
+        BLOCK 23, 16, 2, 1
+        
+        LEVEL_HEADER 6, 1, 6, 14
+        BLOCK 15, 3, 2, 1
+        BLOCK 15, 40, 2, 1
+        
+        LEVEL_HEADER 6, 2, 6, 14
+        BLOCK 28, 22, 2, 2
+        BLOCK 30, 24, 2, 2
+                
 
 
         ; math look up tables
