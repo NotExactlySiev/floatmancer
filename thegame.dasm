@@ -112,83 +112,31 @@ SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
 SCREEN_WIDTH	= 256
 
+
+
 	org $0
 
-	;;; HEADER
-        
+	;;; HEADER        
 	NES_HEADER 0,2,1,0 ; mapper 0, 2 PRGs, 1 CHR, horiz. mirror
 
 
-	
+
+
         ;;; INIT
+Start:	
+	include "init.asm"
 
-Start:
-	; wait for PPU warmup, clear CPU RAM
-	NES_INIT
-        jsr WaitSync
-        jsr ClearRAM
-        jsr WaitSync
-           
-        ; ppu setup
-        jsr LoadPallete
-                      
-        lda #0
-        sta OAM_ADDR
 
-	; load level
-        sta lvl
-	sta lvlptr
-        lda #LEVEL_HEAD
-        sta lvlptr+1
-        
-        lda #0
-        sta func0
-        jsr FindLevel
-        jsr LoadLevel
-        jsr RenderLevel
 
-        ; enable rendering, nmi
-        lda #$80
-        sta PPU_CTRL
-        lda #$1e
-        sta PPU_MASK
-        
-        lda #0
-        sta PPU_ADDR
-        sta PPU_ADDR       
-        
-        ; sprite setup        
-        lda #$10
-        sta $201
-        lda #0
-        sta $202
-        
-        ; initial values
-	lda #$0
-        sta vx1
-        sta vx0
-        sta vx2
-        
-        lda #$0
-        sta vy0  
 
-        jsr UpdateSprites
-
-  
-
-	;;; MAIN GAME LOGIC
-
+	;;; MAIN GAME LOGIC      
 .endless	
         jmp .endless
 
-
-NMIHandler:
-     	; Update the PPU in VBlank
-        lda #0
-        sta PPU_SCROLL
-        
+NMIHandler:       
         ; disable nmi, set nametable
         ldx #$00
+        stx PPU_SCROLL
         lda scroll
         cmp #240
         bcc .notend
@@ -198,7 +146,8 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
 
-	; set hero sprite
+
+        ; set hero sprite
         lda py0
         clc
         adc scroll
@@ -208,62 +157,19 @@ NMIHandler:
 .topscreen
         sec
         sbc #5
-        sta $200     
-        lda px0
-        sec
-        sbc #4
-        sta $203
-        lda flags	; RUNNING ANIMATION
-        eor #%11000000
-        and #%11000001
-        cmp #%11000001
-        bne .nrunning
-        lda $201
-        cmp #$10	; if just started running, start at frame $12
-        bne .already
-        lda #$11
-        sta $201
-.already
-	dec ftimer
-        bne .sameframe
-        lda #5
-        sta ftimer
-        lda $201	; wrap around
-        clc
-        adc #1
-        cmp #$15
-        bne .nwrap
-        lda #$11
-.nwrap        
-.sameframe
-	sta $201
-        lda #1
-        bit $201
-        bne .nobobbing
-        dec $200
-.nobobbing      
-        jmp .spritedone
-.nrunning
-	
-        bit flags	; FALLING ANIMATION
-        bvc .nfalling
-        lda #$14
-        sta $201
-        bne .spritedone
-
-.nfalling
-
-	lda #$10	; IDLE ANIMATION
-        sta $201
-	lda #6
-        sta ftimer
+        sta $200
+	include "animation.asm"
 .spritedone
         
         ; draw sprites
         lda #02
         sta PPU_OAM_DMA
-	       
-        ; read controller
+	
+        bit flags
+        bmi .nosearch
+        jsr FindCloseHook
+.nosearch 
+
 	include "readpad.asm" 
  
 	; backup variables from last frame
@@ -283,9 +189,8 @@ NMIHandler:
 	jsr HookMode
 .physdone
 
-	; scroll the screen if needed
 	include "scroll.asm"
-        
+
 NMIEnd:    
 	; enable nmi, set nametable
         ldx #$80
@@ -303,96 +208,15 @@ NMIEnd:
 
 
         ;;; SUBROUTINES
-                
-LoadPallete:
-	PPU_SETADDR $3f00
-        ldx #$0
-.ld_l   lda Pallete,x
-        sta PPU_DATA
-        inx
-        cpx #$20
-        bne .ld_l
-        rts
-
-        ; reverses horizontal acceleration
-NegativeAclX:
-	clc
-        lda ax2
-        eor #$ff
-        adc #1
-        sta ax2
-        lda ax1
-        eor #$ff
-        adc #0
-        sta ax1
-        lda ax0
-        eor #$ff
-        adc #0
-        sta ax0
-        rts
-        
-
+	include "common.asm"
         include "physics.asm"
-	include "hookmode.asm"     
+	include "hookmode.asm"   
+	include "collision.asm"
 	include "math.asm"
 	include "level.asm"
         
-ClearRAM: subroutine
-	lda #0
-        tax
-.clearRAM
-	sta $0,x	; clear $0-$ff
-        cpx #$fe	; last 2 bytes of stack?
-        bcs .skipStack	; don't clear it
-	sta $100,x	; clear $100-$1fd
-.skipStack
-	sta $200,x	; clear $200-$2ff
-	sta $300,x	; clear $300-$3ff
-	sta $400,x	; clear $400-$4ff
-	sta $500,x	; clear $500-$5ff
-	sta $600,x	; clear $600-$6ff
-	sta $700,x	; clear $700-$7ff
-        inx		; X = X + 1
-        bne .clearRAM	; loop 256 times
-        rts
-
-	; wait for VSYNC to start
-WaitSync:
-	bit PPU_STATUS
-	bpl WaitSync
-        rts
-
-DrawObjects: subroutine
-	ldx #0
-        lda objlist,x
-                
-        iny
-        lda $5
-        rol
-        rol
-        rol
-        rol
-        and #$7
-        ora #$80
-        sta $0280,y
-        iny	; temporary. do stuff here later
-        iny
-        inx
-        
-        lda $5
-        clc
-        asl
-        asl
-        asl
-        sta $0280,y
-        clc
-        adc #4
-        rts
-
-
 
         ;;; DATA
-
 Pallete:
 	.hex 3b
         .hex 0b1a07 00
@@ -400,7 +224,7 @@ Pallete:
         .hex 0b1a07 00
         .hex 0b1a07 3b
         .hex 04130d 00
-        .hex 000000 00
+        .hex 5c3ab2 00
         .hex 24152d 00
         .hex 000000 00
 
@@ -414,12 +238,12 @@ Pallete:
 
 
 
-	;;; VECTORS
-        
+
+	;;; VECTORS  
 	NES_VECTORS
 
 
 
+
 	;;; CHR ROM
-CHR:
 	incbin "chars.chr"

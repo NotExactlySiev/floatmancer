@@ -101,6 +101,7 @@ HookMode: subroutine
         sta omega0
         sta omega1
         sta omega2
+
         rts
 
 
@@ -125,18 +126,27 @@ Release: subroutine
         sta ax0
         sta ax1
         sta ax2
-        ldx hookidx
-        sta $210,x
         
         lda #$7f
         and flags
         sta flags
         
-        rts
+        ldx hookidx
+        lda #0
+        sta $210,x
         
-Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
+        rts
+
+; finds the closest hook to the player that is also in range, and loads its position and index
+; if none are found puts -1
+FindCloseHook: subroutine
+	ldx hookidx
+        lda #0
+        sta $210,x
+	
+
 	lda #$ff
-        sta tmp2
+        sta radius
         ldx #1
 .nexthook        
 	lda $210,x
@@ -151,56 +161,76 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         jmp .nexthook
         
 .ishook
-        ; TODO: maybe we don't need to load all this shit?
-        dex
-        lda $210,x	; load hook position and index
-        clc
-        adc #4
-        sta tmp0
+	dex		; y at y pos, x at x pos of the hook
+        txa
+        tay
         inx
-        inx
-        stx tmp3	; attributes byte
-        inx
-        lda $210,x
-        clc
-        adc #4
-        sta tmp1
         inx
         inx
         
-        lda py0		; calculate distance from hook
         sec
-        sbc tmp0
-        sta func0       
+        lda py0
+        sbc $210,y
+	sec
+        sbc #4
+        sta func0
+     
+        sec
         lda px0
+        sbc $210,x
         sec
-        sbc tmp1
+        sbc #4
         sta func1
+	
+        tya
+        pha
         
         jsr CalcRadius
         
-        lda func6	; compare with the closest hook. replace if closer
-        cmp tmp2
+        pla
+        tay
+        
+        lda func6
+        and #$fe
+        cmp radius
         bcs .nexthook
-        sta tmp2
-    	lda tmp0
-        sta hookpy
-        lda tmp1
-        sta hookpx
-        lda tmp3
-        sta hookidx
-	jmp .nexthook
-.out
-	lda tmp2
+        
         sta radius
-
-        and #$fe	; check if close enough
+        lda $210,y
         clc
+        adc #4
+        sta hookpy
+        lda $210,x
+        clc
+        adc #4
+        sta hookpx
+        
+        dex
+        stx hookidx
+        inx
+        
+        inx
+        
+        jmp .nexthook
+        
+.out
+	lda radius
         cmp #HOOK_RANGE
         bcc .close
-        rts
+        lda #$ff
+        sta hookidx
 .close  
 
+	ldx hookidx
+        lda #1
+        sta $210,x
+
+	rts
+        
+        
+
+
+Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda px0+BACKUP_OFFSET	; attaching. calculate angle at t and t-dt, subtract to get omega
         sec
         sbc hookpx
@@ -219,7 +249,6 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda func7
         sta angle1+BACKUP_OFFSET
         
-
 	lda px0
         sec
         sbc hookpx

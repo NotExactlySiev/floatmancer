@@ -120,13 +120,18 @@ NES_MIRR_QUAD	= 8
 
 	MAC LEVEL_HEADER
         .byte {2}<<6 | {1}-1
-        .byte {3}<<6 | {4}
+        .byte {3}<<5 | {4}
         ENDM
 
 	MAC BLK
         .byte {1}
         .byte {2}
         .byte {3}<<4 | {4}
+        ENDM
+        
+        MAC SPC
+        .byte {1} | $40
+        .byte {2} | {3}<<5
         ENDM
         
         MAC OBJ

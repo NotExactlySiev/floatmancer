@@ -6,9 +6,9 @@ FindLevel: subroutine ; find lvlptr for lvl at func0
         sbc lvl
         bpl .seekforward
         ; if we're past the level, reset to level 0 and start the search
-        lda #<LEVEL_HEAD
+        lda #0
         sta lvlptr
-        lda #>LEVEL_HEAD
+        lda #LEVEL_HEAD
         sta lvlptr+1
         txa
 .seekforward
@@ -56,6 +56,8 @@ ClearLevel: subroutine
         sta $0,x
         inx
         bne .clearzp
+        lda #$ff
+        sta hookidx
         rts
         
 
@@ -475,6 +477,7 @@ UpdateSprites: subroutine
         adc #$20
         sta $210,y	; set sprite index
         iny
+        
         bit flags
         bpl .normalcolor
         cpy hookidx

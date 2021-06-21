@@ -125,10 +125,14 @@
         and padedge
         and #$40
         beq .hookend
+        lda hookidx
+        bmi .hookend
         
         jsr Attach
-
 .hookend
+
+
+
 	lda pad
         and padedge
         and #$20
@@ -143,15 +147,20 @@
         
         ldx lvl
         inx
+        
+        bit pad
+        bvc .nback
+        dex
+        dex
+.nback
+        
         stx func0
         jsr FindLevel
         jsr LoadLevel
         jsr RenderLevel
 	jsr UpdateSprites
         
-        jsr WaitSync
-
-        
+        jsr WaitSync        
         
         lda #$1e
         sta PPU_MASK
