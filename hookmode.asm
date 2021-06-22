@@ -140,7 +140,7 @@ Release: subroutine
         sta flags
         
         ldx hookidx
-        lda #$21
+        lda #$23
         sta $210,x
         
         rts

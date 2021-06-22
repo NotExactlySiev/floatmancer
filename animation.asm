@@ -8,9 +8,8 @@
         cmp #%11000001
         bne .nrunning
         lda $201
-        cmp #$10	; if just started running, start at frame $12
-        bne .already
-        lda #$11
+        bne .already	; if just started running, start at this frame:
+        lda #$1
         sta $201
 .already
 	dec ftimer
@@ -36,11 +35,11 @@
 	
         bit flags	; FALLING ANIMATION
         bvc .nfalling
-        lda #$3
+        lda #$4
         sta $201
         bne .spritedone
 .nfalling
-	lda #$0	; IDLE ANIMATION
+	lda #$0		; IDLE ANIMATION
         sta $201
 	lda #5
         sta ftimer

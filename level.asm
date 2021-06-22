@@ -318,8 +318,8 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 	lda func0
         cmp #31
         bcc .screen
-        sec
-        adc #$22	; ready for shifting to become ppu 2000 or 2800
+        sec		; TODO: this part is broken? writes to weird places
+        adc #$21	; ready for shifting to become ppu 2000 or 2800
 .screen
 	clc
         ror		; this should be a subroutie 0-1 -> 6-7
