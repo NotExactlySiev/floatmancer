@@ -21,7 +21,7 @@
         jsr RenderLevel
 
         ; enable rendering, nmi
-        lda #$80
+        lda #$88
         sta PPU_CTRL
         lda #$1e
         sta PPU_MASK
@@ -31,7 +31,7 @@
         sta PPU_ADDR       
         
         ; sprite setup        
-        lda #$10
+        lda #$0
         sta $201
         lda #0
         sta $202

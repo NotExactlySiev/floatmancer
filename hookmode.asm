@@ -1,4 +1,12 @@
 HookMode: subroutine
+	dec jtimer
+        bne .ngrip
+        ldx hookidx
+        lda #$24
+        sta $210,x
+        
+.ngrip
+
 	lda #HOOK_SWING
         sta func2
         
@@ -132,7 +140,7 @@ Release: subroutine
         sta flags
         
         ldx hookidx
-        lda #0
+        lda #$21
         sta $210,x
         
         rts
@@ -141,7 +149,7 @@ Release: subroutine
 ; if none are found puts -1
 FindCloseHook: subroutine
 	ldx hookidx
-        lda #0
+        lda #$21
         sta $210,x
 	
 
@@ -206,7 +214,9 @@ FindCloseHook: subroutine
         sta hookpx
         
         dex
+        dex
         stx hookidx
+        inx
         inx
         
         inx
@@ -222,7 +232,7 @@ FindCloseHook: subroutine
 .close  
 
 	ldx hookidx
-        lda #1
+        lda #$22
         sta $210,x
 
 	rts
@@ -275,8 +285,11 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sta omega0
         
         ldx hookidx
-        lda #2
+        lda #$23
         sta $210,x
+        
+        lda #4
+        sta jtimer ; use jump timer for hook gripping animation
         
         lda #$80
         ora flags

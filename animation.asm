@@ -20,9 +20,9 @@
         lda $201	; wrap around
         clc
         adc #1
-        cmp #$15
+        cmp #$5
         bne .nwrap
-        lda #$11
+        lda #$1
 .nwrap        
 .sameframe
 	sta $201
@@ -36,11 +36,11 @@
 	
         bit flags	; FALLING ANIMATION
         bvc .nfalling
-        lda #$14
+        lda #$3
         sta $201
         bne .spritedone
 .nfalling
-	lda #$10	; IDLE ANIMATION
+	lda #$0	; IDLE ANIMATION
         sta $201
-	lda #6
+	lda #5
         sta ftimer

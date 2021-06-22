@@ -135,17 +135,19 @@ Start:
 
 NMIHandler:       
         ; disable nmi, set nametable
-        ldx #$00
-        stx PPU_SCROLL
+        lda #0
+        sta PPU_SCROLL
+        ldx #$08
         lda scroll
         cmp #240
         bcc .notend
         lda #0
-        ldx #$02
+        ldx #$0A
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
 
+	
 
         ; set hero sprite
         lda py0
@@ -193,11 +195,11 @@ NMIHandler:
 
 NMIEnd:    
 	; enable nmi, set nametable
-        ldx #$80
+        ldx #$88
         lda scroll
         cmp #240
         bcc .notend2
-        ldx #$82
+        ldx #$8A
 .notend2
 	ldy PPU_STATUS
         stx PPU_CTRL
@@ -218,13 +220,13 @@ NMIEnd:
 
         ;;; DATA
 Pallete:
-	.hex 3b
+	.hex 1d
+        .hex 10002d 00
         .hex 0b1a07 00
         .hex 0b1a07 00
-        .hex 0b1a07 00
-        .hex 0b1a07 3b
-        .hex 04130d 00
-        .hex 5c3ab2 00
+        .hex 0b1a07 1d
+        .hex 041320 00
+        .hex 041903 00
         .hex 24152d 00
         .hex 000000 00
 

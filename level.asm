@@ -40,11 +40,11 @@ ClearLevel: subroutine
         sta PPU_ADDR
         lda #0
         sta PPU_ADDR
-        
+            
         ldx #$ff
 .loop   
 	ldy #12
-.innerloop
+.innerloop        
         sta PPU_DATA
         dey
         bne .innerloop        
@@ -313,9 +313,10 @@ DrawDirt:
         sta func5
 
         
-DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr, t0 onflags, t1 block
+DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr
+			; t0 onflags, t1 block, t2 rowparity, t3 cellparity
 	lda func0
-        cmp #30
+        cmp #31
         bcc .screen
         sec
         adc #$22	; ready for shifting to become ppu 2000 or 2800
@@ -337,6 +338,9 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 
 	ldy func2
 
+	lda func0
+        and #1
+        sta tmp2
 
 .cube      
         lda func6
@@ -355,6 +359,10 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 .ydone	sta tmp0
         
         ldx func3
+        
+        lda func1
+        and #1
+        sta tmp3
         
 .row    lda tmp0	; setting two low bits of on flags
 	and #$fc
@@ -406,7 +414,24 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 .nzero
 	clc
         adc #1
+        
+        
+        sta tmp1    ; check parity and add $10 for odd cells
+        lda tmp2
+        clc
+        adc tmp3
+	asl
+        asl
+        asl
+        asl
+        and #$10
+        adc tmp1
+        
+        
+        
+.drawblock
 	sta PPU_DATA
+        inc tmp3
 	dex
         bpl .row
         
@@ -423,7 +448,7 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 .nchangescreen
         sta func6      
 
-
+	inc tmp2
         dey
         bpl .mback      
         
@@ -475,16 +500,18 @@ UpdateSprites: subroutine
         and #$7
         clc
         adc #$20
-        sta $210,y	; set sprite index
-        iny
         
         bit flags
         bpl .normalcolor
         cpy hookidx
         bne .normalcolor
-        lda #2
-        sta $210,y
+        clc
+        adc #$2
 .normalcolor
+        
+        sta $210,y	; set sprite index
+
+        iny
         
         iny
         lda objlist,x
