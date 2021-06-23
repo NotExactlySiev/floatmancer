@@ -25,6 +25,12 @@ HookMode: subroutine
 .pos
         stx func5
         
+        rol func7
+        rol func6
+        rol func7
+        rol func6
+        
+        
         clc
         lda func7
 	adc omega2
@@ -155,7 +161,7 @@ FindCloseHook: subroutine
 
 	lda #$ff
         sta radius
-        ldx #1
+        ldx #1		; [] [x] [] [] | [] ...
 .nexthook        
 	lda $210,x
 	beq .out
@@ -165,7 +171,7 @@ FindCloseHook: subroutine
         inx
         inx
         inx
-        inx
+        inx		; ... | [] [] [] [] | [] [x] ...
         jmp .nexthook
         
 .ishook
@@ -174,7 +180,7 @@ FindCloseHook: subroutine
         tay
         inx
         inx
-        inx
+        inx		; .. | [y] [] [] [x] | ...
         
         sec
         lda py0
@@ -201,9 +207,12 @@ FindCloseHook: subroutine
         lda func6
         and #$fe
         cmp radius
+        bcc .isclose
+        inx
+        inx		; ... | [y] [] [] [] | [] [x] ...
         bcs .nexthook
-        
-        sta radius
+.isclose
+        sta radius	; still .. | [y] [] [] [x] | ...
         lda $210,y
         clc
         adc #4
@@ -213,13 +222,13 @@ FindCloseHook: subroutine
         adc #4
         sta hookpx
         
+        dex		
         dex
-        dex
-        stx hookidx
+        stx hookidx 	; .. | [y] [x] [] [] | ...
         inx
         inx
         
-        inx
+        inx		; ... | [y] [] [] [] | [] [x] ...
         inx
         
         jmp .nexthook

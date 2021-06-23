@@ -7,8 +7,10 @@ NormalMode: subroutine
         sta ay1  
 	lda #>(GRAVITY>>8)
         sta ay0
-        lda #$40
-        ora flags
+
+	lda flags
+        and #$bf
+        ora #$20
         sta flags
         inc coyote
 

@@ -53,10 +53,10 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         
 
 NormalCollision: subroutine
-	lda vy0
-        bmi .up
-.down
+	ldy #0
 
+	lda vy0
+        bmi .air
 	;; DOWNWARDS AND GROUND COLLISION
 	lda py1		; check for bottom left and bottom right, collision if any are in solid block
         clc
@@ -82,43 +82,53 @@ NormalCollision: subroutine
         jsr CheckCollision	; BOTTOM LEFT
 	lda func2
         bne .nair
-        jmp .colvdone
-        
-.nair        
-        lda #$bf
-        and flags
+.air        
+        lda #$40
+        ora flags
         sta flags
-        jmp .resetvpos
+        jmp .downdone ; i THINK it's always clear here? it's gonna bite me in the butt later isn't it
+.nair        
+        sty coyote
+.downdone
 
-.up
 	;; UPWARDS COLLISION
-	lda py1		; check for top left and top right, collision only if both are in solid block
-        sec
-        sbc #$ff
         lda py0
-        sbc #4
+        sec
+        sbc #5
         sta func0
         
         lda px0
         clc
-        adc #3
+        adc #2
         sta func1
 
         jsr CheckCollision	; TOP RIGHT
 	lda func2
-        beq .colvdone
+        bne .ceiling
 
         lda px0
         sec
-        sbc #3
+        sbc #2
 
         sta func1
         
         jsr CheckCollision	; TOP LEFT
 	lda func2
+        bne .ceiling
+        
+        lda #$df
+        and flags
+        sta flags       
+.ceiling        
+
+	
+        lda flags
+        eor #$40
+        and #$60
         beq .colvdone
-                
-.resetvpos		; if hit block from above or on ground, push character out into grid
+
+
+	; if hit block from above or on ground, push character out into grid
 	lda #0
         sta ay0
         sta ay1
@@ -127,7 +137,6 @@ NormalCollision: subroutine
         sta vy1
         sta vy2
         sta py1
-        sta coyote
 	
         lda scroll
         and #$7
@@ -179,17 +188,19 @@ NormalCollision: subroutine
         
         jsr CheckCollision	; TOP left/right
         lda func2
-        beq .colhdone
+        bne .pushout
         
         lda py0
         clc
-        adc #4
+        adc #3
         sta func0
 
 	jsr CheckCollision	; BOTTOM left/right
         lda func2
-        beq .colhdone
-        
+        bne .pushout
+	beq .colhdone
+
+.pushout
 	lda #$10		; push out into the grid
         bit flags
 	bne .pushright

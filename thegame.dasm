@@ -101,7 +101,7 @@ JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
-HOOK_SWING	= 60
+HOOK_SWING	= 35
 HOOK_RANGE	= 60
 MAX_JUMP	= 7
 COYOTE_TIME	= 5
@@ -154,9 +154,7 @@ NMIHandler:
 	
 
         ; set hero sprite
-        lda py0
-        clc
-        adc scroll
+
         lda py0
         bcc .topscreen
 	adc #7
@@ -241,8 +239,6 @@ Pallete:
         org SIN_HEAD<<8
         include "sinetable.asm"    
 	include "pythtantable.asm"
-
-
 
 
 	;;; VECTORS  
