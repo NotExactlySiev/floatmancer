@@ -3,15 +3,24 @@
         ; Filler 1 Byte
         
         ; Level 1
-        LEVEL_HEADER 19, 0, 3, 4
-        BLK 14, 6, 4, 2
-        BLK 15, 2, 2, 5
+        LEVEL_HEADER 29, 0, 3, 4
+        OBJ 6, 13, 1
+
+        BLK 14, 5, 6, 2
+        BLK 15, 1, 2, 5
         FIL 0, 0, 0, 0, 0, 0
-        BLK 14, 21, 4, 3
-	BLK 17, 23, 1, 4
+        BLK 16, 6, 4, 3
+        FIL 0, 1, 0, 1, 0, 0
+        
+        BLK 19, 8, 2, 11
+	FIL 0, 0, 0, 0, 0, 0
+        
+        OBJ 22, 23, 1
+        BLK 28, 15, 1, 5
+        
+        BLK 14, 20, 4, 3
+	BLK 17, 21, 1, 4
         FIL 0, 0, 0, 1, 0, 0
-        OBJ 5, 14, 1
-        BLK 31, 16, 2, 7
         
         ; Level 2
         LEVEL_HEADER 7, 0, 4, 11

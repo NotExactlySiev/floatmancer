@@ -220,6 +220,7 @@ FindCloseHook: subroutine
         inx
         
         inx
+        inx
         
         jmp .nexthook
         
@@ -243,13 +244,13 @@ FindCloseHook: subroutine
 Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda px0+BACKUP_OFFSET	; attaching. calculate angle at t and t-dt, subtract to get omega
         sec
-        sbc hookpx
+        sbc hookpx+BACKUP_OFFSET
         sta relpx0+BACKUP_OFFSET
         sta func0
         
         lda py0+BACKUP_OFFSET
         sec
-        sbc hookpy
+        sbc hookpy+BACKUP_OFFSET
         sta relpy0+BACKUP_OFFSET
         sta func1
         

@@ -44,5 +44,6 @@
         
         lda #$ff
         sta hookidx
+        sta jbuffer
 
         jsr UpdateSprites

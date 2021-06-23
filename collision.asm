@@ -24,23 +24,19 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
 .ndone
 
 	lda func6	; check the tile with ALL of the collision blocks
-        clc
         cmp collist,x
         bcc .not1
 	inx 
         lda func7
-        clc
         cmp collist,x
         bcc .not2
         inx
         
         lda collist,x
-        clc
         cmp func6
         bcc .not3
         inx
         lda collist,x
-        clc
         cmp func7
         bcc .not4
         
