@@ -33,6 +33,8 @@ padedge	= $12
 
 ;; LEVEL VARIABLES
 
+coyote	= $1C ; how many frames ago you were on the ground?
+jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer
 ftimer	= $1F ; frame timer
 
@@ -99,9 +101,11 @@ JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
-HOOK_SWING	= 60
+HOOK_SWING	= 75
 HOOK_RANGE	= 60
-MAX_JUMP	= 9
+MAX_JUMP	= 7
+COYOTE_TIME	= 5
+BUFFER_WINDOW	= 3
 MARGIN		= $8
 
 SIN_HEAD	= $a0

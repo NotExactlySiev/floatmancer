@@ -131,6 +131,7 @@ NormalCollision: subroutine
         sta vy1
         sta vy2
         sta py1
+        sta coyote
 	
         lda scroll
         and #$7

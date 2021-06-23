@@ -10,6 +10,7 @@ NormalMode: subroutine
         lda #$40
         ora flags
         sta flags
+        inc coyote
 
 	;;; MOVEMENT FLAGS
 	; velocity is the movement direction. velocity zero? acceleration is movement direction
