@@ -125,7 +125,11 @@ NextItem:
         bne .nblock
         jsr DrawBlock
         jmp NextItem
-.nblock
+.nblock cmp #$40
+	bne .nspc
+        jsr DrawSpecial
+        jmp NextItem
+.nspc
         iny
         jmp NextItem
 
@@ -159,6 +163,21 @@ DrawBlock: subroutine
         tay
         rts
 
+
+DrawSpecial: subroutine
+	lda lvldat,y
+        and #$1f
+        
+        and #$20
+        beq DrawText
+DrawDeco:
+
+
+DrawText:
+	iny
+        iny
+        iny
+	rts
 
 DrawInner: subroutine
         lda #%00110000

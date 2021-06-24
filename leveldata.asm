@@ -1,10 +1,11 @@
-	; Block 3 bytes
+	; Block 3 Bytes
+        ; Special 3 Bytes
         ; Object 2 Bytes
         ; Filler 1 Byte
         
         ; Level 1
-        LEVEL_HEADER 37, 0, 2, 3
-        OBJ 5, 13, 1
+        LEVEL_HEADER 37, 0, 2, 6
+        OBJ 7, 14, 1
 
         BLK 14, 5, 6, 2
         BLK 15, 1, 2, 5

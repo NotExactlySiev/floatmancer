@@ -226,6 +226,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
 .nzero
 
         bcs .orderok
+        lda func1
         sta func2
         lda func0
         sta func3
@@ -234,6 +235,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         sta tmp3
         jmp .orderdone
 .orderok
+	lda func1
 	sta func3
         lda func0
         sta func2

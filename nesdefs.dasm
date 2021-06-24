@@ -129,9 +129,11 @@ NES_MIRR_QUAD	= 8
         .byte {3}<<4 | {4}
         ENDM
         
-        MAC SPC
-        .byte {1} | $40
-        .byte {2} | {3}<<5
+        
+        MAC TXT
+        .byte {2} | $40
+        .byte {3}<<6 | {1}
+        .byte {4}
         ENDM
         
         MAC OBJ

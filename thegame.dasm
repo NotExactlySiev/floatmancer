@@ -30,6 +30,7 @@ lvlsize	= $F
 pad	= $10
 padold	= $11
 padedge	= $12
+paused	= $13
 
 ;; LEVEL VARIABLES
 
@@ -152,7 +153,8 @@ NMIHandler:
         stx PPU_CTRL
 
 	
-
+	lda paused
+        bne GamePaused
         ; set hero sprite
 
         lda py0
@@ -174,8 +176,13 @@ NMIHandler:
         jsr FindCloseHook
 .nosearch 
 
+GamePaused:
+
 	include "readpad.asm" 
- 
+
+	lda paused
+        bne NMIEnd
+
 	; backup variables from last frame
 	ldx #$f
 .copyold
@@ -240,6 +247,8 @@ Pallete:
         include "sinetable.asm"    
 	include "pythtantable.asm"
 
+Text:
+	dc "WELCOME TO FLOATMANCER!", 0
 
 	;;; VECTORS  
 	NES_VECTORS

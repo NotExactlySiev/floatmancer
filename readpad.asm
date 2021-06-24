@@ -1,16 +1,10 @@
-	lda #0
-        sta ax2
-        sta ax1
-        sta ax0
-        
-	lda #$FA
-        and flags
-        sta flags
+
 
 	lda #1
 	sta JOYPAD1
         lda #0
         sta JOYPAD1
+        
         
         ; read pad data, xor with last frame's pad data to get edges
         clc
@@ -29,6 +23,20 @@
 
 	lda pad
         sta padold
+
+	lda paused
+        beq GameInput
+        jmp ControlInput
+
+GameInput:
+	lda #0
+        sta ax2
+        sta ax1
+        sta ax0
+        
+	lda #$FA
+        and flags
+        sta flags
 
 	;; Walking
 	lda #2
@@ -191,3 +199,15 @@
         sta PPU_CTRL
         jmp NMIEnd
 .lvlend
+
+
+ControlInput:
+	lda pad
+        and padedge
+        and #$10
+        beq .pauseend
+        
+        lda paused
+        eor #$1
+        sta paused
+.pauseend

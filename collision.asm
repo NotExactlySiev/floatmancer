@@ -86,13 +86,24 @@ NormalCollision: subroutine
         lda #$40
         ora flags
         sta flags
-        jmp .downdone ; i THINK it's always clear here? it's gonna bite me in the butt later isn't it
+        jmp .downdone
 .nair        
         sty coyote
 .downdone
 
 	;; UPWARDS COLLISION
-        lda py0
+
+	
+	lda flags
+        and #$40
+        beq .checkup
+        lda vy0
+        bne .checkup
+        beq .nceiling
+
+.checkup
+
+	lda py0
         sec
         sbc #5
         sta func0
@@ -115,7 +126,8 @@ NormalCollision: subroutine
         jsr CheckCollision	; TOP LEFT
 	lda func2
         bne .ceiling
-        
+
+.nceiling
         lda #$df
         and flags
         sta flags       
@@ -126,7 +138,7 @@ NormalCollision: subroutine
         eor #$40
         and #$60
         beq .colvdone
-
+.updone
 
 	; if hit block from above or on ground, push character out into grid
 	lda #0
