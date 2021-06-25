@@ -25,15 +25,17 @@
         
         BLK 8, 25, 7, 4
         
+        
         BLK 28, 3, 1, 3
         OBJ 22, 10, 1
         
         ; Level 2
-        LEVEL_HEADER 7, 0, 4, 11
-        BLK 17, 10, 3, 2
-        BLK 19, 11, 2, 14
-        FIL 0, 0, 0, 0, 0, 0
-        
+        LEVEL_HEADER 12, 1, 4, 18
+        BLK 26, 11, 7, 2
+        BLK 29, 14, 1, 2
+        BLK 30, 17, 1, 2
+        BLK 31, 20, 1, 2
+                
         ; Level 3
         LEVEL_HEADER 6,1, 6, 14
         BLK 21, 14, 2, 2

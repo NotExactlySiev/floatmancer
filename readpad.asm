@@ -162,8 +162,7 @@ GameInput:
         jsr Attach
 .hookend
 
-
-
+ControlInput:
 	lda pad
         and padedge
         and #$20
@@ -196,12 +195,12 @@ GameInput:
         lda #$1e
         sta PPU_MASK
         lda #$80
+        ldy PPU_STATUS
         sta PPU_CTRL
         jmp NMIEnd
 .lvlend
 
 
-ControlInput:
 	lda pad
         and padedge
         and #$10

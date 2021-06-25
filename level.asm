@@ -335,7 +335,7 @@ DrawDirt:
 DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr
 			; t0 onflags, t1 block, t2 rowparity, t3 cellparity
 	lda func0
-        cmp #31
+        cmp #30
         bcc .screen
         sec		; TODO: this part is broken? writes to weird places
         adc #$21	; ready for shifting to become ppu 2000 or 2800
@@ -460,12 +460,19 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
         sta func7
         lda func6
         adc #0
+        sta func6
 
-	cmp #$24		; if entered nametable 2, jump straight to 3
+	cmp #$23		; if entered nametable 2, jump straight to 3
         bne .nchangescreen
+        lda func7
+        cmp #$c0
+        bcc .nchangescreen
         lda #$28
+        sta func6
+        lda func7
+        and #$f
+        sta func7
 .nchangescreen
-        sta func6      
 
 	inc tmp2
         dey
