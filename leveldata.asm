@@ -30,11 +30,19 @@
         OBJ 22, 10, 1
         
         ; Level 2
-        LEVEL_HEADER 12, 1, 4, 18
-        BLK 26, 11, 7, 2
-        BLK 29, 14, 1, 2
-        BLK 30, 17, 1, 2
-        BLK 31, 20, 1, 2
+        LEVEL_HEADER 29, 0, 4, 4
+        BLK 26, 1, 1, 1
+        BLK 27, 3, 1, 1
+        BLK 29, 5, 1, 1
+        BLK 30, 7, 1, 1
+	BLK 31, 9, 1, 1
+	BLK 32, 11, 1, 1
+	BLK 33, 13, 1, 1
+	BLK 34, 15, 1, 1
+	BLK 30, 15, 1, 1
+
+        OBJ 31, 23, 1
+
                 
         ; Level 3
         LEVEL_HEADER 6,1, 6, 14

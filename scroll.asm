@@ -43,6 +43,7 @@
         clc
         adc scroll
         bpl .nunderflow
+        bcs .nunderflow		; sometimes scroll > $80 in which case a second check is needed
         lda #0
         sec
         sbc scroll

@@ -37,10 +37,18 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         bcc .not3
         inx
         lda collist,x
+        and #$1f
         cmp func7
         bcc .not4
         
-        lda #1
+        lda collist,x
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        clc
+        adc #1
         sta func2
         rts
         
@@ -53,7 +61,8 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         
 
 NormalCollision: subroutine
-	ldy #0
+	ldy #4
+        sty tmp1
 
 	lda vy0
         bmi .air
@@ -91,18 +100,40 @@ NormalCollision: subroutine
         sty coyote
 .downdone
 
+	;; SELF COLLISION
+        
+        lda py0
+        sta func0
+        lda px0
+        sta func1
+        jsr CheckCollision
+	lda func2
+        beq .nstuck
+        lda py0
+        sec
+        sbc #8
+        sta py0
+        
+        
+.nstuck
+
 	;; UPWARDS COLLISION
 
-	
 	lda flags
         and #$40
         beq .checkup
         lda vy0
-        bne .checkup
         beq .nceiling
 
+	lda #8
+        sta tmp1	; we need to remember if we're checking this for collision because we're moving
+        		; up, or because we're on the ground and want to prevent jumping. if we're on the
+                        ; ground and there is a ceiling 1 block above the player, the game wouldn't know
+                        ; the difference and push the player down into the ground. but that should only
+                        ; happen when there is collisin with the ground. so we set this variable to 8 if
+                        ; ended up here by having vertical velocity, and will later be added to the y position
+                        ; value which will end up pushing the player down.
 .checkup
-
 	lda py0
         sec
         sbc #5
@@ -132,8 +163,6 @@ NormalCollision: subroutine
         and flags
         sta flags       
 .ceiling        
-
-	
         lda flags
         eor #$40
         and #$60
@@ -150,7 +179,7 @@ NormalCollision: subroutine
         sta vy2
         sta py1
 	
-        lda scroll
+        lda scroll	; grid pixel offset
         and #$7
         sta tmp0
         
@@ -159,7 +188,9 @@ NormalCollision: subroutine
         adc tmp0
         and #$f8
         sbc tmp0
-        adc #4
+        sec		; set carry because sprite line is delayed roflmfao
+        adc tmp1
+                
         
         sta py0
 

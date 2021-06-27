@@ -14,7 +14,7 @@
         lda #LEVEL_HEAD
         sta lvlptr+1
         
-        lda #1
+        lda #0
         sta func0
         jsr FindLevel
         jsr LoadLevel
