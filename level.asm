@@ -62,7 +62,7 @@ ClearLevel: subroutine
         
 
 
-LoadLevel: subroutine	; load level data and metadata from level pointer
+LoadLevel: subroutine	; load level data and metadata from level pointer        
         ldy #0
         lda (lvlptr),y
         lsr
@@ -105,34 +105,49 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
 	rts
 
 
-RenderLevel: subroutine
+RenderLevel: subroutine	; draw the background parts of the level, load the collision
+			; and object (sprite) data into appropriate tables
       	ldy #0
 NextItem:
-        lda lvldat,y
         cpy lvlsize
         bne .nend
-        rts        
-.nend   and #$c0
-        bne .ndirt
-        jsr DrawDirt
+        rts
+.nend   
+	
+	lda lvldat,y
+        tax
+	and #$e0
+        bne .nBLK
+     	jsr DrawDirt
         jmp NextItem
-.ndirt  cmp #$c0
-        bne .nfill
+.nBLK
+        cmp #$80
+        bne .nFIL
         jsr DrawInner
-        iny
         jmp NextItem
-.nfill  cmp #$80
-        bne .nblock
-        jsr DrawBlock
-        jmp NextItem
-.nblock cmp #$40
-	bne .nspc
-        jsr DrawSpecial
-        jmp NextItem
-.nspc
-        iny
+.nFIL
+
+
+        bmi .ntile
+	
+        
+        
+
+
+.ntile
+	
+        
+        
+
+
+	
+
+
         jmp NextItem
 
+
+DrawObject: subroutine ; puts sprite objects into the table, doesn't change 
+	
 
 DrawBlock: subroutine
         lda lvldat,y
@@ -190,6 +205,7 @@ DrawInner: subroutine
         and #$0f
         sta func4
         
+        iny
         tya
         pha
         

@@ -94,27 +94,12 @@ HookMode: subroutine
         adc hookpx
         sta func1
 
-	jsr CheckCollision
-        lda func2
-        bne .undo
-        lda func0
+	lda func0
         sta py0
         lda func1
         sta px0
-        rts
-.undo   
-	lda relpy0+BACKUP_OFFSET
-        sta relpy0
-        lda relpx0+BACKUP_OFFSET
-        sta relpx0
-        lda angle0+BACKUP_OFFSET
-        sta angle0
-        lda angle1+BACKUP_OFFSET
-        sta angle1
-        lda #0
-        sta omega0
-        sta omega1
-        sta omega2
+
+	
 
         rts
 

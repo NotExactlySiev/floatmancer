@@ -17,8 +17,8 @@ func7	= $7
 
 tmp0	= $8
 tmp1	= $9
-tmp2	= $a
-tmp3	= $b
+tmp2	= $A
+tmp3	= $B
 
 ; pointers
 lvlptr	= $C

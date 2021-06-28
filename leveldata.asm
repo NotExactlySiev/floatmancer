@@ -4,7 +4,11 @@
         ; Filler 1 Byte
         
         ; Level 1
-        LEVEL_HEADER 37, 0, 2, 6
+        LEVEL_HEADER 3, 0, 2, 6
+        BLK 4, 10, 4, 2
+        
+        
+        LEVEL_HEADER 26, 0, 4, 4
         OBJ 7, 14, 1
 
         BLK 14, 5, 6, 2

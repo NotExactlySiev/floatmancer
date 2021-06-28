@@ -10,6 +10,26 @@ LoadPallete: subroutine
         rts
 
 
+	; finds the first zero byte after Y
+FindEmptyZp: subroutine
+	lda $00,Y
+        bne .found
+	inx
+	bne FindEmptyZp
+.found  rts
+
+
+	; finds the first zero byte in page A after AY
+FindEmpty: subroutine
+	sta tmp3
+.loop
+        lda (tmp3),y
+        beq .found
+        iny
+        bne .loop
+.found	rts
+        
+
         ; reverses horizontal acceleration
 NegativeAclX: subroutine
 	clc
