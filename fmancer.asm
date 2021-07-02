@@ -1,5 +1,8 @@
 
 	include "nesdefs.dasm"
+	
+	include "levelmacros.asm"
+
 
 ; maybe change the item types 00 for objects 10 for dirt
 

@@ -44,7 +44,7 @@ ClearLevel: subroutine
         ldx #$ff
 .loop   
 	ldy #12
-.innerloop        
+.innerloop
         sta PPU_DATA
         dey
         bne .innerloop        
@@ -105,6 +105,7 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
 	rts
 
 
+
 RenderLevel: subroutine	; draw the background parts of the level, load the collision
 			; and object (sprite) data into appropriate tables
       	ldy #0
@@ -113,31 +114,34 @@ NextItem:
         bne .nend
         rts
 .nend   
-	
-	lda lvldat,y
-        tax
-	and #$e0
-        bne .nBLK
-     	jsr DrawDirt
-        jmp NextItem
-.nBLK
-        cmp #$80
+	lda lvldat,y	; special cases that set the variables on their own
+        and #$e0
         bne .nFIL
-        jsr DrawInner
+        jsr DrawFill
         jmp NextItem
 .nFIL
-
-
-        bmi .ntile
-	
+        
+        cmp #$20
+        bne .nBLK
+     	jsr DrawBlock
+        jmp NextItem
+.nBLK
+       
+        lda lvldat,y ; if it's not a block or fill, set the position for now
+        and #$1f
+        sta func1
+        
+        iny
+        lda lvldat,y
+        sta func0
+        
+        dey
+        lda lvldat,y
+        bpl .nsprite
         
         
-
-
-.ntile
-	
-        
-        
+	jmp NextItem
+.nsprite
 
 
 	
@@ -147,54 +151,10 @@ NextItem:
 
 
 DrawObject: subroutine ; puts sprite objects into the table, doesn't change 
-	
-
-DrawBlock: subroutine
-        lda lvldat,y
-        sta $4
-        iny
-        lda lvldat,y
-        sta $5
-        iny
-        tya
-        pha
-
-
-        ldx #0
-.find   lda objlist,x
-        beq .empty
-        inx
-        inx
-        jmp .find
-
-.empty  
-	lda $4
-        sta objlist,x
-        inx
-	lda $5
-        sta objlist,x
-        
-        pla
-        tay
+        lda #objlist
         rts
 
-
-DrawSpecial: subroutine
-	lda lvldat,y
-        and #$1f
-        
-        and #$20
-        beq DrawText
-DrawDeco:
-
-
-DrawText:
-	iny
-        iny
-        iny
-	rts
-
-DrawInner: subroutine
+DrawFill: subroutine
         lda #%00110000
         sta func5
         
@@ -291,52 +251,47 @@ DrawInner: subroutine
 	jmp DrawRect
 
 
-DrawDirt:
+DrawBlock:
         inc blknum
         ldx #0
-.search lda collist,x
-        beq .foundempty
-        inx
-        inx
-        inx
-        inx
-        jmp .search
-.foundempty
+	lda #collist
+	jsr FindEmpty
+
+	inx
 
         lda lvldat,y	; put block data in collist
-        sta func0
+        and #$1f
+        sta func1
         sta collist,x
 
 	iny
-        inx
+        dex
         lda lvldat,y
-        sta func1
+        and #$3f
+        sta func0
 	sta collist,x
-
+        
+        inx
+        inx
 	iny
 	lda lvldat,y
-        lsr
-        lsr
-        lsr
-        lsr
+        and #$0f
         sta func2
-	dex
         clc
-	adc collist,x
-        inx
-        inx
+        adc func0
         sta collist,x
-
-        lda lvldat,y	; pass level data for DrawRect function
-	and #$0f
+        
+        inx
+        lda lvldat,y
+        lsr
+        lsr
+        lsr
+        lsr
         sta func3
-        dex
         clc
-        adc collist,x
-        inx
-        inx
+        adc func1
         sta collist,x
-
+        
         iny
         tya
         pha
@@ -350,28 +305,9 @@ DrawDirt:
         
 DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr
 			; t0 onflags, t1 block, t2 rowparity, t3 cellparity
-	lda func0
-        cmp #30
-        bcc .screen
-        sec		; TODO: this part is broken? writes to weird places
-        adc #$21	; ready for shifting to become ppu 2000 or 2800
-.screen
-	clc
-        ror		; this should be a subroutie 0-1 -> 6-7
-        ror
-        ror
-        ror
-        sta func6
-	and #$e0
-        ora func1
-        sta func7
-        lda func6
-        rol
-        and #$0f
-        ora #$20
-        sta func6
-
-	ldy func2
+	jsr PPUFormat
+	
+        ldy func2
 
 	lda func0
         and #1
@@ -418,15 +354,8 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
         lda #$c
         bit tmp0
         beq .nincor
-        jmp .midway
-        
-        
-        ; midway point
-.mback	bpl .cube        
-        
-        
         ; if corner and sides not set, convert to inner
-.midway lda #$08
+	lda #$08
         bit tmp0
         beq .fzero
 .fone   lda #$0f
@@ -460,6 +389,7 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
         asl
         asl
         and #$10
+        clc
         adc tmp1
         
         
@@ -492,8 +422,10 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
 
 	inc tmp2
         dey
-        bpl .mback      
-        
+        bmi .out
+        jmp .cube
+
+.out
         pla
         tay
 	rts

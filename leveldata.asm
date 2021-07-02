@@ -5,7 +5,7 @@
         
         ; Level 1
         LEVEL_HEADER 3, 0, 2, 6
-        BLK 4, 10, 4, 2
+        BLK 4, 8, 4, 15
         
         
         LEVEL_HEADER 26, 0, 4, 4

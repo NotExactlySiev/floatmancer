@@ -116,35 +116,6 @@ NES_MIRR_QUAD	= 8
 	.word NMIHandler	; $fffe irq / brk
 	ENDM
 
-;;;;; LEVEL
-
-	MAC LEVEL_HEADER
-        .byte {2}<<6 | {1}-1
-        .byte {3}<<5 | {4}
-        ENDM
-
-	MAC BLK
-        .byte {1}
-        .byte {2}
-        .byte {3}<<4 | {4}
-        ENDM
-        
-        
-        MAC TXT
-        .byte {2} | $40
-        .byte {3}<<6 | {1}
-        .byte {4}
-        ENDM
-        
-        MAC OBJ
-        .byte {1} | $80
-        .byte {2} | {3}<<5
-	ENDM
-        
-        MAC FIL
-        .byte {1}<<5 | {2}<<4 | {3}<<3 | {4}<<2 | {5}<<1 | {6} | $c0
-        ENDM
-
 ;;;;; PPU_SETADDR <address> - set 16-bit PPU address
 
 	MAC PPU_SETADDR

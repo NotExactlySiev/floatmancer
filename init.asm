@@ -16,6 +16,7 @@
         
         lda #0
         sta func0
+        jsr ClearLevel
         jsr FindLevel
         jsr LoadLevel
         jsr RenderLevel

@@ -72,3 +72,26 @@ WaitSync: subroutine
 	bit PPU_STATUS
 	bpl WaitSync
         rts
+
+PPUFormat: subroutine ; 0-1 xy -> 6-7 PPU memory address
+	lda func0
+        cmp #30
+        bcc .screen
+        sec		; TODO: this part is broken? writes to weird places
+        adc #$21	; ready for shifting to become ppu 2000 or 2800
+.screen
+	clc
+        ror		; this should be a subroutie 0-1 -> 6-7
+        ror
+        ror
+        ror
+        sta func6
+	and #$e0
+        ora func1
+        sta func7
+        lda func6
+        rol
+        and #$0f
+        ora #$20
+        sta func6
+        rts
