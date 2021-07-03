@@ -28,19 +28,36 @@ UpdateSprites: subroutine
         cmp #120
         bcc .onscreen
         lda #$ff
+        sta $210,y
+        iny
+        iny
+        iny
+        iny
+        bne .next
 .onscreen
-	clc
 	asl
-	sta $210,y
-        iny		; Set Sprite and Pallete
+	sta func0	; if is on screen, load the data for the object
         
         inx
 	lda objlist,x
+        sta func1
+        inx
+        lda objlist,x
+        clc
+        asl
+        asl
+        asl
+        sta func2
+        inx
+        
+        txa
+        pha
+        
+        lda func1
         and #$1c
         cmp #$10
         bne .nBouncy
         ; Bouncy
-        
         jmp .spritedone
 .nBouncy
 	cmp #$14
@@ -60,37 +77,37 @@ UpdateSprites: subroutine
         
 .spritedone
 
-
-        iny		; Set X pos
-        inx
-        lda objlist,x
-        and #$1f
-        clc
-        asl
-        asl
-        asl
-        sta $210,y
-        inx
-        iny
+	pla
+        tax
         
         jmp .next
 
 
 
 DrawHook: subroutine
+	lda func0
+        sta $210,y
+        iny
+        
         lda #$30
         bit flags
         bpl .nhooked
         cpy hookidx
         bne .nhooked	; set the sprite accordingly if it's close and/or hooked
-	lda #$33
+	
+        lda #$33
 .nhooked
 	sta $210,y
+        iny
         
-        iny		; set the pallete
-	lda objlist,x
+	lda func1 ; set the pallete
         and #$3
         sta $210,y
+        iny
+        
+        lda func2
+        sta $210,y
+        iny
         
         rts
 
