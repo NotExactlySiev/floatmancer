@@ -227,8 +227,10 @@ NMIEnd:
 	include "hookmode.asm"   
 	include "collision.asm"
 	include "math.asm"
-	include "level.asm"
         
+	include "level.asm"
+	include "sprites.asm"
+
 
         ;;; DATA
 Pallete:

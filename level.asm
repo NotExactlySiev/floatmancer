@@ -28,7 +28,7 @@ FindLevel: subroutine ; find lvlptr for lvl at func0
         adc #0
         sta lvlptr+1
         dex
-        jmp .nextlevel        
+        jmp .nextlevel
 .out    
 	lda func0
         sta lvl
@@ -138,20 +138,42 @@ NextItem:
         dey
         lda lvldat,y
         bpl .nsprite
-        
+        jmp DrawObject
         
 	jmp NextItem
 .nsprite
-
-
-	
-
 
         jmp NextItem
 
 
 DrawObject: subroutine ; puts sprite objects into the table, doesn't change 
-        lda #objlist
+        ldx #objlist
+        jsr FindEmptyZp
+        
+	lda func0	; set y pos
+        and #$3f
+        sta $0,x
+        inx
+        
+        lda lvldat,y	; set object type
+        and #$e0
+        sta $0,x
+        iny
+        lda lvldat,y
+        lsr
+        lsr
+        lsr
+        and #$18
+        ora $0,x
+        sta $0,x
+        inx
+
+        lda func1	; set x pos
+        and #$1f
+        sta $0,x
+
+        iny
+        iny
         rts
 
 DrawFill: subroutine
@@ -253,23 +275,22 @@ DrawFill: subroutine
 
 DrawBlock:
         inc blknum
-        ldx #0
-	lda #collist
-	jsr FindEmpty
+        ldx #collist
+	jsr FindEmptyZp ; find empty in collision list
 
 	inx
 
         lda lvldat,y	; put block data in collist
         and #$1f
         sta func1
-        sta collist,x
+        sta $0,x
 
 	iny
         dex
         lda lvldat,y
         and #$3f
         sta func0
-	sta collist,x
+	sta $0,x
         
         inx
         inx
@@ -279,7 +300,7 @@ DrawBlock:
         sta func2
         clc
         adc func0
-        sta collist,x
+        sta $0,x
         
         inx
         lda lvldat,y
@@ -290,7 +311,7 @@ DrawBlock:
         sta func3
         clc
         adc func1
-        sta collist,x
+        sta $0,x
         
         iny
         tya
@@ -429,73 +450,4 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
         pla
         tay
 	rts
-        
-	; handles scrolling the sprites on the screen. hero sprite handled seperately
-UpdateSprites: subroutine
-
-	; clear oam objects before drawing
-	lda #0
-        ldx #$10
-.clearoam
-        sta $0200,x
-        inx
-        bne .clearoam
-	
-	lda scroll
-        lsr
-        sta tmp0
-
-	ldx #0 ; object list
-        ldy #0 ; oam
-.next
-	lda objlist,x
-        bne .draw
-	rts
-.draw	
-	clc
-        asl
-        asl
-	sec
-        sbc tmp0
-        cmp #120
-        bcc .onscreen
-        lda #$ff       
-.onscreen
-	clc
-	asl
-	sta $210,y	; set y pos
-        inx
-        iny
-        lda objlist,x
-        rol
-        rol
-        rol
-        rol
-        and #$7
-        clc
-        adc #$20
-        
-        bit flags
-        bpl .normalcolor
-        cpy hookidx
-        bne .normalcolor
-        clc
-        adc #$2
-.normalcolor
-        
-        sta $210,y	; set sprite index
-
-        iny
-        
-        iny
-        lda objlist,x
-        and #$1f
-        clc
-        asl
-        asl
-        asl
-        sta $210,y	; set x pos
-        inx
-        iny
-        jmp .next
         

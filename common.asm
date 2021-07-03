@@ -10,20 +10,23 @@ LoadPallete: subroutine
         rts
 
 
-	; finds the first zero byte after Y
+	; finds the first zero byte after X
 FindEmptyZp: subroutine
-	lda $00,Y
-        bne .found
+.loop
+	lda $00,x
+        beq .found
 	inx
-	bne FindEmptyZp
+	bne .loop
 .found  rts
 
 
 	; finds the first zero byte in page A after AY
 FindEmpty: subroutine
 	sta tmp3
+	lda #0
+        sta tmp2
 .loop
-        lda (tmp3),y
+        lda (tmp2),y
         beq .found
         iny
         bne .loop
