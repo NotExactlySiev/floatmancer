@@ -140,7 +140,7 @@ Release: subroutine
 ; if none are found puts -1
 FindCloseHook: subroutine
 	ldx hookidx
-        lda #$21
+        lda #$30
         sta $210,x
 	
 
@@ -151,7 +151,7 @@ FindCloseHook: subroutine
 	lda $210,x
 	beq .out
         
-        cmp #$21
+        cmp #$30
         beq .ishook
         inx
         inx
@@ -227,7 +227,7 @@ FindCloseHook: subroutine
 .close  
 
 	ldx hookidx
-        lda #$22
+        lda #$31
         sta $210,x
 
 	rts

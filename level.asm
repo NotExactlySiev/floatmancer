@@ -138,7 +138,7 @@ NextItem:
         dey
         lda lvldat,y
         bpl .nsprite
-        jmp DrawObject
+        jsr DrawObject
         
 	jmp NextItem
 .nsprite
@@ -157,13 +157,16 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         
         lda lvldat,y	; set object type
         and #$e0
+        lsr
+        lsr
+        lsr
         sta $0,x
         iny
         lda lvldat,y
-        lsr
-        lsr
-        lsr
-        and #$18
+        rol
+        rol
+        rol
+        and #$3
         ora $0,x
         sta $0,x
         inx
@@ -172,7 +175,6 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         and #$1f
         sta $0,x
 
-        iny
         iny
         rts
 

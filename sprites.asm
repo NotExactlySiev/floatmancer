@@ -32,24 +32,24 @@ UpdateSprites: subroutine
 	clc
 	asl
 	sta $210,y
-        
+        iny		; Set Sprite and Pallete
         
         inx
-	lda objlist,x	; Set Sprite and Pallete
-        and #$e0
-        cmp #$80
+	lda objlist,x
+        and #$1c
+        cmp #$10
         bne .nBouncy
         ; Bouncy
         
         jmp .spritedone
 .nBouncy
-	cmp #$a0
+	cmp #$14
         bne .nBig
         ; Big
-        
+        jsr DrawBig
         jmp .spritedone
 .nBig
-	cmp #$c0
+	cmp #$18
         bne .nHook
         ; Hook
         jsr DrawHook
@@ -61,22 +61,23 @@ UpdateSprites: subroutine
 .spritedone
 
 
-        iny
+        iny		; Set X pos
+        inx
         lda objlist,x
         and #$1f
         clc
         asl
         asl
         asl
-        sta $210,y	; set x pos
+        sta $210,y
         inx
         iny
+        
         jmp .next
 
 
 
 DrawHook: subroutine
-	iny
         lda #$30
         bit flags
         bpl .nhooked
@@ -86,12 +87,24 @@ DrawHook: subroutine
 .nhooked
 	sta $210,y
         
-        inx
         iny		; set the pallete
 	lda objlist,x
-        lsr
-        lsr
-        lsr
         and #$3
         sta $210,y
+        
+        rts
+
+DrawBig: subroutine ; draws one of four meta sprite objects
+	lda objlist,x
+        and #$f
+        clc
+        adc #4
+        asl
+        asl
+        sta $210,y
+        
+        iny
+        lda #1
+        sta $210,y
+        
         rts
