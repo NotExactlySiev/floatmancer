@@ -116,6 +116,7 @@ NextItem:
 .nend   
 	lda lvldat,y	; special cases that set the variables on their own
         and #$e0
+        tax
         bne .nFIL
         jsr DrawFill
         jmp NextItem
@@ -126,32 +127,107 @@ NextItem:
      	jsr DrawBlock
         jmp NextItem
 .nBLK
-       
-        lda lvldat,y ; if it's not a block or fill, set the position for now
+        lda lvldat,y	; if it's not a block or fill, set the position for now
+        sta func3
         and #$1f
         sta func1
-        
+              
         iny
         lda lvldat,y
+        sta func2
+        and #$3f
         sta func0
         
-        dey
-        lda lvldat,y
+        ; at this point, 0 = y, 1 = x, x = upper nybble not shifted
+        
+        txa
         bpl .nsprite
         jsr DrawObject
-        
 	jmp NextItem
 .nsprite
+        jsr PPUFormat	; if it's 01000-01111, we need ppu address
+        txa
+        cmp #$40
+        bne .nspike
+        jsr DrawSpike
+        jmp NextItem
+.nspike	
+	
+        ; upper nybble fully checked. cheking lower nybble now to narrow it down
+        lda func2
+        and #$c0
+        
+	
 
         jmp NextItem
 
+
+DrawSpike: subroutine
+	lda func6
+        sta PPU_ADDR
+        lda func7
+        sta PPU_ADDR
+        
+	ldx #collist
+        jsr FindEmptyZp
+
+	lda func0
+        sta $0,x
+        sta $2,x
+        lda func1
+        sta $1,x
+        sta $3,x
+        inx
+        
+        lda func2
+        bpl .horiz
+        lda #4
+        sta PPU_CTRL
+        dex
+.horiz
+	iny
+        lda lvldat,y
+        pha		; save it to use for drawing later
+        clc
+        adc $0,x
+        inx
+        inx
+        sta $0,x
+	pla
+        tax
+
+	lda func2	; setting up for drawing
+        rol
+        rol
+        rol
+        and #$3
+        clc
+        adc #$20
+	sta PPU_DATA
+        
+        adc #4
+
+.draw        
+        dex
+        bmi .drawdone
+        sta PPU_DATA
+        bpl .draw     
+.drawdone
+
+	adc #4
+        sta PPU_DATA
+
+        lda #0
+        sta PPU_CTRL
+        
+        iny
+        rts
 
 DrawObject: subroutine ; puts sprite objects into the table, doesn't change 
         ldx #objlist
         jsr FindEmptyZp
         
 	lda func0	; set y pos
-        and #$3f
         sta $0,x
         inx
         

@@ -2,26 +2,26 @@
         sec
         sbc #4
         sta $203
+        
         lda flags	; RUNNING ANIMATION
         eor #%11000000
         and #%11000001
         cmp #%11000001
         bne .nrunning
 	
-        lda $201
 	dec ftimer
         bne .sameframe
-        lda #5
+        lda #4
         sta ftimer
-        lda $201	; wrap around
+        lda $201
         clc
-        adc #1
-        cmp #$5
+        adc #1		; next frame
+        cmp #$6
         bne .nwrap
-        lda #$1
-.nwrap        
-.sameframe
+        lda #$2 	; wrap around
+.nwrap  
 	sta $201
+.sameframe
         lda #1
         bit $201
         beq .nobobbing
@@ -29,6 +29,7 @@
 .nobobbing      
         jmp .spritedone
 .nrunning
+
 
         bit flags	; FALLING ANIMATION
         bvc .nfalling
@@ -40,5 +41,5 @@
 
 	lda #$0		; IDLE ANIMATION
         sta $201
-	lda #5
+	lda #1
         sta ftimer
