@@ -5,7 +5,7 @@ LVL0:
         BLK 4, 8, 4, 15
         BLK 10, 20, 10, 3
         SPK 14, 19, 0, 3
-        ;OBJ 6, 6, 0
+        HOK 18, 7, 0
         
 LVL1:        
         LEVEL_HEADER LVL2, 0, 3, 4

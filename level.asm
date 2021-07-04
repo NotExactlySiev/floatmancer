@@ -111,7 +111,7 @@ RenderLevel: subroutine	; draw the background parts of the level, load the colli
       	ldy #0
 NextItem:
         cpy lvlsize
-        bne .nend
+        bcc .nend
         rts
 .nend   
 	lda lvldat,y	; special cases that set the variables on their own
@@ -170,6 +170,7 @@ DrawSpike: subroutine
         
 	ldx #collist
         jsr FindEmptyZp
+        stx func5	; keep for later, when x is uncertain
 
 	lda func0
         sta $0,x
@@ -188,11 +189,20 @@ DrawSpike: subroutine
 	iny
         lda lvldat,y
         pha		; save it to use for drawing later
-        clc
+        sec
         adc $0,x
         inx
         inx
         sta $0,x
+       
+        ldx func5
+        lda func2	; set the horizontal or vertical direction of deadly ocol
+        and #$80
+        lsr        
+        ora #$80
+        ora $3,x
+        sta $3,x
+
 	pla
         tax
 
@@ -237,12 +247,12 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         lsr
         lsr
         sta $0,x
-        iny
+        dey
         lda lvldat,y
-        rol
-        rol
-        rol
-        and #$3
+        lsr
+        lsr
+        lsr
+        and #$1c
         ora $0,x
         sta $0,x
         inx
@@ -251,6 +261,7 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         and #$1f
         sta $0,x
 
+	iny
         iny
         rts
 

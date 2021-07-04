@@ -1,13 +1,5 @@
 
-LoadPallete: subroutine
-	PPU_SETADDR $3f00
-        ldx #$0
-.loop   lda Pallete,x
-        sta PPU_DATA
-        inx
-        cpx #$20
-        bne .loop
-        rts
+
 
 
 	; finds the first zero byte after X

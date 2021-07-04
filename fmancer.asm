@@ -135,21 +135,32 @@ NMIEnd:
 	include "collision.asm"
 	include "math.asm"
         
+	include "palette.asm"
+
 	include "level.asm"
 	include "sprites.asm"
 
+PlayerDeath: subroutine
+	
+	rts
+
 
         ;;; DATA
-Pallete:
-	.hex 1d
-        .hex 10002d 00
-        .hex 0b1a07 00
-        .hex 0b1a07 00
-        .hex 0b1a07 1d
-        .hex 041320 00
-        .hex 041903 00
-        .hex 24152d 00
-        .hex 000000 00
+CastlePalette:
+	.hex 0f
+        .hex 10002d
+        .hex 0b1a07
+        .hex 0b1a07
+        .hex 0b1a07
+        .hex 041320
+        .hex 041903
+        .hex 24152d
+        .hex 111111
+
+HueShift:	; hues to shift into for each dark color before going to black
+	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
+DarkTable:	; where the palettes of each darkness degree are located
+	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
 
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"

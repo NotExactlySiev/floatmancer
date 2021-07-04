@@ -19,7 +19,6 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         lda collist,x
         bne .ndone
         lda #0
-        sta func2
         rts
 .ndone
 
@@ -42,14 +41,8 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         bcc .not4
         
         lda collist,x
-        lsr
-        lsr
-        lsr
-        lsr
-        lsr
-        clc
-        adc #1
-        sta func2
+        and #$e0
+        ora #1
         rts
         
 .not1	inx
@@ -67,29 +60,10 @@ NormalCollision: subroutine
 	lda vy0
         bmi .air
 	;; DOWNWARDS AND GROUND COLLISION
-	lda py1		; check for bottom left and bottom right, collision if any are in solid block
-        clc
-        adc #$ff
-        lda py0
-        adc #7
-        sta func0
-        
-        lda px0
-        clc
-        adc #2
-        sta func1
-
-        jsr CheckCollision	; BOTTOM RIGHT
-	lda func2
-        bne .nair
-
-        lda px0
-        sec
-        sbc #2
-        sta func1
-        
-        jsr CheckCollision	; BOTTOM LEFT
-	lda func2
+	jsr DownCollision
+        bpl .ndie
+     	jmp PlayerDeath   
+.ndie
         bne .nair
 .air        
         lda #$40
@@ -107,7 +81,6 @@ NormalCollision: subroutine
         lda px0
         sta func1
         jsr CheckCollision
-	lda func2
         beq .nstuck
         lda py0
         sec
@@ -134,28 +107,8 @@ NormalCollision: subroutine
                         ; ended up here by having vertical velocity, and will later be added to the y position
                         ; value which will end up pushing the player down.
 .checkup
-	lda py0
-        sec
-        sbc #5
-        sta func0
-        
-        lda px0
-        clc
-        adc #2
-        sta func1
-
-        jsr CheckCollision	; TOP RIGHT
-	lda func2
-        bne .ceiling
-
-        lda px0
-        sec
-        sbc #2
-
-        sta func1
-        
-        jsr CheckCollision	; TOP LEFT
-	lda func2
+	jsr UpCollision
+        bmi .die
         bne .ceiling
 
 .nceiling
@@ -190,8 +143,6 @@ NormalCollision: subroutine
         sbc tmp0
         sec		; set carry because sprite line is delayed roflmfao
         adc tmp1
-                
-        
         sta py0
 
 .colvdone
@@ -203,44 +154,8 @@ NormalCollision: subroutine
         bit flags
         beq .colhdone
 
-	lda #$10
-        bit flags
-	bne .cleft
-.cright
-	lda px1		; set for the left or right corners based on movement direction
-        clc
-        adc #MARGIN
-        lda px0
-        adc #3
-        sta func1
-        jmp .colhxset
-.cleft
-
-	lda px1
-        sec
-        sbc #MARGIN
-	lda px0
-        sbc #3
-        sta func1
-        
-.colhxset		; horizontal collision if both corners are solid block
-	lda py0		
-        sec
-        sbc #3
-        sta func0
-        
-        jsr CheckCollision	; TOP left/right
-        lda func2
-        bne .pushout
-        
-        lda py0
-        clc
-        adc #3
-        sta func0
-
-	jsr CheckCollision	; BOTTOM left/right
-        lda func2
-        bne .pushout
+	jsr FrontCollision
+        bmi .die
 	beq .colhdone
 
 .pushout
@@ -272,5 +187,102 @@ NormalCollision: subroutine
         sta vx2
         sta px1
 .colhdone
-
 	rts
+
+.die	jmp PlayerDeath
+
+
+
+DownCollision: subroutine
+	lda py1		; check for bottom left and bottom right, collision if any are in solid block
+        clc
+        adc #$ff
+        lda py0
+        adc #7
+        sta func0
+        
+        lda px0
+        clc
+        adc #2
+        sta func1
+
+        jsr CheckCollision	; BOTTOM RIGHT
+        bne .yes
+
+        lda px0
+        sec
+        sbc #2
+        sta func1
+        
+        jsr CheckCollision	; BOTTOM LEFT
+        bne .yes
+        lda #0
+.yes	rts
+
+
+UpCollision: subroutine
+	lda py0
+        sec
+        sbc #5
+        sta func0
+        
+        lda px0
+        clc
+        adc #2
+        sta func1
+
+        jsr CheckCollision	; TOP RIGHT
+        bne .yes
+
+        lda px0
+        sec
+        sbc #2
+
+        sta func1
+        
+        jsr CheckCollision	; TOP LEFT
+        bne .yes
+        lda #0
+.yes    rts
+
+
+	; collision in the direction of horizontal movement
+FrontCollision: subroutine
+	lda flags
+        and #$10
+	bne .cleft
+.cright
+	lda px1		; set for the left or right corners based on movement direction
+        clc
+        adc #MARGIN
+        lda px0
+        adc #3
+        sta func1
+        jmp .colhxset
+.cleft
+
+	lda px1
+        sec
+        sbc #MARGIN
+	lda px0
+        sbc #3
+        sta func1
+        
+.colhxset		; horizontal collision if both corners are solid block
+	lda py0		
+        sec
+        sbc #3
+        sta func0
+        
+        jsr CheckCollision	; TOP left/right
+        bne .yes
+        
+        lda py0
+        clc
+        adc #3
+        sta func0
+
+	jsr CheckCollision	; BOTTOM left/right
+	bne .yes
+        lda #0
+.yes	rts

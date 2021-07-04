@@ -5,7 +5,10 @@
         jsr WaitSync
            
         ; ppu setup
-        jsr LoadPallete
+        lda #3
+        sta darkness
+        jsr LoadPalette
+        jsr SetDarkness
                       
         lda #0
         sta OAM_ADDR
@@ -21,12 +24,7 @@
         jsr LoadLevel
         jsr RenderLevel
 
-        ; enable rendering, nmi
-        lda #$88
-        sta PPU_CTRL
-        lda #$1e
-        sta PPU_MASK
-        
+
         lda #0
         sta PPU_ADDR
         sta PPU_ADDR       
@@ -48,3 +46,9 @@
         sta jbuffer
 
         jsr UpdateSprites
+        
+        ; enable rendering, nmi
+        lda #$88
+        sta PPU_CTRL
+        lda #$1e
+        sta PPU_MASK

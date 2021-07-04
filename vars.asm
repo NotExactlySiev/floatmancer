@@ -79,7 +79,9 @@ scroll	= $3C	; screen scroll. [0, 240]
 flags	= $3D	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
 
 ; $40-$5F are the same from last frame
+objlist	= $60
+collist	= $80
 
-lvldat	= $100
-objlist	= $80
-collist	= $a8
+lvldat		= $100
+basepalette	= $170
+darkness	= $1EF
