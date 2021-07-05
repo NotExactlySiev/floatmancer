@@ -91,7 +91,7 @@ NMIHandler:
         bcc .animdone
         ldy darkness
         iny
-        cpy #5
+        cpy #4
         beq .animfinish
         sty darkness
         jsr SetDarkness
