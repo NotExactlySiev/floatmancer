@@ -5,7 +5,7 @@
         jsr WaitSync
            
         ; ppu setup
-        lda #3
+        lda #0
         sta darkness
         jsr LoadPalette
         jsr SetDarkness
@@ -46,6 +46,14 @@
         sta jbuffer
 
         jsr UpdateSprites
+        
+        ; start game
+        lda #1
+        sta loop
+        lda #0
+        sta anim
+        sta darkness
+        jsr SetDarkness
         
         ; enable rendering, nmi
         lda #$88

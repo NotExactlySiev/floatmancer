@@ -23,7 +23,11 @@ lvlsize	= $F
 pad	= $10
 padold	= $11
 padedge	= $12
-paused	= $13
+loop	= $13
+
+anim	= $14	; animation playing right now. 0 if none
+animcounter	= $15
+animreturn	= $16
 
 ;; LEVEL VARIABLES
 

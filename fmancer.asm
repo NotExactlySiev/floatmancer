@@ -44,11 +44,23 @@ Start:
 
 
 
-	;;; MAIN GAME LOGIC      
+	;;; MAIN LOOP
 .endless	
         jmp .endless
 
-NMIHandler:       
+
+StartAnimation:
+	sta anim
+        pla
+        sta animreturn+1
+        pla
+        sta animreturn
+        lda #0
+        sta animcounter
+        jmp NMIEnd
+
+NMIHandler:
+	
         ; disable nmi, set nametable
         lda #0
         sta PPU_SCROLL
@@ -62,18 +74,66 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
 
+	;; PPU WRITES
+        jsr UpdatePlayer
+        
+        
+        lda anim
+        beq .nanim
+        ldx animcounter
+        inx
+        stx animcounter
+        
+        cmp #1
+        bne .nfadeout
+        
+        cpx #4
+        bcc .animdone
+        ldy darkness
+        iny
+        cpy #5
+        beq .animfinish
+        sty darkness
+        jsr SetDarkness
+	ldx #0
+        stx animcounter
+        jmp .animdone
+.nfadeout
 	
-	lda paused
-        bne GamePaused
+        cmp #2
+        bne .nfadein
+        
+        cpx #4
+        bcc .animdone
+        ldy darkness
+        dey
+        cpy #$ff
+        beq .animfinish
+        sty darkness
+        jsr SetDarkness
+        ldx #0
+        stx animcounter
+        jmp .animdone
+.nfadein
+
+.animfinish
+	lda #0
+        sta anim
+        lda animreturn
+        pha
+        lda animreturn+1
+        pha
+        rts
+.animdone
+	jmp NMIEnd
+.nanim
+	;; GAME LOOP
+        
+	lda loop
+        beq GamePaused
         ; set hero sprite
 
-        lda py0
-        bcc .topscreen
-	adc #7
-.topscreen
-        sec
-        sbc #5
-        sta $200
+
 	include "animation.asm"
 .spritedone
         
@@ -87,11 +147,10 @@ NMIHandler:
 .nosearch 
 
 GamePaused:
-
 	include "readpad.asm" 
 
-	lda paused
-        bne NMIEnd
+	lda loop
+        beq NMIEnd
 
 	; backup variables from last frame
 	ldx #$f

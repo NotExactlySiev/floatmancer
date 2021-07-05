@@ -24,8 +24,8 @@
 	lda pad
         sta padold
 
-	lda paused
-        beq GameInput
+	lda loop
+        bne GameInput
         jmp ControlInput
 
 GameInput:
@@ -168,12 +168,15 @@ ControlInput:
         and #$20
         beq .lvlend
                 
+        lda #1
+        jsr StartAnimation
+
         lda #$00
         sta PPU_MASK
         sta PPU_CTRL
         jsr WaitSync
         
-        jsr ClearLevel
+        
         
         ldx lvl
         inx
@@ -185,19 +188,34 @@ ControlInput:
 .nback
         
         stx func0
-        jsr FindLevel
-        jsr LoadLevel
-        jsr RenderLevel
-	jsr UpdateSprites
+
         
-        jsr WaitSync        
+        jsr HardReset
+        jsr WaitSync
+        
+        jsr UpdateSprites
+        jsr UpdatePlayer
+        
+        lda #2
+        sta PPU_OAM_DMA
+        
+        jsr WaitSync
+        jsr WaitSync
         
         lda #$1e
         sta PPU_MASK
         lda #$80
         ldy PPU_STATUS
         sta PPU_CTRL
-        jmp NMIEnd
+        
+        
+        
+        lda #2
+        jsr StartAnimation
+        
+	jmp NMIEnd
+
+        
 .lvlend
 
 
@@ -206,7 +224,7 @@ ControlInput:
         and #$10
         beq .pauseend
         
-        lda paused
+        lda loop
         eor #$1
-        sta paused
+        sta loop
 .pauseend

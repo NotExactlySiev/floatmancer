@@ -49,4 +49,5 @@ SetDarkness: subroutine
         iny
         cpy #$21
         bne .loop
+        
         rts

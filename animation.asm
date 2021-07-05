@@ -1,8 +1,4 @@
-	lda px0
-        sec
-        sbc #4
-        sta $203
-        
+       
         lda flags	; RUNNING ANIMATION
         eor #%11000000
         and #%11000001

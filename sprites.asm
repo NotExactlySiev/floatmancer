@@ -1,4 +1,19 @@
-	; handles scrolling the sprites on the screen. hero sprite handled seperately
+UpdatePlayer: subroutine
+        lda py0
+        bcc .topscreen
+	adc #7
+.topscreen
+        sec
+        sbc #5
+        sta $200
+        
+        lda px0
+        sec
+        sbc #4
+        sta $203
+        rts
+
+; handles scrolling the sprites on the screen. hero sprite handled seperately
 UpdateSprites: subroutine
 	; clear oam objects before drawing
 	lda #0

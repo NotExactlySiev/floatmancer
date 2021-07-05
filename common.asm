@@ -1,5 +1,10 @@
-
-
+HardReset: subroutine
+	jsr ClearLevel
+        jsr FindLevel
+        jsr LoadLevel
+        jsr RenderLevel
+	jsr UpdateSprites
+	rts
 
 
 	; finds the first zero byte after X
