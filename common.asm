@@ -6,15 +6,6 @@ HardReset: subroutine
 	jsr UpdateSprites
 	rts
 
-	; NEVER call this outside of NMI
-WaitFor:
-	sta waitfor
-        pla
-        sta waitptr+1
-        pla
-        sta waitptr
-        jmp NMIEnd
-
 	; finds the first zero byte after X
 FindEmptyZp: subroutine
 .loop

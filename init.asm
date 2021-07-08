@@ -44,7 +44,6 @@
         lda #$ff
         sta hookidx
         sta jbuffer
-        sta waitfor
 
         jsr UpdateSprites
         
@@ -55,7 +54,6 @@
         sta input
         
         lda #0
-        sta anim
         sta darkness
         jsr SetDarkness
         

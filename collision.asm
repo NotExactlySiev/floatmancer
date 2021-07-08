@@ -70,7 +70,7 @@ NormalCollision: subroutine
 .nair   
 	cmp #%10000001
         bne .ndeath
-	jsr PlayerDeath
+	; what happens if die? play death sequence
 .ndeath
         sty coyote
 .downdone
@@ -160,7 +160,7 @@ NormalCollision: subroutine
 	beq .colhdone
 	cmp #%11000001
         bne .ndie
-       	jsr PlayerDeath 
+	; what happens if die? play death sequence
 .ndie
 
 .pushout
@@ -195,7 +195,7 @@ NormalCollision: subroutine
 .colhdone
 	rts
 
-.die	jmp PlayerDeath
+.die	; what happens if die? play death sequence
 
 
 

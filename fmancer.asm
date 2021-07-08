@@ -19,6 +19,8 @@ COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 MARGIN		= $8
 
+WINDUP_TIME	= $1
+
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
 LEVEL_HEAD	= $90
@@ -34,22 +36,14 @@ SCREEN_WIDTH	= 256
 	;;; HEADER        
 	NES_HEADER 0,2,1,0 ; mapper 0, 2 PRGs, 1 CHR, horiz. mirror
 
-
-
-
         ;;; INIT
 Start:	
 	include "init.asm"
 
 
-
-
 	;;; MAIN LOOP
 .endless	
         jmp .endless
-
-
-
 
 NMIHandler:
 	
@@ -66,44 +60,35 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
         
-        ;; Check if waiting
-        ldx waitfor
-        bmi .nwait
-        dex
-        bne .keepwait
-        dex
-        stx waitfor
-        lda waitptr
-        pha
-        lda waitptr+1
-        pha
-        rts
-.keepwait
-	stx waitfor
-.nwait
+        
 
 	;; PPU WRITES
         jsr UpdatePlayer
+        
+        lda loop
+        beq GamePaused
                 
 	;; GAME LOOP
-	include "animation.asm"
-.spritedone
-        
+	include "animation.asm"        
         ; draw sprites
         lda #02
         sta PPU_OAM_DMA
-	
+
         bit flags
         bmi .nosearch
         jsr FindCloseHook
 .nosearch 
 
+GamePaused:
 	lda input
         bne .nskipinput
         jmp .inputdone
 .nskipinput
 	include "readpad.asm" 
 .inputdone
+
+	lda loop
+        beq NMIEnd
 
 	; backup variables from last frame
 	ldx #$f
@@ -125,7 +110,7 @@ NMIHandler:
 	jsr HookMode
 .physdone
 
-	include "scroll.asm"
+	jsr UpdateScroll
 
 NMIEnd:    
 	; enable nmi, set nametable
@@ -149,23 +134,14 @@ NMIEnd:
 	include "hookmode.asm"   
 	include "collision.asm"
 	include "math.asm"
-        
+        include "scroll.asm"
+
+	include "sequence.asm"
+
 	include "palette.asm"
 
 	include "level.asm"
 	include "sprites.asm"
-
-PlayerDeath: subroutine
-	lda #1
-        sta anim
-        ;lda #6
-        ;jsr WaitFor
-        jsr ClearLevel
-        ;lda #2
-        ;sta anim
-        
-	rts
-
 
         ;;; DATA
 CastlePalette:

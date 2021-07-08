@@ -168,11 +168,6 @@ ControlInput:
         and #$20
         beq .lvlend
         
-        lda #1
-        sta anim
-        lda #10
-        jsr WaitFor
-
         lda #$00
         sta PPU_MASK
         sta PPU_CTRL
@@ -195,13 +190,6 @@ ControlInput:
         jsr HardReset
         jsr WaitSync
         
-        jsr UpdateSprites
-        jsr UpdatePlayer
-        
-        ;lda #2
-        ;sta PPU_OAM_DMA
-        
-        jsr WaitSync
         jsr WaitSync
         
         lda #$1e
@@ -209,10 +197,7 @@ ControlInput:
         lda #$80
         ldy PPU_STATUS
         sta PPU_CTRL
-        
-        lda #2
-        sta anim
-        
+
 	jmp NMIEnd
 
         

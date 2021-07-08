@@ -1,4 +1,4 @@
-
+UpdateScroll: subroutine
 	; scrolls if the character passes a threshhold distance from the bottom or top of the screen
         lda #SCREEN_HEIGHT-SCROLL_THOLD
 	cmp py0
@@ -72,6 +72,6 @@ Scroll:
 	
 
 .scrolldone
-	jsr UpdateSprites
-        
+	jsr UpdateSprites       
 .scrollover
+	rts

@@ -24,16 +24,16 @@ pad	= $10
 padold	= $11
 padedge	= $12
 
-anim	= $13		; the animation that's playing, 0 if none
-
 ; turn on and off
 loop	= $14
 physics	= $15
 input	= $16
 
+;; SEQUENCE VARIABLES
+seq	= $17
+stimer	= $18
 
-waitfor		= $17	; how many frames of waiting
-waitptr		= $18	; where to return after waiting is over
+
 
 
 ;; LEVEL VARIABLES
@@ -97,3 +97,7 @@ collist	= $80
 lvldat		= $100
 basepalette	= $170
 darkness	= $1EF
+
+; $200-$2FF is OAM DMA
+
+sequence	= $300

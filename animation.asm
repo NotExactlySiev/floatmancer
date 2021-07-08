@@ -1,9 +1,29 @@
-       
+
+	lda #%01001000
+        bit flags
+        bne .air
+        bpl .ground	
+
+.hooking
+	;;; HOOK ANIMATION
+	lda #3
+        bne .spritedone
+
+.air
+        ;;; AIR ANIMATION
+        lda #$1
+        ldx jtimer
+        cpx #WINDUP_TIME
+        bcs .jwindup
+        lda #$10
+.jwindup
+        bne .spritedone
+
+.ground
+	;;; GROUND ANIMATION
         lda flags	; RUNNING ANIMATION
-        eor #%11000000
-        and #%11000001
-        cmp #%11000001
-        bne .nrunning
+        and #1
+        beq .nrunning
 	
 	dec ftimer
         bne .sameframe
@@ -23,24 +43,15 @@
         beq .nobobbing
         dec $200
 .nobobbing      
-        jmp .spritedone
+        jmp .animationover
 .nrunning
 
-
-        bit flags	; FALLING ANIMATION
-        bvc .nrising
-        lda #$3
-        ldx jtimer
-        cpx #3
-        bcs .jwindup
-        lda #$10
-.jwindup
-        sta $201
-        bne .spritedone
-.nrising
-
-
-	lda #$0		; IDLE ANIMATION
-        sta $201
+	;; IDLE ANIMATION
 	lda #1
         sta ftimer
+	lda #$0
+
+
+.spritedone
+        sta $201
+.animationover
