@@ -54,12 +54,50 @@ HookMode: subroutine
         lda angle0
         adc omega0
         sta angle0
-
-
-
-	; positioning
         
-        lda radius
+        jsr UpdateAngularPosition
+
+
+	lda py0
+	sec
+        sbc py0+BACKUP_OFFSET
+	sta vy0
+        
+        bmi .up
+        jsr DownCollision
+        bvc .vchecked
+.up
+        jsr UpCollision
+.vchecked
+	bne .undo
+
+        sec
+        sbc px0+BACKUP_OFFSET
+        sta vx0
+        
+        jsr FrontCollision
+        bne .undo
+	
+        rts
+
+.undo
+	clc
+	lda angle0+BACKUP_OFFSET
+        sta angle0
+        lda angle1+BACKUP_OFFSET
+        sta angle1
+        lda angle2+BACKUP_OFFSET
+        sta angle2
+        lda #0
+        sta omega0
+        sta omega1
+        sta omega2
+        jsr UpdateAngularPosition
+        
+        rts
+
+UpdateAngularPosition: subroutine
+	lda radius
         sta func2
         
         lda angle0
@@ -71,6 +109,9 @@ HookMode: subroutine
         
         lda func6
         sta relpy0
+        clc
+        adc hookpy
+        sta py0
         
         lda angle0
         clc
@@ -83,24 +124,9 @@ HookMode: subroutine
         
         lda func6
         sta relpx0
-
-        lda relpy0
-        clc
-        adc hookpy
-        sta func0	; check for collision
-
-	lda relpx0
         clc
         adc hookpx
-        sta func1
-
-	lda func0
-        sta py0
-        lda func1
         sta px0
-
-	
-
         rts
 
 

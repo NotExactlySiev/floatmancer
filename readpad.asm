@@ -127,7 +127,7 @@ GameInput:
         lda jbuffer
         cmp #BUFFER_WINDOW
         bcs .njumpstart
-        
+                
         lda #0
         sta jtimer
         lda #$8
@@ -167,9 +167,11 @@ ControlInput:
         and padedge
         and #$20
         beq .lvlend
-                
+        
         lda #1
-        jsr StartAnimation
+        sta anim
+        lda #10
+        jsr WaitFor
 
         lda #$00
         sta PPU_MASK
@@ -196,8 +198,8 @@ ControlInput:
         jsr UpdateSprites
         jsr UpdatePlayer
         
-        lda #2
-        sta PPU_OAM_DMA
+        ;lda #2
+        ;sta PPU_OAM_DMA
         
         jsr WaitSync
         jsr WaitSync
@@ -208,15 +210,14 @@ ControlInput:
         ldy PPU_STATUS
         sta PPU_CTRL
         
-        
-        
         lda #2
-        jsr StartAnimation
+        sta anim
         
 	jmp NMIEnd
 
         
 .lvlend
+
 
 
 	lda pad

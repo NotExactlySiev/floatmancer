@@ -44,12 +44,16 @@
         lda #$ff
         sta hookidx
         sta jbuffer
+        sta waitfor
 
         jsr UpdateSprites
         
         ; start game
         lda #1
         sta loop
+        sta physics
+        sta input
+        
         lda #0
         sta anim
         sta darkness

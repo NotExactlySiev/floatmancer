@@ -14,7 +14,7 @@ MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
 HOOK_SWING	= 35
 HOOK_RANGE	= 60
-MAX_JUMP	= 7
+MAX_JUMP	= 13
 COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 MARGIN		= $8
@@ -49,15 +49,7 @@ Start:
         jmp .endless
 
 
-StartAnimation:
-	sta anim
-        pla
-        sta animreturn+1
-        pla
-        sta animreturn
-        lda #0
-        sta animcounter
-        jmp NMIEnd
+
 
 NMIHandler:
 	
@@ -73,67 +65,27 @@ NMIHandler:
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
+        
+        ;; Check if waiting
+        ldx waitfor
+        bmi .nwait
+        dex
+        bne .keepwait
+        dex
+        stx waitfor
+        lda waitptr
+        pha
+        lda waitptr+1
+        pha
+        rts
+.keepwait
+	stx waitfor
+.nwait
 
 	;; PPU WRITES
         jsr UpdatePlayer
-        
-        
-        lda anim
-        beq .nanim
-        ldx animcounter
-        inx
-        stx animcounter
-        
-        cmp #1
-        bne .nfadeout
-        
-        cpx #4
-        bcc .animdone
-        ldy darkness
-        iny
-        cpy #4
-        beq .animfinish
-        sty darkness
-        jsr SetDarkness
-	ldx #0
-        stx animcounter
-        jmp .animdone
-.nfadeout
-	
-        cmp #2
-        bne .nfadein
-        
-        cpx #4
-        bcc .animdone
-        ldy darkness
-        dey
-        cpy #$ff
-        beq .animfinish
-        sty darkness
-        jsr SetDarkness
-        ldx #0
-        stx animcounter
-        jmp .animdone
-.nfadein
-
-.animfinish
-	lda #0
-        sta anim
-        lda animreturn
-        pha
-        lda animreturn+1
-        pha
-        rts
-.animdone
-	jmp NMIEnd
-.nanim
+                
 	;; GAME LOOP
-        
-	lda loop
-        beq GamePaused
-        ; set hero sprite
-
-
 	include "animation.asm"
 .spritedone
         
@@ -146,11 +98,12 @@ NMIHandler:
         jsr FindCloseHook
 .nosearch 
 
-GamePaused:
+	lda input
+        bne .nskipinput
+        jmp .inputdone
+.nskipinput
 	include "readpad.asm" 
-
-	lda loop
-        beq NMIEnd
+.inputdone
 
 	; backup variables from last frame
 	ldx #$f
@@ -161,6 +114,9 @@ GamePaused:
         bpl .copyold
 
 	; do physics calculations based on mode
+        lda physics
+        beq .physdone
+        
         bit flags
         bmi .hook
         jsr NormalMode
@@ -200,14 +156,21 @@ NMIEnd:
 	include "sprites.asm"
 
 PlayerDeath: subroutine
-	
+	lda #1
+        sta anim
+        ;lda #6
+        ;jsr WaitFor
+        jsr ClearLevel
+        ;lda #2
+        ;sta anim
+        
 	rts
 
 
         ;;; DATA
 CastlePalette:
 	.hex 0f
-        .hex 10002d
+        .hex 102d00
         .hex 0b1a07
         .hex 0b1a07
         .hex 0b1a07
@@ -215,6 +178,11 @@ CastlePalette:
         .hex 041903
         .hex 24152d
         .hex 111111
+        
+        org $8E00
+SEQ_Death:
+	
+
 
 HueShift:	; hues to shift into for each dark color before going to black
 	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15

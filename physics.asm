@@ -84,6 +84,9 @@ NormalMode: subroutine
 	lda #$8			; finally set variables if jumping
         bit flags
         beq .nojump
+        ldx jtimer
+        cpx #$2
+        bcc .nojump
 	lda #<(-JUMP_FORCE)
         sta vy2
         lda #>(-JUMP_FORCE)

@@ -23,14 +23,22 @@ lvlsize	= $F
 pad	= $10
 padold	= $11
 padedge	= $12
-loop	= $13
 
-anim	= $14	; animation playing right now. 0 if none
-animcounter	= $15
-animreturn	= $16
+anim	= $13		; the animation that's playing, 0 if none
+
+; turn on and off
+loop	= $14
+physics	= $15
+input	= $16
+
+
+waitfor		= $17	; how many frames of waiting
+waitptr		= $18	; where to return after waiting is over
+
 
 ;; LEVEL VARIABLES
 
+pstate	= $1B ; the player state is in (affects animation and physics) ; 0 normal, 1 jump windup, 2 on air, 3 hook
 coyote	= $1C ; how many frames ago you were on the ground?
 jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer

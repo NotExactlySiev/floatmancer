@@ -28,11 +28,16 @@
 
 
         bit flags	; FALLING ANIMATION
-        bvc .nfalling
-        lda #$4
+        bvc .nrising
+        lda #$3
+        ldx jtimer
+        cpx #3
+        bcs .jwindup
+        lda #$10
+.jwindup
         sta $201
         bne .spritedone
-.nfalling
+.nrising
 
 
 	lda #$0		; IDLE ANIMATION

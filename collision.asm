@@ -61,16 +61,17 @@ NormalCollision: subroutine
         bmi .air
 	;; DOWNWARDS AND GROUND COLLISION
 	jsr DownCollision
-        bpl .ndie
-     	jmp PlayerDeath   
-.ndie
         bne .nair
 .air        
         lda #$40
         ora flags
         sta flags
         jmp .downdone
-.nair        
+.nair   
+	cmp #%10000001
+        bne .ndeath
+	jsr PlayerDeath
+.ndeath
         sty coyote
 .downdone
 
@@ -131,6 +132,7 @@ NormalCollision: subroutine
         sta vy1
         sta vy2
         sta py1
+        sta omega0
 	
         lda scroll	; grid pixel offset
         and #$7
@@ -155,8 +157,11 @@ NormalCollision: subroutine
         beq .colhdone
 
 	jsr FrontCollision
-        bmi .die
 	beq .colhdone
+	cmp #%11000001
+        bne .ndie
+       	jsr PlayerDeath 
+.ndie
 
 .pushout
 	lda #$10		; push out into the grid
@@ -186,6 +191,7 @@ NormalCollision: subroutine
         sta vx1
         sta vx2
         sta px1
+        sta omega0
 .colhdone
 	rts
 
