@@ -11,13 +11,18 @@
 
 .air
         ;;; AIR ANIMATION
-        lda #$1
         ldx jtimer
         cpx #WINDUP_TIME
         bcs .jwindup
         lda #$10
-.jwindup
         bne .spritedone
+.jwindup
+	lda #$0
+        ldx vy0
+        bmi .upwards
+	lda #$3
+.upwards
+	bne .spritedone
 
 .ground
 	;;; GROUND ANIMATION
@@ -27,7 +32,7 @@
 	
 	dec ftimer
         bne .sameframe
-        lda #4
+        lda #5
         sta ftimer
         lda $201
         clc

@@ -19,7 +19,7 @@ COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 MARGIN		= $8
 
-WINDUP_TIME	= $1
+WINDUP_TIME	= $2
 
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
@@ -59,8 +59,44 @@ NMIHandler:
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
+
+.checkseq
+        ldx sqidx
+        lda sequence,x
+        beq .nseq
+        cmp #$20
+        bcs .nctrl
         
+.nctrl	cmp #$40
+	bcs .ncall
         
+.ncall	cmp #$60		; first part of this should be shared with add
+	bcs .nset
+        and #$1f
+        pha
+        inx
+        lda sequence,x
+        pha
+        rol
+        rol
+        and #$1
+        tay
+        pla
+        sta sqvar0,y
+        pla
+        sta (sqvar0,y)
+        jmp .opdone
+        
+.nset	cmp #$80
+	bcs .nadd
+        
+.nadd
+
+.opdone
+	inx
+        bne .checkseq
+
+.nseq   
 
 	;; PPU WRITES
         jsr UpdatePlayer
@@ -98,10 +134,7 @@ GamePaused:
         dex
         bpl .copyold
 
-	; do physics calculations based on mode
-        lda physics
-        beq .physdone
-        
+	; do physics calculations based on mode        
         bit flags
         bmi .hook
         jsr NormalMode
@@ -126,9 +159,8 @@ NMIEnd:
         rti
 
 
-
-
         ;;; SUBROUTINES
+        
 	include "common.asm"
         include "physics.asm"
 	include "hookmode.asm"   
@@ -154,6 +186,12 @@ CastlePalette:
         .hex 041903
         .hex 24152d
         .hex 111111
+        
+CallTable:
+	.byte ClearLevel, HardReset, SetDarkness, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
         
         org $8E00
 SEQ_Death:

@@ -2,7 +2,7 @@ HookMode: subroutine
 	dec jtimer
         bne .ngrip
         ldx hookidx
-        lda #$24
+        lda #$33
         sta $210,x
         
 .ngrip
@@ -306,7 +306,7 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sta omega0
         
         ldx hookidx
-        lda #$23
+        lda #$32
         sta $210,x
         
         lda #4

@@ -23,22 +23,22 @@ lvlsize	= $F
 pad	= $10
 padold	= $11
 padedge	= $12
+darkness = $13
 
 ; turn on and off
 loop	= $14
-physics	= $15
-input	= $16
+input	= $15
 
 ;; SEQUENCE VARIABLES
-seq	= $17
-stimer	= $18
-
+sqvar0	= $16
+sqvar1	= $17
+sqtimer	= $18
+sqidx	= $19
 
 
 
 ;; LEVEL VARIABLES
 
-pstate	= $1B ; the player state is in (affects animation and physics) ; 0 normal, 1 jump windup, 2 on air, 3 hook
 coyote	= $1C ; how many frames ago you were on the ground?
 jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer
@@ -95,8 +95,7 @@ objlist	= $60
 collist	= $80
 
 lvldat		= $100
-basepalette	= $170
-darkness	= $1EF
+basepalette	= $170 ; -$1EE
 
 ; $200-$2FF is OAM DMA
 
