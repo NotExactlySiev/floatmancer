@@ -60,42 +60,8 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
 
-.checkseq
-        ldx sqidx
-        lda sequence,x
-        beq .nseq
-        cmp #$20
-        bcs .nctrl
-        
-.nctrl	cmp #$40
-	bcs .ncall
-        
-.ncall	cmp #$60		; first part of this should be shared with add
-	bcs .nset
-        and #$1f
-        pha
-        inx
-        lda sequence,x
-        pha
-        rol
-        rol
-        and #$1
-        tay
-        pla
-        sta sqvar0,y
-        pla
-        sta (sqvar0,y)
-        jmp .opdone
-        
-.nset	cmp #$80
-	bcs .nadd
-        
-.nadd
 
-.opdone
-	inx
-        bne .checkseq
-
+	jsr SequenceFrame
 .nseq   
 
 	;; PPU WRITES
@@ -186,14 +152,29 @@ CastlePalette:
         .hex 041903
         .hex 24152d
         .hex 111111
+
+CallTableHi:
+	.byte >(ClearLevel-1), >(HardReset-1), >(SetDarkness-1), 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+CallTableLo:
+	.byte <(ClearLevel-1), <(HardReset-1), <(SetDarkness-1), 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+        .byte 0, 0, 0, 0
+
         
-CallTable:
-	.byte ClearLevel, HardReset, SetDarkness, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
         
-        org $8E00
+        org $8F00
 SEQ_Death:
 	
 

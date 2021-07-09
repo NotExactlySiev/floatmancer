@@ -6,6 +6,14 @@ HardReset: subroutine
 	jsr UpdateSprites
 	rts
 
+	; use this to jsr to indirect address, index x from 
+CallFromTable: subroutine
+	lda CallTableHi,x
+        pha
+        lda CallTableLo,x
+        pha
+        rts
+
 	; finds the first zero byte after X
 FindEmptyZp: subroutine
 .loop
