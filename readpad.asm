@@ -209,7 +209,7 @@ ControlInput:
         and padedge
         and #$10
         beq .pauseend
-        
+        jsr PlaySequence        
         lda loop
         eor #$1
         sta loop

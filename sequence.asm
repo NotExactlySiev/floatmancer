@@ -3,55 +3,67 @@
 SequenceFrame: subroutine
 	ldx sqtimer
         dex
-        bmi .advance
+        beq .advance
         stx sqtimer
         rts
 .advance
         
+	
 .checkseq
-        ldx sqidx
-        lda sequence,x
+	ldy sqidx
+        lda sequence,y
         bne .nend	; are we in a sequence?
-     	rts   
+     	rts
 .nend
         bmi .getmem	; is it just a simple set/offset?
         cmp #$20
         bcs .nwait	; is it a control command?
+        sta sqtimer
+        iny
+        sty sqidx
+        rts
         
 .nwait	cmp #$40
 	bcs .ncall	; is it a call command?
+        iny
+        sty sqidx
+        and #$1f
+        tax
+        jsr CallFromTable
+        jmp .checkseq
         
 .ncall	cmp #$60
         bcs .nplay	; is it a play command?
+        ;; play code goes here
 .nplay	
 	; if we reach here it's a set memory address command
 	; set the memory address and continue like a simple set/offset
 
         and #$1f
         sta tmp0
-        inx
-        lda sequence,x
+        iny
+        lda sequence,y
         sta tmp1
         rol
         rol
         and #$1
-        tay
+        tax
         lda tmp1
         and #$3f
-        sta sqvar0,y
+        sta sqvar0,x
         jmp .setval
 
 .getmem
 	sta tmp1
 	and #$1f
         sta tmp0
-        lda sequence,x
+        lda sequence,y
 	rol
         rol
         rol
         rol
         and #$1
-        tay
+        tax
         
 
 .setval
@@ -59,17 +71,32 @@ SequenceFrame: subroutine
 	bit tmp1
         bvs .offset
         
-        sta (sqvar0,y)
+        sta (sqvar0,x)
         jmp .opdone
 .offset
 	clc
-        adc (sqvar0,y)
-        sta (sqvar0,y)
+        adc (sqvar0,x)
+        sta (sqvar0,x)
         jmp .opdone
 	
 
 .reset
 
 .opdone
-	inx
+	iny
+        sty sqidx
         bne .checkseq
+
+PlaySequence: subroutine
+	ldx #$ff
+.copy
+	inx
+	lda SEQ_FadeOut,x
+        sta sequence,x
+        bne .copy
+        
+        ldx #0
+        stx sqidx
+        inx
+        stx sqtimer
+        rts

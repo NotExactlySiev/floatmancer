@@ -154,7 +154,7 @@ CastlePalette:
         .hex 111111
 
 CallTableHi:
-	.byte >(ClearLevel-1), >(HardReset-1), >(SetDarkness-1), 0
+	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -163,7 +163,7 @@ CallTableHi:
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
 CallTableLo:
-	.byte <(ClearLevel-1), <(HardReset-1), <(SetDarkness-1), 0
+	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -175,7 +175,8 @@ CallTableLo:
         
         
         org $8F00
-SEQ_Death:
+SEQ_FadeOut:
+	byte $61, $13, $21, $01, $82, $21, $01, $83, $21, $01, $84, $21, $00
 	
 
 
