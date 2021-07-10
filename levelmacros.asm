@@ -7,7 +7,7 @@
 
 	; 00000 - 00011
         MAC FIL ; select sides
-        .byte {2}<<2 | {1}
+        .byte {1}<<3 | {2}
         ENDM
 
 	; 00100 - 00111

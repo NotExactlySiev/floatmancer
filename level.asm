@@ -273,8 +273,30 @@ DrawFill: subroutine
         sta filbyte
                 
         ; set sides right away
-        and #$0f
-        sta func4
+	and #$7
+        tax
+        
+        and #$2
+        ; this is some voodoo that maps the 8 possible values into the 4 bit ones we need one to one
+	bne .oneside
+        txa
+        asl
+        ora filbyte
+        and #$f
+        bcc .sidesdone
+.oneside
+	txa
+        lsr
+        eor filbyte
+        and #$3
+        tax
+        sec
+        lda #0
+.shift	rol
+	dex
+        bpl .shift       
+.sidesdone
+	sta func4
         
         iny
         tya
