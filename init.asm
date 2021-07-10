@@ -44,6 +44,7 @@
         lda #$ff
         sta hookidx
         sta jbuffer
+        sta sqsr
 
         jsr UpdateSprites
         
@@ -59,5 +60,5 @@
         ; enable rendering, nmi
         lda #$88
         sta PPU_CTRL
-        lda #$1e
+        lda #$18
         sta PPU_MASK

@@ -174,32 +174,14 @@ ControlInput:
         jsr WaitSync
         
         
-        
-        ldx lvl
-        inx
-        
-        bit pad
-        bvc .nback
-        dex
-        dex
-.nback
-        
-        stx func0
-
-        
-        jsr HardReset
-        jsr WaitSync
-        
-        jsr WaitSync
+        ldx #2
+        jsr PlaySequence
         
         lda #$1e
         sta PPU_MASK
         lda #$80
         ldy PPU_STATUS
         sta PPU_CTRL
-
-	jmp NMIEnd
-
         
 .lvlend
 
@@ -209,8 +191,11 @@ ControlInput:
         and padedge
         and #$10
         beq .pauseend
-        jsr PlaySequence        
+        
         lda loop
         eor #$1
         sta loop
+	tax
+	jsr PlaySequence
+
 .pauseend

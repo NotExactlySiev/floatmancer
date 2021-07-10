@@ -14,7 +14,8 @@ CallFromTable: subroutine
         pha
         rts
 
-	; finds the first zero byte after X
+
+; finds the first zero byte after X
 FindEmptyZp: subroutine
 .loop
 	lda $00,x
@@ -37,7 +38,22 @@ FindEmpty: subroutine
 .found	rts
         
 
-        ; reverses horizontal acceleration
+DisableRender: subroutine
+	lda #0
+        sta PPU_MASK
+        lda #$08
+        sta PPU_CTRL
+	rts
+        
+EnableRender: subroutine
+	lda #$18
+        sta PPU_MASK
+        lda #$18
+        sta PPU_CTRL
+        rts
+
+
+; reverses horizontal acceleration
 NegativeAclX: subroutine
 	clc
         lda ax2

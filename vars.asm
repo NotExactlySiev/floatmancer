@@ -34,6 +34,7 @@ sqvar0	= $16
 sqvar1	= $17
 sqtimer	= $18
 sqidx	= $19
+sqsr	= $1A
 
 
 
@@ -99,4 +100,4 @@ basepalette	= $170 ; -$1EE
 
 ; $200-$2FF is OAM DMA
 
-sequence	= $300
+sequence	= $310

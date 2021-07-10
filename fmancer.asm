@@ -46,7 +46,7 @@ Start:
         jmp .endless
 
 NMIHandler:
-	
+	jsr SequenceFrame
         ; disable nmi, set nametable
         lda #0
         sta PPU_SCROLL
@@ -60,8 +60,7 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
 
-
-	jsr SequenceFrame
+	
 .nseq   
 
 	;; PPU WRITES
@@ -142,6 +141,8 @@ NMIEnd:
 	include "sprites.asm"
 
         ;;; DATA
+        
+        ;; color data
 CastlePalette:
 	.hex 0f
         .hex 102d00
@@ -152,10 +153,16 @@ CastlePalette:
         .hex 041903
         .hex 24152d
         .hex 111111
+HueShift:	; hues to shift into for each dark color before going to black
+	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
+DarkTable:	; where the palettes of each darkness degree are located
+	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
 
+
+	;; sequence data
 CallTableHi:
-	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), 0
-        .byte 0, 0, 0, 0
+	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), >(DisableRender-1)
+        .byte >(EnableRender-1), 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -163,8 +170,8 @@ CallTableHi:
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
 CallTableLo:
-	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), 0
-        .byte 0, 0, 0, 0
+	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), <(DisableRender-1)
+        .byte <(EnableRender-1), 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -172,18 +179,19 @@ CallTableLo:
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
 
-        
-        
-        org $8F00
+SequencesTable:
+	.byte SEQ_FadeOut-Sequences
+        .byte SEQ_FadeIn-Sequences
+        .byte SEQ_ResetLevel-Sequences
+Sequences:
 SEQ_FadeOut:
-	byte $61, $13, $21, $01, $82, $21, $01, $83, $21, $01, $84, $21, $00
-	
+	.byte $61, $13, $21, $01, $82, $21, $01, $83, $21, $01, $84, $21, $00
+SEQ_FadeIn:
+	.byte $63, $13, $21, $01, $82, $21, $01, $81, $21, $01, $80, $21, $00
+SEQ_ResetLevel:
+	.byte $40, $1f, $1f, $41, $00 
 
 
-HueShift:	; hues to shift into for each dark color before going to black
-	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
-DarkTable:	; where the palettes of each darkness degree are located
-	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
 
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"

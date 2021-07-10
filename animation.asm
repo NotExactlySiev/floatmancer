@@ -39,7 +39,7 @@
         adc #1		; next frame
         cmp #$6
         bne .nwrap
-        lda #$2 	; wrap around
+        lda #2	 	; wrap around
 .nwrap  
 	sta $201
 .sameframe

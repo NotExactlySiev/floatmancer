@@ -88,15 +88,46 @@ SequenceFrame: subroutine
         bne .checkseq
 
 PlaySequence: subroutine
+	ldy SequencesTable,x
 	ldx #$ff
+        txa
+        pha
+        dey
 .copy
-	inx
-	lda SEQ_FadeOut,x
+	iny
+        inx
+	lda Sequences,y
+        sta tmp3
+        and #$e0
+        cmp #$40
+        bne .nnest
+	; put the return index into stack and continue from new index
+        tya
+        pha
+        lda tmp3
+        and #$1f
+        tay
+        lda SequencesTable,y
+        tay
+        dex
+        dey
+	bne .copy
+.nnest
+	lda tmp3
         sta sequence,x
         bne .copy
-        
-        ldx #0
-        stx sqidx
-        inx
-        stx sqtimer
+	; if here, either a nest is closed or we're done
+	pla
+        cmp #$ff
+        beq .done
+        dex
+        tay
+        bne .copy
+.done        
+
+
+	ldy #0
+        sty sqidx
+        iny
+        sty sqtimer
         rts
