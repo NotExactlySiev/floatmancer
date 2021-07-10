@@ -28,13 +28,13 @@ darkness = $13
 ; turn on and off
 loop	= $14
 input	= $15
+physics	= $16
 
 ;; SEQUENCE VARIABLES
-sqvar0	= $16
-sqvar1	= $17
-sqtimer	= $18
-sqidx	= $19
-sqsr	= $1A
+sqvar0	= $17
+sqvar1	= $18
+sqtimer	= $19
+sqidx	= $1A
 
 
 

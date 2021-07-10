@@ -99,7 +99,10 @@ GamePaused:
         dex
         bpl .copyold
 
-	; do physics calculations based on mode        
+	; do physics calculations based on mode
+        lda physics
+        beq .physdone
+        
         bit flags
         bmi .hook
         jsr NormalMode
@@ -125,6 +128,14 @@ NMIEnd:
 
 
         ;;; SUBROUTINES
+PlayerDeath: subroutine
+	ldx #3
+        jsr PlaySequence
+        ldx #0
+        stx physics
+        pla
+        pla
+        rts
         
 	include "common.asm"
         include "physics.asm"
@@ -183,6 +194,7 @@ SequencesTable:
 	.byte SEQ_FadeOut-Sequences
         .byte SEQ_FadeIn-Sequences
         .byte SEQ_ResetLevel-Sequences
+        .byte SEQ_Death-Sequences
 Sequences:
 SEQ_FadeOut:
 	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
@@ -190,7 +202,8 @@ SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
 	.byte $40, $01, $22, $01, $41, $00 
-
+SEQ_Death:
+	.byte $42, $61, $16, $00
 
 
 	org LEVEL_HEAD<<8

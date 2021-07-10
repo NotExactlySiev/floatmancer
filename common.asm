@@ -6,10 +6,6 @@ HardReset: subroutine
         sta PPU_CTRL
         
 	jsr ClearLevel
-        ldx lvl
-        inx
-        stx func0
-        jsr FindLevel
         jsr LoadLevel
         jsr RenderLevel
 	jsr UpdateSprites

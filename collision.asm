@@ -70,7 +70,7 @@ NormalCollision: subroutine
 .nair   
 	cmp #%10000001
         bne .ndeath
-	; what happens if die? play death sequence
+	jmp PlayerDeath
 .ndeath
         sty coyote
 .downdone
@@ -223,7 +223,8 @@ DownCollision: subroutine
         jsr CheckCollision	; BOTTOM LEFT
         bne .yes
         lda #0
-.yes	rts
+.yes	
+	rts
 
 
 UpCollision: subroutine

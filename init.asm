@@ -41,7 +41,6 @@
         lda #$ff
         sta hookidx
         sta jbuffer
-        sta sqsr
 
         jsr UpdateSprites
         
@@ -49,6 +48,7 @@
         lda #1
         sta loop
         sta input
+        sta physics
         
         lda #0
         sta darkness
