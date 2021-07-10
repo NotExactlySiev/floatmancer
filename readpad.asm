@@ -167,9 +167,10 @@ ControlInput:
         and padedge
         and #$20
         beq .lvlend
-        
+	lda #1
+        sta func0
+        jsr FindLevel
 
-        
         ldx #2
         jsr PlaySequence
         
