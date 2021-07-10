@@ -3,7 +3,14 @@
         jsr WaitSync
         jsr ClearRAM
         jsr WaitSync
-           
+	
+        ldx #0
+.self
+	txa
+	sta $700,x
+	inx
+        bne .self
+
         ; ppu setup
         lda #0
         sta darkness

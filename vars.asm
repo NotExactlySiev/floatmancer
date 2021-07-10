@@ -53,6 +53,8 @@ filbyte	= $21
 blkptr1	= $22
 blkptr2	= $23
 
+sidestmp = $24
+
 ; set 1 variables
 ax0	= $20
 ax1	= $21

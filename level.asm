@@ -281,7 +281,7 @@ DrawFill: subroutine
 	bne .oneside
         txa
         asl
-        ora filbyte
+        ora $700,x
         and #$f
         bcc .sidesdone
 .oneside
@@ -303,18 +303,17 @@ DrawFill: subroutine
         pha
         
 	; load the two overlapping rects
-        lda filbyte
-        asl
-        asl
-        sta filbyte
         
         lda blknum	; put 1 in x, 2 in y
         tax
+        tay
         dex
+        lda #$8
         bit filbyte
-        bvc .oneback
+        beq .oneback
         dex
 .oneback
+	tya
         asl
         asl
         tay
