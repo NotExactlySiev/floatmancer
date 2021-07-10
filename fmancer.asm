@@ -161,8 +161,8 @@ DarkTable:	; where the palettes of each darkness degree are located
 
 	;; sequence data
 CallTableHi:
-	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), >(DisableRender-1)
-        .byte >(EnableRender-1), 0, 0, 0
+	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), 0
+        .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -170,8 +170,8 @@ CallTableHi:
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
 CallTableLo:
-	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), <(DisableRender-1)
-        .byte <(EnableRender-1), 0, 0, 0
+	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), 0
+        .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -185,11 +185,11 @@ SequencesTable:
         .byte SEQ_ResetLevel-Sequences
 Sequences:
 SEQ_FadeOut:
-	.byte $61, $13, $21, $01, $82, $21, $01, $83, $21, $01, $84, $21, $00
+	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
 SEQ_FadeIn:
-	.byte $63, $13, $21, $01, $82, $21, $01, $81, $21, $01, $80, $21, $00
+	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $40, $1f, $1f, $41, $00 
+	.byte $40, $01, $22, $01, $41, $00 
 
 
 

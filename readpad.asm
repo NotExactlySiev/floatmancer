@@ -168,20 +168,11 @@ ControlInput:
         and #$20
         beq .lvlend
         
-        lda #$00
-        sta PPU_MASK
-        sta PPU_CTRL
-        jsr WaitSync
-        
+
         
         ldx #2
         jsr PlaySequence
         
-        lda #$1e
-        sta PPU_MASK
-        lda #$80
-        ldy PPU_STATUS
-        sta PPU_CTRL
         
 .lvlend
 

@@ -1,9 +1,23 @@
+	; clears everything that's not a main game state and loads level from func0
 HardReset: subroutine
+	lda #0
+        sta PPU_MASK
+        lda #$08
+        sta PPU_CTRL
+        
 	jsr ClearLevel
+        ldx lvl
+        inx
+        stx func0
         jsr FindLevel
         jsr LoadLevel
         jsr RenderLevel
 	jsr UpdateSprites
+        
+        lda #$18
+        sta PPU_MASK
+        lda #$18
+        sta PPU_CTRL
 	rts
 
 	; use this to jsr to indirect address, index x from 
@@ -36,21 +50,6 @@ FindEmpty: subroutine
         iny
         bne .loop
 .found	rts
-        
-
-DisableRender: subroutine
-	lda #0
-        sta PPU_MASK
-        lda #$08
-        sta PPU_CTRL
-	rts
-        
-EnableRender: subroutine
-	lda #$18
-        sta PPU_MASK
-        lda #$18
-        sta PPU_CTRL
-        rts
 
 
 ; reverses horizontal acceleration
