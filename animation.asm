@@ -41,16 +41,24 @@
         bne .nwrap
         lda #2	 	; wrap around
 .nwrap  
-	sta $201
+	sta frame
 .sameframe
         lda #1
-        bit $201
+        bit frame
         beq .nobobbing
         dec $200
 .nobobbing      
         jmp .animationover
 .nrunning
 
+	lda flags
+        and #2
+        beq .nmoving
+	ldx #4
+        jsr PlaySequence
+	lda #6
+        bne .spritedone
+.nmoving
 	;; IDLE ANIMATION
 	lda #1
         sta ftimer
@@ -58,5 +66,5 @@
 
 
 .spritedone
-        sta $201
+        sta frame
 .animationover

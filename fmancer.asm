@@ -70,7 +70,12 @@ NMIHandler:
         beq GamePaused
                 
 	;; GAME LOOP
-	include "animation.asm"        
+        bit anim
+        beq .nanim
+	include "animation.asm"
+.nanim        
+        lda frame
+        sta $201
         ; draw sprites
         lda #02
         sta PPU_OAM_DMA
@@ -81,12 +86,8 @@ NMIHandler:
 .nosearch 
 
 GamePaused:
-	lda input
-        bne .nskipinput
-        jmp .inputdone
-.nskipinput
+
 	include "readpad.asm" 
-.inputdone
 
 	lda loop
         beq NMIEnd
@@ -195,6 +196,7 @@ SequencesTable:
         .byte SEQ_FadeIn-Sequences
         .byte SEQ_ResetLevel-Sequences
         .byte SEQ_Death-Sequences
+        .byte SEQ_PlayerStop-Sequences
 Sequences:
 SEQ_FadeOut:
 	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
@@ -204,6 +206,8 @@ SEQ_ResetLevel:
 	.byte $40, $01, $22, $01, $41, $00 
 SEQ_Death:
 	.byte $42, $61, $16, $00
+SEQ_PlayerStop:
+	.byte $02, $60, $95, $67, $3C, $02, $88, $02, $A1, $1f, $00
 
 
 	org LEVEL_HEAD<<8

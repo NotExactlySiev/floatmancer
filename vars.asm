@@ -27,7 +27,7 @@ darkness = $13
 
 ; turn on and off
 loop	= $14
-input	= $15
+anim	= $15
 physics	= $16
 
 ;; SEQUENCE VARIABLES
@@ -90,15 +90,17 @@ radius	= $39	; radius from the hook. 8 bit (but actually 7)
 hookpx	= $3A	; hook pixel position. 8 bit
 hookpy	= $3B
 
-scroll	= $3C	; screen scroll. [0, 240]
-flags	= $3D	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
+frame	= $3C	; character's animation frame index
+
+scroll	= $3D	; screen scroll. [0, 240]
+flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
 
 ; $40-$5F are the same from last frame
 objlist	= $60
 collist	= $80
 
 lvldat		= $100
-basepalette	= $170 ; -$1EE
+basepalette	= $170 ; - $1EE
 
 ; $200-$2FF is OAM DMA
 

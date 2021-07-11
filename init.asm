@@ -54,7 +54,7 @@
         ; start game
         lda #1
         sta loop
-        sta input
+        sta anim
         sta physics
         
         lda #0

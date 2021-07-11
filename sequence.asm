@@ -64,19 +64,22 @@ SequenceFrame: subroutine
         rol
         and #$1
         tax
-        
-
 .setval
+
+	
+        lda sqvar0,x
+	tax
+
 	lda tmp0
 	bit tmp1
         bvs .offset
         
-        sta (sqvar0,x)
+        sta $0,x
         jmp .opdone
 .offset
 	clc
-        adc (sqvar0,x)
-        sta (sqvar0,x)
+        adc $0,x
+        sta $0,x
         jmp .opdone
 	
 
