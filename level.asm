@@ -266,7 +266,7 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         rts
 
 DrawFill: subroutine
-        lda #%00110000
+        lda #0
         sta func5
         
         lda lvldat,y
@@ -332,8 +332,7 @@ DrawFill: subroutine
         lda collist,y	; compare x2 and x1
         cmp collist,x
         bcs .x1first
-        lda #%10000000
-        ora func5
+        lda #%00001000
         sta func5
         lda collist,x
 .x1first
@@ -346,8 +345,8 @@ DrawFill: subroutine
         lda collist,y
         cmp collist,x
 	bcc .ye2first
-        lda #%00110000	; later will be xor'd with a shifted one, setting the last two bits
-        eor func5
+        lda #%00000010	; later will be xor'd with a shifted one, setting the last two bits
+        ora func5
         sta func5
         lda collist,x
 .ye2first
@@ -361,7 +360,7 @@ DrawFill: subroutine
         lda collist,y
         cmp collist,x
         bcc .xe2first
-        lda #%01000000
+        lda #%00000100
         ora func5
         sta func5
 	lda collist,x
@@ -370,14 +369,14 @@ DrawFill: subroutine
         sbc func1
         sta func3
  
-	lda func5
+	lda func5	; lol this actually worked
+        lsr
+        tax
         lsr
         lsr
+        eor $700,x
+        and #$3
         eor func5
-        lsr
-        lsr
-        lsr
-        lsr
         sta func5
               
 	jmp DrawRect
@@ -547,7 +546,7 @@ DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu ad
         lda #$28
         sta func6
         lda func7
-        and #$f
+        and #$1f
         sta func7
 .nchangescreen
 
