@@ -124,10 +124,8 @@ NormalCollision: subroutine
 .updone
 
 	; if hit block from above or on ground, push character out into grid
-	lda #0
-        sta ay0
-        sta ay1
-        sta ay2
+        lda #0
+        
         sta vy0
         sta vy1
         sta vy2

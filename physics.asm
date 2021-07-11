@@ -1,13 +1,6 @@
 NormalMode: subroutine
 
 	; reset vertical velocity and air flag, ready to update
-	lda #<(GRAVITY)
-        sta ay2
-        lda #>(GRAVITY)
-        sta ay1  
-	lda #>(GRAVITY>>8)
-        sta ay0
-
 	lda flags
         and #$bf
         ora #$20
@@ -80,6 +73,25 @@ NormalMode: subroutine
 .air
 	
 	;; Air Rules
+        lda vy0
+        bmi .upwards
+        lda #<DOWN_GRAVITY
+        sta ay2
+        lda #>DOWN_GRAVITY
+        sta ay1
+        lda #>(DOWN_GRAVITY>>8)
+        sta ay0
+        beq .gravitydone
+.upwards
+        lda #<UP_GRAVITY
+        sta ay2
+        lda #>UP_GRAVITY
+        sta ay1
+        lda #>(UP_GRAVITY>>8)
+        sta ay0
+        
+
+.gravitydone
 
 	lda #$8			; finally set variables if jumping
         bit flags

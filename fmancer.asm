@@ -6,7 +6,8 @@
 
 
 ;; Physics Constants
-GRAVITY	        = $007000
+UP_GRAVITY	= $005000
+DOWN_GRAVITY	= $007500
 MAX_FALL	= $056010
 JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
@@ -207,7 +208,7 @@ SEQ_ResetLevel:
 SEQ_Death:
 	.byte $42, $61, $16, $00
 SEQ_PlayerStop:
-	.byte $02, $60, $95, $67, $3C, $02, $88, $02, $A1, $1f, $00
+	.byte $60, $95, $02, $67, $3C, $02, $88, $02, $A1, $1f, $00
 
 
 	org LEVEL_HEAD<<8
