@@ -24,9 +24,9 @@
         lda #LEVEL_HEAD
         sta lvlptr+1
         
-        jsr ClearLevel
-        jsr LoadLevel
-        jsr RenderLevel
+        ;jsr ClearLevel
+        ;jsr LoadLevel
+        ;jsr RenderLevel
 
 
         lda #0
@@ -49,13 +49,13 @@
         sta hookidx
         sta jbuffer
 
-        jsr UpdateSprites
+	jsr LoadMenu
         
         ; start game
         lda #1
-        sta loop
-        sta anim
-        sta physics
+        ;sta loop
+        ;sta anim
+        ;sta physics
         
         lda #0
         sta darkness

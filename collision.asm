@@ -1,4 +1,4 @@
-CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid or not
+CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
         lda func0	; set pixel positions to grid positions. adjust for scrolling
         clc
         adc scroll
@@ -17,9 +17,6 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
         
 .checkrect        
         lda collist,x
-        bne .ndone
-        lda #0
-        rts
 .ndone
 
 	lda func6	; check the tile with ALL of the collision blocks
@@ -50,7 +47,9 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles, 2 is solid 
 .not3	inx
 .not4	inx
 
-	jmp .checkrect
+	bpl .checkrect
+        lda #0
+        rts
         
 
 NormalCollision: subroutine

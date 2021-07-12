@@ -40,6 +40,7 @@ sqidx	= $1A
 
 ;; LEVEL VARIABLES
 
+
 coyote	= $1C ; how many frames ago you were on the ground?
 jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer
@@ -95,8 +96,8 @@ frame	= $3C	; character's animation frame index
 scroll	= $3D	; screen scroll. [0, 240]
 flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
 
-; $40-$5F are the same from last frame
-objlist	= $60
+; $40-$4E are the same but from the previous frame
+objlist	= $50
 collist	= $80
 
 lvldat		= $100

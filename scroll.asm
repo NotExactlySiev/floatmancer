@@ -57,10 +57,10 @@ Scroll:
         clc
         adc scroll
 	sta scroll
-        lda py0+$20
+        lda py0+BACKUP_OFFSET
         sec
         sbc func0
-        sta py0+$20        
+        sta py0+BACKUP_OFFSET     
         lda hookpy
         sec
         sbc func0

@@ -145,6 +145,10 @@ PlayerDeath: subroutine
 	include "collision.asm"
 	include "math.asm"
         include "scroll.asm"
+	
+	include "text.asm"
+
+	include "menu.asm"
 
 	include "sequence.asm"
 
@@ -204,9 +208,9 @@ SEQ_FadeOut:
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $40, $01, $22, $01, $41, $00 
+	.byte $40, $01, $22, $01, $41, $00
 SEQ_Death:
-	.byte $42, $61, $16, $00
+	.byte $60, $16, $42, $61, $16, $00
 SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $02, $A1, $1f, $00
 
@@ -220,8 +224,10 @@ SEQ_PlayerStop:
 	include "pythtantable.asm"
 
 Text:
-	dc "WELCOME TO FLOATMANCER!", 0
-
+	dc "PRECISIONaPHYSICSaACTION", 0
+        dc "PRESS A TO JUMP", 0
+	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0
+        dc "TRY TO SWING ACROSS", 0
 	;;; VECTORS  
 	NES_VECTORS
 

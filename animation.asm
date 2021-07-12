@@ -26,6 +26,13 @@
 
 .ground
 	;;; GROUND ANIMATION
+        bit flags+BACKUP_OFFSET
+        bvc .nlanded
+        lda #$10
+        bne .spritedone
+        
+.nlanded
+        
         lda flags	; RUNNING ANIMATION
         and #1
         beq .nrunning
@@ -38,14 +45,14 @@
         clc
         adc #1		; next frame
         cmp #$6
-        bne .nwrap
+        bcc .nwrap
         lda #2	 	; wrap around
 .nwrap  
 	sta frame
 .sameframe
         lda #1
         bit frame
-        beq .nobobbing
+        bne .nobobbing
         dec $200
 .nobobbing      
         jmp .animationover
