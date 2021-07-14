@@ -163,13 +163,14 @@ PlayerDeath: subroutine
 CastlePalette:
 	.hex 0f
         .hex 102d00
-        .hex 0b1a07
+        .hex 301a30
         .hex 0b1a07
         .hex 0b1a07
         .hex 041320
         .hex 041903
         .hex 24152d
         .hex 111111
+        
 HueShift:	; hues to shift into for each dark color before going to black
 	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
 DarkTable:	; where the palettes of each darkness degree are located
@@ -224,7 +225,6 @@ SEQ_PlayerStop:
 	include "pythtantable.asm"
 
 Text:
-	dc "PRECISIONaPHYSICSaACTION", 0
         dc "PRESS A TO JUMP", 0
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0
         dc "TRY TO SWING ACROSS", 0
