@@ -32,7 +32,7 @@ SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
 SCREEN_WIDTH	= 256
 
-MENU_ITEMS	= 4
+MENU_ITEMS	= 3
 
 	org $0
 
@@ -224,8 +224,6 @@ SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $02, $A1, $1f, $00
 
 
-MenuOptions:
-	dc "CASTLE", 0, "JUNGLE", 0, "CODE", 0, "SPEEDRUN", 0
 
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"
@@ -236,11 +234,17 @@ MenuOptions:
 	include "pythtantable.asm"
 
 Text:
+Worlds:
+        dc "TSACGNUJ"
+MenuOptions:
+	dc "]    LE^", 0, "CODE@@[[[[", 0
+
         dc "PRESS A TO JUMP", 0
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0
-        dc "TRY TO SWING ACROSS", 0
+
+TXT_Credits:
         dc "A@GAME@BY@SIEV", 0
-        dc "CASTLE", 0
+
 	;;; VECTORS  
 	NES_VECTORS
 

@@ -54,14 +54,20 @@ LoadMenu: subroutine
         inx
         stx PPU_DATA
         
+        
         lda #25
         sta func0
         lda #16
         sta func1
-        lda #$64
+        lda #<TXT_Credits
         jsr DrawText
         
-        
+        ldx #20
+.loop
+	lda MenuOptions,x
+        sta options,x
+        dex
+        bpl .loop
         
         lda #1
         sta state
@@ -76,10 +82,26 @@ LoadMenu: subroutine
         rts
 
 UpdateMenu: subroutine
-	lda #$21
+	clc
+        lda world
+        asl
+        asl
+        tax
+        
+        ldy #4
+.world
+	lda Worlds,x
+        sta $30,y
+        inx
+        dey
+        bne .world
+        
+        lda #$21
         sta func6
         lda #$63
         sta func7
+        
+        
         
         ldy #$ff
 	ldx #MENU_ITEMS-1
@@ -99,7 +121,7 @@ UpdateMenu: subroutine
 
 .caption
 	iny
-        lda MenuOptions,y
+        lda options,y
         beq .out
         sta PPU_DATA
         bne .caption

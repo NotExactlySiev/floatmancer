@@ -53,6 +53,18 @@ MenuInput: subroutine
 
 .navigatedone
 
+	lda select
+        cmp #$2
+        bne .worlddone
+	lda tmp0
+        and #$3
+        beq .nchange
+        lda world
+        eor #1
+        sta world
+.nchange
+
+.worlddone
 	rts
 
 
