@@ -1,5 +1,62 @@
+ControlInput: subroutine
+	lda pad
+        and padedge
+        and #$20
+        beq .lvlend
+	lda #1
+        sta func0
+        jsr FindLevel
 
-GameInput: subroutine
+        ldx #2
+        jsr PlaySequence
+        
+.lvlend
+	lda pad
+        and padedge
+        and #$10
+        beq .pauseend
+        
+        lda loop
+        eor #$1
+        sta loop
+	tax
+	jsr PlaySequence
+
+.pauseend
+	rts
+
+
+
+MenuInput: subroutine
+	ldx select
+        lda pad
+        and padedge
+        sta tmp0
+        
+        and #$4
+        beq .nUp
+        dex
+        bpl .nmin
+     	inx   
+.nmin
+        
+.nUp	lda tmp0
+	and #$8
+        beq .nDown
+      	inx
+        cpx #MENU_ITEMS
+        bcc .nmax
+        dex
+.nmax
+.nDown
+	stx select
+
+.navigatedone
+
+	rts
+
+
+PlayInput: subroutine
 	lda #0
         sta ax2
         sta ax1

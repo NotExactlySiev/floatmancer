@@ -24,6 +24,32 @@ ClearState: subroutine
         bne .loop
 	rts
 
+	; call only once per frame, otherwise the edge data would be lost
+ReadPad: subroutine
+	lda #1
+	sta JOYPAD1
+        lda #0
+        sta JOYPAD1
+        ; read pad data, xor with last frame's pad data to get edges
+        clc
+	ldx #8
+.readpad
+	asl pad
+        lda JOYPAD1
+        and #$1
+        ora pad
+        sta pad
+        dex
+        bne .readpad
+        
+	eor padold
+        sta padedge
+
+	lda pad
+        sta padold
+	rts    
+
+
 	; use this to jsr to indirect address, index x from 
 CallFromTable: subroutine
 	lda CallTableHi,x

@@ -24,13 +24,15 @@ WINDUP_TIME	= $1
 
 SIN_HEAD	= $a0
 PYTAN_HEAD	= $e0
-LEVEL_HEAD	= $90
+LEVEL_HEAD	= $98
 
 BACKUP_OFFSET	= $10
 
 SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
 SCREEN_WIDTH	= 256
+
+MENU_ITEMS	= 4
 
 	org $0
 
@@ -48,6 +50,7 @@ Start:
 
 NMIHandler:
 	jsr SequenceFrame
+        jsr ReadPad
         ; disable nmi, set nametable
         lda #0
         sta PPU_SCROLL
@@ -61,14 +64,23 @@ NMIHandler:
         sta PPU_SCROLL
         stx PPU_CTRL
 
-	
-.nseq   
+	lda state
+        beq .playing
+        jsr MenuInput
+	jsr UpdateMenu
+               
 
+
+.playing
 	;; PPU WRITES
         jsr UpdatePlayer
         
+        jsr ControlInput
+        
         lda loop
-        beq GamePaused
+        bne .gameloop
+        jmp NMIEnd
+.gameloop
                 
 	;; GAME LOOP
         bit anim
@@ -86,13 +98,7 @@ NMIHandler:
         jsr FindCloseHook
 .nosearch 
 
-GamePaused:
-
-	include "readpad.asm" 
-
-	lda loop
-        beq NMIEnd
-
+	jsr PlayInput
 	; backup variables from last frame
 	ldx #$f
 .copyold
@@ -114,6 +120,7 @@ GamePaused:
 .physdone
 
 	jsr UpdateScroll
+
 
 NMIEnd:    
 	; enable nmi, set nametable
@@ -144,8 +151,7 @@ PlayerDeath: subroutine
 	include "hookmode.asm"   
 	include "collision.asm"
 	include "math.asm"
-        include "scroll.asm"
-	
+        include "scroll.asm"	
 	include "text.asm"
 
 	include "menu.asm"
@@ -231,6 +237,7 @@ Text:
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0
         dc "TRY TO SWING ACROSS", 0
         dc "AaGAMEaBYaSIEV", 0
+        dc "JUNGLE"
 	;;; VECTORS  
 	NES_VECTORS
 
