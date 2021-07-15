@@ -16,6 +16,14 @@ HardReset: subroutine
         sta PPU_CTRL
 	rts
 
+ClearState: subroutine
+	lda #0
+        ldx #$38
+.loop   sta $18,x
+        dex
+        bne .loop
+	rts
+
 	; use this to jsr to indirect address, index x from 
 CallFromTable: subroutine
 	lda CallTableHi,x

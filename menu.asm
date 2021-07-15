@@ -1,7 +1,8 @@
 LoadMenu: subroutine
 	
         PPU_SETADDR $23C0
-        ldx #0
+        jsr ClearState
+        
 .attr
 	lda #$55
         sta PPU_DATA
@@ -43,5 +44,20 @@ LoadMenu: subroutine
         sta func1
         bcc .logo
         
+                
+        lda #25
+        sta func0
+        lda #16
+        sta func1
+        lda #$64
+        jsr DrawText
+        
+        
+        
+        lda #1
+        sta state
+        
 	PPU_SETADDR $00
-	rts
+	
+        
+        rts

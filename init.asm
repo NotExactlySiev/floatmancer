@@ -28,26 +28,10 @@
         ;jsr LoadLevel
         ;jsr RenderLevel
 
-	PPU_SETADDR $23C0
-        lda #$55
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-        sta PPU_DATA
-
 
         lda #0
         sta PPU_ADDR
-        sta PPU_ADDR       
+        sta PPU_ADDR
         
         ; sprite setup        
         lda #$0

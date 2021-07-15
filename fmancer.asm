@@ -150,6 +150,8 @@ PlayerDeath: subroutine
 
 	include "menu.asm"
 
+	include "input.asm"
+
 	include "sequence.asm"
 
 	include "palette.asm"
@@ -163,7 +165,7 @@ PlayerDeath: subroutine
 CastlePalette:
 	.hex 0f
         .hex 102d00
-        .hex 301a30
+        .hex 2d1a10
         .hex 0b1a07
         .hex 0b1a07
         .hex 041320
@@ -228,6 +230,7 @@ Text:
         dc "PRESS A TO JUMP", 0
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0
         dc "TRY TO SWING ACROSS", 0
+        dc "AaGAMEaBYaSIEV", 0
 	;;; VECTORS  
 	NES_VECTORS
 

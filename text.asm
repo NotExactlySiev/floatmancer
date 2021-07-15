@@ -1,5 +1,8 @@
-	; 0-1 xy, 2-3 txt addr, 6-7 ppu addr
+	; 0-1 xy, 6-7 ppu addr, text addr low byte in A
 DrawText: subroutine
+	sta func2
+        lda #$ff
+        sta func3
 	jsr PPUFormat
         lda func6
         sta PPU_ADDR

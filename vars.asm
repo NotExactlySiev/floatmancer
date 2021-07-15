@@ -1,3 +1,6 @@
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; LOCAL VARIABLES ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
 
 func0	= $0
 func1	= $1
@@ -13,48 +16,46 @@ tmp1	= $9
 tmp2	= $A
 tmp3	= $B
 
-; pointers
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;; GLOBAL VARIABLES ;;; C-18
+;;;;;;;;;;;;;;;;;;;;;;;;
+
 lvlptr	= $C
 lvl	= $E
 lvlsize	= $F
 
-;; GAME VARIABLES
-
 pad	= $10
 padold	= $11
 padedge	= $12
+
 darkness = $13
 
+state	= $14 ; 0 in game, 1 in menu, 2 rendering level
+
+;;; SEQUENCE
+sqvar0	= $15
+sqvar1	= $16
+sqtimer	= $17
+sqidx	= $18
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; STATE VARIABLES ;;; 19-50
+;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;; GAME
+
 ; turn on and off
-loop	= $14
-anim	= $15
-physics	= $16
-
-;; SEQUENCE VARIABLES
-sqvar0	= $17
-sqvar1	= $18
-sqtimer	= $19
-sqidx	= $1A
-
-
-
-;; LEVEL VARIABLES
-
+loop	= $19
+anim	= $1A
+physics	= $1B
 
 coyote	= $1C ; how many frames ago you were on the ground?
 jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer
 ftimer	= $1F ; frame timer
-
-
-; level generation variables
-blknum	= $20
-filbyte	= $21
-
-blkptr1	= $22
-blkptr2	= $23
-
-sidestmp = $24
 
 ; set 1 variables
 ax0	= $20
@@ -95,8 +96,33 @@ frame	= $3C	; character's animation frame index
 
 scroll	= $3D	; screen scroll. [0, 240]
 flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
-
 ; $40-$4E are the same but from the previous frame
+
+
+;;; LEVEL GENERATION
+blknum	= $20
+filbyte	= $21
+
+blkptr1	= $22
+blkptr2	= $23
+
+sidestmp = $24
+
+
+;;; MENU
+select	= $20
+code0	= $21
+code1	= $22
+code2	= $23
+code3	= $24
+world	= $25
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; TABLES AND DATA ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
 objlist	= $50
 collist	= $80
 
