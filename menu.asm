@@ -1,8 +1,9 @@
 LoadMenu: subroutine
 	
-        PPU_SETADDR $23C0
         jsr ClearState
         
+        ldx #$3f
+	PPU_SETADDR $23C0
 .attr
 	lda #$55
         sta PPU_DATA
@@ -21,7 +22,7 @@ LoadMenu: subroutine
 .title
         stx PPU_DATA
         inx
-        cpx #$c8
+        cpx #$c2
         bcc .title
 
 
@@ -44,11 +45,14 @@ LoadMenu: subroutine
         sta func1
         bcc .logo
         
-        lda #10
-        sta func0
-        sta func1
-        lda #$73
-        jsr DrawText
+        lda #$21
+        sta PPU_ADDR
+        lda #$15
+        sta PPU_ADDR
+        ldx #$c2
+        stx PPU_DATA
+        inx
+        stx PPU_DATA
         
         lda #25
         sta func0
@@ -74,24 +78,34 @@ LoadMenu: subroutine
 UpdateMenu: subroutine
 	lda #$21
         sta func6
-        lda #$44
+        lda #$63
         sta func7
         
-	ldx #MENU_ITEMS
+        ldy #$ff
+	ldx #MENU_ITEMS-1
 .loop
         lda func6
         sta PPU_ADDR
         lda func7
         sta PPU_ADDR
         
-        ldy #0
+        lda #0
         cpx select
         bne .nthis
-        ldy #$5f
+        lda #$5f
 .nthis
-	sty PPU_DATA
-	
-        
+	sta PPU_DATA
+        bit PPU_DATA
+
+.caption
+	iny
+        lda MenuOptions,y
+        beq .out
+        sta PPU_DATA
+        bne .caption
+.out
+
+        lda func7
         clc
         adc #$40
         sta func7
