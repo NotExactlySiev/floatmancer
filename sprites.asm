@@ -16,17 +16,12 @@ UpdatePlayer: subroutine
 ; handles scrolling the sprites on the screen. hero sprite handled seperately
 UpdateSprites: subroutine
 	; clear oam objects before drawing
-	lda #0
         ldx #$10
-.cleardma
-        sta $0200,x
-        inx
-        bne .cleardma
+	jsr ClearDMA
 	
 	lda scroll
         lsr
         sta tmp0
-
 
 	ldx #0 ; object list
         ldy #0 ; oam

@@ -56,8 +56,11 @@ ClearLevel: subroutine
         sta $0,x
         inx
         bne .clearzp
-        lda #$ff
-        sta hookidx
+        ldx #$ff
+        stx hookidx
+        inx
+        stx PPU_ADDR
+        sta PPU_ADDR
         rts
         
 

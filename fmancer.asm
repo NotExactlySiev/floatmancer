@@ -171,7 +171,7 @@ PlayerDeath: subroutine
 CastlePalette:
 	.hex 0f
         .hex 102d00
-        .hex 2d1a10
+        .hex 2d1a30
         .hex 0b1a07
         .hex 0b1a07
         .hex 041320
@@ -187,18 +187,18 @@ DarkTable:	; where the palettes of each darkness degree are located
 
 	;; sequence data
 CallTableHi:
-	.byte >(ClearLevel-1), >(SetDarkness-1), >(HardReset-1), 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
+	.byte >(ClearLevel-1), >(SetDarkness-1), >(InitPlay-1), >(UpdateSprites-1)
+        .byte >(ClearState-1), >(ClearDMA-1), >(LoadLevel-1), >(RenderLevel-1)
+        .byte >(DisablePPU-1), >(EnablePPU-1), 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
 CallTableLo:
-	.byte <(ClearLevel-1), <(SetDarkness-1), <(HardReset-1), 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
+	.byte <(ClearLevel-1), <(SetDarkness-1), <(InitPlay-1), <(UpdateSprites-1)
+        .byte <(ClearState-1), <(ClearDMA-1), <(LoadLevel-1), <(RenderLevel-1)
+        .byte <(DisablePPU-1), <(EnablePPU-1), 0, 0				; DO NOT wait after disabling ppu
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
         .byte 0, 0, 0, 0
@@ -211,19 +211,20 @@ SequencesTable:
         .byte SEQ_ResetLevel-Sequences
         .byte SEQ_Death-Sequences
         .byte SEQ_PlayerStop-Sequences
+        .byte SEQ_InitLevel-Sequences
 Sequences:
 SEQ_FadeOut:
 	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $40, $01, $22, $01, $41, $00
+	.byte $40, $01, $45, $01, $41, $00
 SEQ_Death:
 	.byte $60, $16, $42, $61, $16, $00
 SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $02, $A1, $1f, $00
-
-
+SEQ_InitLevel:
+	.byte $28, $20, $24, $25, $26, $27, $23, $22, $29, $00
 
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"

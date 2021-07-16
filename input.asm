@@ -63,8 +63,33 @@ MenuInput: subroutine
         eor #1
         sta world
 .nchange
-
 .worlddone
+
+	bit tmp0
+        bpl .nenter
+        lda select
+        bne .nspeed
+        ; speedrun selected
+        rts
+.nspeed
+	cmp #$1
+        bne .ncode
+        ; code selected
+        
+        rts
+.ncode
+	; new game selected
+	lda #LEVEL_HEAD
+        sta lvlptr+1
+	ldx #0
+        stx lvlptr
+        stx lvl
+        stx state
+        inx
+	inx
+        jsr PlaySequence
+        rts
+.nenter
 	rts
 
 

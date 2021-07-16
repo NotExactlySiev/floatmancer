@@ -111,11 +111,16 @@ sidestmp = $24
 
 ;;; MENU
 select	= $20
+
 code0	= $21
 code1	= $22
 code2	= $23
 code3	= $24
-world	= $25
+typing	= $25
+codeidx	= $26
+
+world	= $27
+
 
 options	= $30
 

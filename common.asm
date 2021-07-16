@@ -1,20 +1,32 @@
-	; clears everything that's not a main game state and loads level from func0
-HardReset: subroutine
+DisablePPU: subroutine
 	lda #0
         sta PPU_MASK
         lda #$08
         sta PPU_CTRL
+	rts
         
-	jsr ClearLevel
-        jsr LoadLevel
-        jsr RenderLevel
-	jsr UpdateSprites
-        
-        lda #$18
+EnablePPU: subroutine
+	lda #$18
         sta PPU_MASK
         lda #$18
         sta PPU_CTRL
 	rts
+
+InitPlay: subroutine
+	ldx #$ff
+        stx hookidx
+        stx jbuffer
+        inx
+        stx vx1
+        stx vx0
+        stx vx2
+        stx vy0  
+        inx
+        stx loop
+        stx physics
+        stx anim
+        rts
+        
 
 ClearState: subroutine
 	lda #0
@@ -26,10 +38,10 @@ ClearState: subroutine
 
 	; call only once per frame, otherwise the edge data would be lost
 ReadPad: subroutine
-	lda #1
-	sta JOYPAD1
-        lda #0
-        sta JOYPAD1
+	ldx #1
+	stx JOYPAD1
+        dex
+        stx JOYPAD1
         ; read pad data, xor with last frame's pad data to get edges
         clc
 	ldx #8
@@ -58,6 +70,14 @@ CallFromTable: subroutine
         pha
         rts
 
+	; clears DMA from x onwards
+ClearDMA: subroutine
+	lda #0
+.loop
+        sta $0200,x
+        inx
+        bne .loop
+	rts
 
 ; finds the first zero byte after X
 FindEmptyZp: subroutine
