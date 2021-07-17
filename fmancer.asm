@@ -68,7 +68,7 @@ NMIHandler:
         beq .playing
         jsr MenuInput
 	jsr UpdateMenu
-               
+	jmp NMIEnd
 
 
 .playing
@@ -191,19 +191,13 @@ CallTableHi:
         .byte >(ClearState-1), >(ClearDMA-1), >(LoadLevel-1), >(RenderLevel-1)
         .byte >(DisablePPU-1), >(EnablePPU-1), 0, 0
         .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
+
 CallTableLo:
 	.byte <(ClearLevel-1), <(SetDarkness-1), <(InitPlay-1), <(UpdateSprites-1)
         .byte <(ClearState-1), <(ClearDMA-1), <(LoadLevel-1), <(RenderLevel-1)
         .byte <(DisablePPU-1), <(EnablePPU-1), 0, 0				; DO NOT wait after disabling ppu
         .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
-        .byte 0, 0, 0, 0
+
 
 SequencesTable:
 	.byte SEQ_FadeOut-Sequences
@@ -222,7 +216,7 @@ SEQ_ResetLevel:
 SEQ_Death:
 	.byte $60, $16, $42, $61, $16, $00
 SEQ_PlayerStop:
-	.byte $60, $95, $02, $67, $3C, $02, $88, $02, $A1, $1f, $00
+	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:
 	.byte $28, $20, $24, $25, $26, $27, $23, $22, $29, $00
 
@@ -238,7 +232,7 @@ Text:
 Worlds:
         dc "TSACGNUJ"
 MenuOptions:
-	dc "]    LE^", 0, "CODE@@[[[[", 0
+	dc "]    LE^", 0, "CODE@@[[[[", 0, "SPEEDRUN", 0
 
         dc "PRESS A TO JUMP", 0
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0

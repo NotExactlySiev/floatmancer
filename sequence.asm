@@ -91,6 +91,11 @@ SequenceFrame: subroutine
         bne .checkseq
 
 PlaySequence: subroutine
+	ldy sqidx
+        lda sequence,y
+        beq .nalready	; if a sequence is already being played, do nothing
+        rts
+.nalready
 	ldy SequencesTable,x
 	ldx #$ff
         txa
