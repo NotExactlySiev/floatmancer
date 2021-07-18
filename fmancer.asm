@@ -6,14 +6,14 @@
 
 
 ;; Physics Constants
-UP_GRAVITY	= $005000
+UP_GRAVITY	= $007000
 DOWN_GRAVITY	= $007500
 MAX_FALL	= $056010
 JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $015000
 PASSIVE_DECEL	= $003540
-HOOK_SWING	= 25
+HOOK_SWING	= 27
 HOOK_RANGE	= 60
 MAX_JUMP	= 9
 COYOTE_TIME	= 5
@@ -50,7 +50,7 @@ Start:
 
 NMIHandler:
 	jsr SequenceFrame
-        jsr ReadPad
+        jsr ReadPad	; putting this after diable nmi causes bugs :/
         ; disable nmi, set nametable
         lda #0
         sta PPU_SCROLL
@@ -63,6 +63,9 @@ NMIHandler:
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
+        
+        
+
 
 	lda state
         beq .playing
@@ -212,13 +215,13 @@ SEQ_FadeOut:
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $40, $01, $45, $01, $41, $00
+	.byte $24, $40, $01, $45, $01, $41, $00
 SEQ_Death:
 	.byte $60, $16, $42, $61, $16, $00
 SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:
-	.byte $28, $20, $24, $25, $26, $27, $23, $22, $29, $00
+	.byte $28, $20, $25, $26, $27, $23, $22, $29, $00
 
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"
