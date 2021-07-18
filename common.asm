@@ -25,6 +25,7 @@ InitPlay: subroutine
         stx loop
         stx physics
         stx anim
+        stx state
         rts
         
 

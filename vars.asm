@@ -31,7 +31,10 @@ padedge	= $12
 
 darkness = $13
 
-state	= $14 ; 0 in game, 1 in menu, 2 rendering level
+state	= $14
+STATE_TRAN	= $0 ; in between states. nothing is updated in nmi
+STATE_PLAY	= $1 ; in levels. the main game loop, physics etc. are running
+STATE_MENU	= $2 ; in main menu. menu logic is running
 
 ;;; SEQUENCE
 sqvar0	= $15
@@ -122,7 +125,7 @@ codeidx	= $26
 world	= $27
 
 
-options	= $30
+options	= $80
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;

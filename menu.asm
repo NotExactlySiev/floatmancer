@@ -69,7 +69,7 @@ LoadMenu: subroutine
         dex
         bpl .loop
         
-        lda #1
+        lda #STATE_MENU
         sta state
         lda #MENU_ITEMS-1
         sta select
@@ -91,7 +91,7 @@ UpdateMenu: subroutine
         ldy #4
 .world
 	lda Worlds,x
-        sta $30,y
+        sta options,y
         inx
         dey
         bne .world

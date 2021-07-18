@@ -51,6 +51,12 @@ Start:
 NMIHandler:
 	jsr SequenceFrame
         jsr ReadPad	; putting this after diable nmi causes bugs :/
+        
+        lda state
+        bne .ntransition
+        jmp NMIEnd
+.ntransition
+        
         ; disable nmi, set nametable
         lda #0
         sta PPU_SCROLL
@@ -63,18 +69,29 @@ NMIHandler:
 .notend
         sta PPU_SCROLL
         stx PPU_CTRL
-        
+        lda #02
+        sta PPU_OAM_DMA
         
 
 
 	lda state
+        cmp #STATE_PLAY
         beq .playing
-        jsr MenuInput
 	jsr UpdateMenu
+        jsr MenuInput
 	jmp NMIEnd
 
 
 .playing
+	;checking if the player has fallen outside the level        
+	lda py0
+        cmp #239
+        bcc .noutside
+	ldx #3
+        jsr PlaySequence
+        jmp NMIEnd
+.noutside
+        
 	;; PPU WRITES
         jsr UpdatePlayer
         
@@ -92,9 +109,7 @@ NMIHandler:
 .nanim        
         lda frame
         sta $201
-        ; draw sprites
-        lda #02
-        sta PPU_OAM_DMA
+
 
         bit flags
         bmi .nosearch
@@ -215,7 +230,7 @@ SEQ_FadeOut:
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $24, $40, $01, $45, $01, $41, $00
+	.byte $60, $14, $24, $40, $01, $45, $01, $41, $00
 SEQ_Death:
 	.byte $60, $16, $42, $61, $16, $00
 SEQ_PlayerStop:
