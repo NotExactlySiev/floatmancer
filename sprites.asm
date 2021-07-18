@@ -1,8 +1,5 @@
 UpdatePlayer: subroutine
         lda py0
-        bcc .topscreen
-	adc #7
-.topscreen
         sec
         sbc #5
         sta $200

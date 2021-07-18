@@ -54,7 +54,7 @@ NMIHandler:
         
         lda state
         bne .ntransition
-        jmp NMIEnd
+        rti
 .ntransition
         
         ; disable nmi, set nametable
@@ -83,15 +83,6 @@ NMIHandler:
 
 
 .playing
-	;checking if the player has fallen outside the level        
-	lda py0
-        cmp #239
-        bcc .noutside
-	ldx #3
-        jsr PlaySequence
-        jmp NMIEnd
-.noutside
-        
 	;; PPU WRITES
         jsr UpdatePlayer
         
@@ -138,7 +129,15 @@ NMIHandler:
 .physdone
 
 	jsr UpdateScroll
-
+	
+        ;checking if the player has fallen outside the level        
+	lda py0
+        cmp #239
+        bcc .noutside
+	ldx #3
+        jsr PlaySequence
+        jmp NMIEnd
+.noutside
 
 NMIEnd:    
 	; enable nmi, set nametable
@@ -232,7 +231,7 @@ SEQ_FadeIn:
 SEQ_ResetLevel:
 	.byte $60, $14, $24, $40, $01, $45, $01, $41, $00
 SEQ_Death:
-	.byte $60, $16, $42, $61, $16, $00
+	.byte $60, state, $60, $19, $42, $61, $19, $00
 SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:

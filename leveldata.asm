@@ -9,6 +9,7 @@ LVL0:
 	FIL 1, 3
         SPK 8, 27, 0, 8
         HOK 12, 17, 0
+        BLK 20, 35, 7, 5
         
 LVL1:        
         LEVEL_HEADER LVL2, 0, 5, 5
