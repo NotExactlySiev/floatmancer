@@ -40,6 +40,7 @@ UpdateSprites: subroutine
         iny
         iny
         iny
+        cpy #252
         bne .next
 .onscreen
 	asl

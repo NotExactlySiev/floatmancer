@@ -1,16 +1,18 @@
 
         ; Level 1
 LVL0:
-        LEVEL_HEADER LVL1, 1, 4, 25
+        LEVEL_HEADER LVL1, 0, 4, 8
         BLK 3, 23, 4, 6
         BLK 18, 23, 7, 6
 	BLK 5, 28, 15, 1
 	FIL 0, 3
 	FIL 1, 3
-        SPK 8, 27, 0, 8
+        ;SPK 8, 27, 0, 8
         HOK 12, 17, 0
         BLK 20, 35, 7, 5
         HOK 12, 35, 0
+        
+        BLK 3, 57, 15, 2
         
 LVL1:        
         LEVEL_HEADER LVL2, 0, 5, 5
