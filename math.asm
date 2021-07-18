@@ -2,13 +2,6 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         lda #0
         sta func3
 
-	; round radius to closest even number
-	lda func2
-        clc
-        adc #1
-        and #$fe
-        sta func2
-
         lda func0
         bpl .check1
         
@@ -56,29 +49,17 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         
 .nright ; else
         lda func2
-        clc
-        adc #SIN_HEAD
+        lsr
+        ora #SIN_HEAD
         sta func5
 
-	lda func0
-        
-        clc
+        lda func1
+        asl    
+        lda func0
         asl
         asl
-        asl
-        bcc .nbig
-	inc func5
-.nbig
 	sta func4
-        
-	lda func1
-        rol
-        rol
-        rol
-        rol
-        and #$06
-        ora func4
-        sta func4
+
 
         ldy #0
         lda (func4),y

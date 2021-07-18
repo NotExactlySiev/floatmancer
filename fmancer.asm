@@ -22,7 +22,7 @@ MARGIN		= $8
 
 WINDUP_TIME	= $1
 
-SIN_HEAD	= $a0
+SIN_HEAD	= $c0
 PYTAN_HEAD	= $e0
 LEVEL_HEAD	= $98
 
@@ -229,9 +229,9 @@ SEQ_FadeOut:
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $60, $14, $24, $40, $01, $45, $01, $41, $00
+	.byte $40, $01, $45, $01, $41, $00
 SEQ_Death:
-	.byte $60, state, $60, $19, $42, $61, $19, $00
+	.byte $60, state, $42, $00
 SEQ_PlayerStop:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:
