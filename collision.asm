@@ -1,4 +1,19 @@
 CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
+	lda func1
+        lsr
+        lsr
+        lsr
+        cmp #$3		; first check collision with the two walls
+        bcc .wall
+       	cmp #29
+        bcc .nwall
+.wall
+	lda #1
+        rts
+.nwall   
+
+        sta func7
+
         lda func0	; set pixel positions to grid positions. adjust for scrolling
         clc
         adc scroll
@@ -7,11 +22,7 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
         lsr
         sta func6
         
-        lda func1
-        lsr
-        lsr
-        lsr
-        sta func7
+
         
         ldx #0
         

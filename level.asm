@@ -111,7 +111,24 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
 
 RenderLevel: subroutine	; draw the background parts of the level, load the collision
 			; and object (sprite) data into appropriate tables
-      	ldy #0
+        ; first we draw the elements common among all levels
+        ldx #59
+        stx func2
+        ldx #2
+        stx func3
+        dex
+        stx func4
+        dex
+        stx func0
+        stx func1
+        stx func5
+        jsr DrawWall
+        ldx #29
+        stx func1        
+        asl func4
+        jsr DrawWall
+        
+	ldy #0
 NextItem:
         cpy lvlsize
         bcc .nend
@@ -267,6 +284,11 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
 	iny
         iny
         rts
+
+	;just to put something in the stack so when drawrect pulls out it doesn't crash
+DrawWall: subroutine
+	pha
+        jmp DrawRect
 
 DrawFill: subroutine
         lda #0
@@ -425,15 +447,17 @@ DrawBlock:
         adc func1
         sta $0,x
         
-        iny
-        tya
-        pha
+
         
         lda #$0f	; constant arguments for dirt block
         sta func4
         
         lda #$00
         sta func5
+        
+	iny
+        tya
+        pha
 
         
 DrawRect: subroutine	; 0-1 yx, 2 height, 3 width, 4 sides, 5 corners, 6-7 ppu addr
