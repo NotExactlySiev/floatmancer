@@ -261,18 +261,17 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         sta $0,x
         inx
         
-        lda lvldat,y	; set object type
+        lda func3	; set object type
         and #$e0
         lsr
         lsr
         lsr
         sta $0,x
-        dey
-        lda lvldat,y
+        lda func2
         lsr
         lsr
         lsr
-        and #$1c
+        and #$18
         ora $0,x
         sta $0,x
         inx
@@ -282,7 +281,6 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         sta $0,x
 
 	iny
-        iny
         rts
 
 	;just to put something in the stack so when drawrect pulls out it doesn't crash
