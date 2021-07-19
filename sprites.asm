@@ -66,6 +66,7 @@ UpdateSprites: subroutine
         cmp #$10
         bne .nBouncy
         ; Bouncy
+        jsr DrawBouncy
         jmp .spritedone
 .nBouncy
 	cmp #$14
@@ -90,6 +91,69 @@ UpdateSprites: subroutine
         
         jmp .next
 
+
+BouncyFlip:
+	.byte $00, $40
+        .byte $80, $c0
+        .byte $00, $80
+        .byte $40, $c0
+
+DrawBouncy: subroutine
+	lda func0
+        sta $210,y
+        sta $214,y
+        sta $218,y
+        iny
+        
+        lda func1
+        and #$2
+        sta func4
+        clc
+        adc #$40
+        sta $210,y
+        sta $218,y
+        adc #1
+        sta $214,y
+        iny
+        
+        lda func1
+        asl
+        and #$6
+        tax
+        lda BouncyFlip,x
+        sta $210,y
+        sta $214,y
+        inx
+        lda BouncyFlip,x
+        sta $218,y
+        iny
+        
+        lda func2
+        sta $210,y
+        sta $214,y
+        sta $218,y
+	
+        lda func4
+        beq .ver
+    	dey
+        dey
+        dey
+.ver
+        lda $210,y
+        clc
+        adc #$8
+        sta $214,y
+        adc #$8
+        sta $218,y
+
+	lda func4
+        beq .ver2
+        iny
+        iny
+        iny
+.ver2	iny
+
+        rts
 
 
 DrawHook: subroutine

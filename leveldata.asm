@@ -1,5 +1,5 @@
 
-        ; Level 1
+Levels:
 LVL0:
         LEVEL_HEADER LVL1, 0, 4, 8
         BLK 3, 23, 4, 6
@@ -13,6 +13,8 @@ LVL0:
         HOK 12, 35, 0
         
         BLK 3, 57, 15, 2
+        
+        BNC 10, 10, 2
         
 LVL1:        
         LEVEL_HEADER LVL2, 0, 5, 5
@@ -33,3 +35,6 @@ LVL1:
         BLK 1, 10, 7, 1
 LVL2:
 	.byte 0
+        
+Stages:
+	

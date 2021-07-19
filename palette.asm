@@ -31,12 +31,14 @@ LoadPalette: subroutine
         
         rts
 
-	; set darkness equal to $180, 0-5, 5 is black
+	; set darkness equal to the value stored in "darkness", 0-5, 5 is black
 SetDarkness: subroutine
-	PPU_SETADDR $3f00
+	ldy #$3f
+        sty PPU_ADDR
         ldy darkness
         ldx DarkTable,y
         ldy #0
+        sty PPU_ADDR
 .loop
         lda $100,x	; some voodoo magic shit that skips mirrors in pallete addresses
         sta PPU_DATA

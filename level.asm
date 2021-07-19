@@ -268,10 +268,10 @@ DrawObject: subroutine ; puts sprite objects into the table, doesn't change
         lsr
         sta $0,x
         lda func2
-        lsr
-        lsr
-        lsr
-        and #$18
+        rol
+        rol
+        rol
+        and #$3
         ora $0,x
         sta $0,x
         inx

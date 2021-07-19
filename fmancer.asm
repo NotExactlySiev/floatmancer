@@ -244,7 +244,7 @@ SEQ_InitLevel:
         org SIN_HEAD<<8
         include "sinetable.asm"    
 	include "pythtantable.asm"
-
+        
 Text:
 Worlds:
         dc "TSACGNUJ"
