@@ -14,7 +14,7 @@ LVL0:
         
         BLK 3, 57, 15, 2
         
-        BNC 10, 10, 2
+        BNC 13, 27, 0
         
 LVL1:        
         LEVEL_HEADER LVL2, 0, 5, 5
@@ -31,7 +31,6 @@ LVL1:
 	BLK 15, 14, 3, 1
 	BLK 16, 10, 1, 6
         FIL 0, 0
-        BLK 1, 12, 1, 15
         BLK 1, 10, 7, 1
 LVL2:
 	.byte 0

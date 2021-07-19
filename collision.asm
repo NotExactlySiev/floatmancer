@@ -70,6 +70,7 @@ NormalCollision: subroutine
 	lda vy0
         bmi .air
 	;; DOWNWARDS AND GROUND COLLISION
+        lda #7
 	jsr DownCollision
         bne .nair
 .air        
@@ -118,6 +119,7 @@ NormalCollision: subroutine
                         ; ended up here by having vertical velocity, and will later be added to the y position
                         ; value which will end up pushing the player down.
 .checkup
+	lda #3
 	jsr UpCollision
         bmi .die
         bne .ceiling
@@ -164,6 +166,7 @@ NormalCollision: subroutine
         bit flags
         beq .colhdone
 
+	lda #4
 	jsr FrontCollision
 	beq .colhdone
 	cmp #%11000001
@@ -206,39 +209,18 @@ NormalCollision: subroutine
 .die	; what happens if die? play death sequence
 
 
+; collision subroutines. load the hitbox margin before calling
 
 DownCollision: subroutine
-	lda py1		; check for bottom left and bottom right, collision if any are in solid block
         clc
-        adc #$ff
-        lda py0
-        adc #7
-        sta func0
-        
-        lda px0
-        clc
-        adc #2
-        sta func1
-
-        jsr CheckCollision	; BOTTOM RIGHT
-        bne .yes
-
-        lda px0
-        sec
-        sbc #2
-        sta func1
-        
-        jsr CheckCollision	; BOTTOM LEFT
-        bne .yes
-        lda #0
-.yes	
-	rts
-
+        jmp VerticalCheck
 
 UpCollision: subroutine
-	lda py0
         sec
-        sbc #5
+        eor #$ff
+
+VerticalCheck: subroutine
+        adc py0
         sta func0
         
         lda px0
@@ -246,16 +228,15 @@ UpCollision: subroutine
         adc #2
         sta func1
 
-        jsr CheckCollision	; TOP RIGHT
+        jsr CheckCollision
         bne .yes
 
         lda px0
         sec
         sbc #2
-
         sta func1
         
-        jsr CheckCollision	; TOP LEFT
+        jsr CheckCollision
         bne .yes
         lda #0
 .yes    rts
@@ -263,27 +244,21 @@ UpCollision: subroutine
 
 	; collision in the direction of horizontal movement
 FrontCollision: subroutine
+	sta func3
 	lda flags
         and #$10
-	bne .cleft
-.cright
-	lda px1		; set for the left or right corners based on movement direction
-        clc
-        adc #MARGIN
-        lda px0
-        adc #3
-        sta func1
-        jmp .colhxset
-.cleft
-
-	lda px1
+	beq .cright
+	lda #0
         sec
-        sbc #MARGIN
-	lda px0
-        sbc #3
+        sbc func3
+        sta func3
+.cright
+        lda px0
+        clc
+        adc func3
         sta func1
-        
-.colhxset		; horizontal collision if both corners are solid block
+	
+        ; horizontal collision if both corners are solid block
 	lda py0		
         sec
         sbc #3

@@ -57,6 +57,7 @@ HookMode: subroutine
         
         jsr UpdateAngularPosition
 
+	; hitbox is smaller while swinging
 
 	lda py0
 	sec
@@ -64,9 +65,11 @@ HookMode: subroutine
 	sta vy0
         
         bmi .up
+        lda #7
         jsr DownCollision
         bvc .vchecked
 .up
+	lda #4
         jsr UpCollision
 .vchecked
 	bne .undo
@@ -75,6 +78,7 @@ HookMode: subroutine
         sbc px0+BACKUP_OFFSET
         sta vx0
         
+        lda #3
         jsr FrontCollision
         bne .undo
 	
