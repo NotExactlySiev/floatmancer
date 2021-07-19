@@ -217,9 +217,11 @@ DrawSpike: subroutine
        
         ldx func5
         lda func2	; set the horizontal or vertical direction of deadly ocol
-        and #$80
-        lsr        
-        ora #$80
+        cmp #2
+        lda #%01000000
+        bcs .ver
+        lda #%10000000
+.ver
         ora $3,x
         sta $3,x
 

@@ -70,19 +70,16 @@ NormalCollision: subroutine
 	lda vy0
         bmi .air
 	;; DOWNWARDS AND GROUND COLLISION
-        lda #7
+        lda #4
 	jsr DownCollision
-        bne .nair
+        beq .air
+        bmi .air
+        bpl .nair
 .air        
         lda #$40
         ora flags
         sta flags
-        jmp .downdone
-.nair   
-	cmp #%10000001
-        bne .ndeath
-	jmp PlayerDeath
-.ndeath
+.nair
         sty coyote
 .downdone
 
@@ -94,12 +91,17 @@ NormalCollision: subroutine
         sta func1
         jsr CheckCollision
         beq .nstuck
+        bmi .dead
+        asl
+        bmi .dead
+        bpl .ndead
+.dead        
+        jsr PlayerDeath
+.ndead
         lda py0
         sec
         sbc #8
         sta py0
-        
-        
 .nstuck
 
 	;; UPWARDS COLLISION
@@ -121,14 +123,16 @@ NormalCollision: subroutine
 .checkup
 	lda #3
 	jsr UpCollision
-        bmi .die
-        bne .ceiling
-
+        beq .nceiling
+        bmi .nceiling
+        bpl .ceiling
 .nceiling
         lda #$df
         and flags
         sta flags       
-.ceiling        
+.ceiling
+
+
         lda flags
         eor #$40
         and #$60
@@ -169,10 +173,8 @@ NormalCollision: subroutine
 	lda #4
 	jsr FrontCollision
 	beq .colhdone
-	cmp #%11000001
-        bne .ndie
-	; what happens if die? play death sequence
-.ndie
+        asl
+        bmi .colhdone
 
 .pushout
 	lda #$10		; push out into the grid
@@ -205,8 +207,6 @@ NormalCollision: subroutine
         sta omega0
 .colhdone
 	rts
-
-.die	; what happens if die? play death sequence
 
 
 ; collision subroutines. load the hitbox margin before calling
