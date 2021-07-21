@@ -1,4 +1,4 @@
-
+CharacterAnimation: subroutine
 	lda #%01001000
         bit flags
         bne .air
@@ -41,7 +41,34 @@
         bne .sameframe
         lda #5
         sta ftimer
+        
         lda $201
+        cmp #$8
+        bne .nrotate
+        lda #3
+        sta ftimer
+        lda vx0
+        bmi .left
+        cmp #$2
+        bcs .fast
+        bcc .slow
+.left
+	cmp #$fe
+        bcc .fast
+.slow
+	lda #$9
+        bne .spritedone
+.fast
+	lda #$2
+        bne .spritedone
+
+.nrotate
+	cmp #$9
+        bne .nfastdone
+        lda #2
+        bne .nwrap
+        
+.nfastdone
         clc
         adc #1		; next frame
         cmp #$6
@@ -75,3 +102,4 @@
 .spritedone
         sta frame
 .animationover
+	rts

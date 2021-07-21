@@ -96,7 +96,7 @@ NMIHandler:
 	;; GAME LOOP
         bit anim
         beq .nanim
-	include "animation.asm"
+	jsr CharacterAnimation
 .nanim        
         lda frame
         sta $201
@@ -172,6 +172,7 @@ PlayerDeath: subroutine
 	include "text.asm"
 
 	include "menu.asm"
+	include "animation.asm"
 
 	include "input.asm"
 

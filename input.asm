@@ -114,6 +114,8 @@ PlayInput: subroutine
         sta ax1  
 	lda #>((-WALK_ACCEL)>>8)
         sta ax0
+        lda #$8
+        sta $201
         lda #$40
         ora $202
         sta $202
@@ -139,7 +141,7 @@ PlayInput: subroutine
         sta flags
 .nRight
         
-	
+        
         ;; Jumping
         lda pad
         eor #$ff
