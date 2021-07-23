@@ -26,79 +26,20 @@ CharacterAnimation: subroutine
 
 .ground
 	;;; GROUND ANIMATION
-        bit flags+BACKUP_OFFSET
-        bvc .nlanded
-        lda #$10
-        bne .spritedone
-        
-.nlanded
-        
-        lda flags	; RUNNING ANIMATION
-        and #1
-        beq .nrunning
-	
-	dec ftimer
-        bne .sameframe
+        dec ftimer
+        bne .animationover
+        lda flags
+        asl
+        asl
+        asl
+        asl
+        and #$10
+        clc
+        adc frame
+        tax
         lda #5
         sta ftimer
-        
-        lda $201
-        cmp #$8
-        bne .nrotate
-        lda #3
-        sta ftimer
-        lda vx0
-        bmi .left
-        cmp #$2
-        bcs .fast
-        bcc .slow
-.left
-	cmp #$fe
-        bcc .fast
-.slow
-	lda #$9
-        bne .spritedone
-.fast
-	lda #$2
-        bne .spritedone
-
-.nrotate
-	cmp #$9
-        bne .nfastdone
-        lda #2
-        bne .nwrap
-        
-.nfastdone
-        clc
-        adc #1		; next frame
-        cmp #$6
-        bcc .nwrap
-        lda #2	 	; wrap around
-.nwrap  
-	sta frame
-.sameframe
-        lda #1
-        bit frame
-        bne .nobobbing
-        dec $200
-.nobobbing      
-        jmp .animationover
-.nrunning
-
-	lda flags
-        and #2
-        beq .nmoving
-	ldx #4
-        jsr PlaySequence
-	lda #6
-        bne .spritedone
-.nmoving
-	;; IDLE ANIMATION
-	lda #1
-        sta ftimer
-	lda #$0
-
-
+        lda Animations,x
 .spritedone
         sta frame
 .animationover

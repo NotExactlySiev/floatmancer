@@ -8,6 +8,16 @@ UpdatePlayer: subroutine
         sec
         sbc #4
         sta $203
+        
+        lda #1
+        bit flags
+        beq .nrotate
+        lda flags
+        asl
+        asl
+        and #$40
+        sta $202
+.nrotate        
         rts
 
 ; handles scrolling the sprites on the screen. hero sprite handled seperately

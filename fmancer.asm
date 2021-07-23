@@ -238,6 +238,17 @@ SEQ_PlayerStop:
 SEQ_InitLevel:
 	.byte $28, $20, $25, $26, $27, $23, $22, $29, $00
 
+
+Animations:
+ANIM_Idle:
+	.byte $0, $6, $6, $6, $6, $6, $7, $0
+        .byte $9, $0, $0, $0, $0, $0, $0, $0
+
+ANIM_Run:
+	.byte $5, $2, $3, $4, $1, $2, $4, $4
+        .byte $4, $5, $0, $0, $0, $0, $0, $0
+
+
 	org LEVEL_HEAD<<8
 	include "leveldata.asm"
 

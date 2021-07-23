@@ -114,11 +114,6 @@ PlayInput: subroutine
         sta ax1  
 	lda #>((-WALK_ACCEL)>>8)
         sta ax0
-        lda #$8
-        sta $201
-        lda #$40
-        ora $202
-        sta $202
         
 	jmp .flag
 .nLeft
@@ -132,16 +127,36 @@ PlayInput: subroutine
         sta ax1  
 	lda #>(WALK_ACCEL>>8)
         sta ax0
-	lda #$bf
-        and $202
-        sta $202
 
 .flag	lda #$3
 	ora flags
         sta flags
 .nRight
         
-        
+	lda pad
+        and padedge
+        and #%00000001
+        beq .nright
+        lda flags+BACKUP_OFFSET
+        and #$10
+        beq .nright
+        bne .rotate
+.nright       
+        lda pad
+        and padedge
+        and #%00000010
+        beq .nrotate
+        lda flags+BACKUP_OFFSET
+        and #$10
+        bne .nrotate
+.rotate
+        lda #$8
+        sta frame
+        lda #6
+        sta ftimer
+.nrotate
+
+
         ;; Jumping
         lda pad
         eor #$ff
