@@ -27,6 +27,8 @@ InitPlay: subroutine
         stx physics
         stx anim
         stx state
+        stx jtimer
+        stx ftimer
         rts
         
 

@@ -21,6 +21,9 @@ tmp3	= $B
 ;;; GLOBAL VARIABLES ;;; C-18
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
+; TODO: some of these that aren't accessed more than a few times every frame
+; can be moved out of zero page to make space for bigger obj and col tables
+
 lvlptr	= $C
 lvl	= $E
 lvlsize	= $F

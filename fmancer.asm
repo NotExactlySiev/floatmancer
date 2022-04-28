@@ -232,7 +232,7 @@ SEQ_ResetLevel:
 	.byte $40, $01, $45, $01, $41, $00
 SEQ_Death:
 	.byte $60, state, $42, $00
-SEQ_PlayerStop:
+SEQ_PlayerStop:	; i don't think we need this
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:
 	.byte $28, $20, $25, $26, $27, $23, $22, $29, $00

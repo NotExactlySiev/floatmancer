@@ -61,7 +61,11 @@ UpdateSprites: subroutine
         iny
         iny
         cpy #252
-        bne .next
+        bcs .spritedone
+        inx
+        cpx #30
+        bcs .spritedone
+        bcc .next
 .onscreen
 	asl
 	sta func0	; if is on screen, load the data for the object
