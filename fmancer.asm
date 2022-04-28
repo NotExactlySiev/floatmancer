@@ -7,8 +7,8 @@
 
 ;; Physics Constants
 UP_GRAVITY	= $007000
-DOWN_GRAVITY	= $007500
-MAX_FALL	= $056010
+DOWN_GRAVITY	= $003500
+MAX_FALL	= $056010 ; doesn't do anything yet :/
 JUMP_FORCE	= $035000
 WALK_ACCEL	= $006a80
 MAX_WALK	= $009cc0
@@ -160,7 +160,13 @@ PlayerDeath: subroutine
         stx physics
         pla
         pla
+        ; alternate method below. isn't much different but is faster so the nmi routine
+        ; ends before vblank finishes
+        ;ldx #$fc
+        ;txs
+        ;jmp NMIEnd
         rts
+        
         
 	include "common.asm"
         include "physics.asm"
@@ -231,7 +237,9 @@ SEQ_FadeIn:
 SEQ_ResetLevel:
 	.byte $40, $01, $45, $01, $41, $00
 SEQ_Death:
-	.byte $60, state, $42, $00
+	; i stopped changing the state and it stopped randomly scrolling at death
+	; .byte $60, state
+	.byte $42, $00
 SEQ_PlayerStop:	; i don't think we need this
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:

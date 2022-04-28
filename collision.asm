@@ -1,5 +1,9 @@
 CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
-	lda func1
+	; wouldn't it make more sense to just wait for vblank and look at the tiles surrounding
+        ; the player every frame? then we'd have all the collision data we'll ever need
+        ; also there'll be no limit on the number of collision rects in a level
+        ; am i missing something or was i just stupid back when i wrote this?
+        lda func1
         lsr
         lsr
         lsr

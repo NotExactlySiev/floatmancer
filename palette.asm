@@ -51,7 +51,7 @@ SetDarkness: subroutine
         iny
         cpy #$21
         bne .loop
-        lda #0
+        lda #$00
         sta PPU_ADDR
         sta PPU_ADDR
         rts

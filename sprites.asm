@@ -47,6 +47,13 @@ UpdateSprites: subroutine
         bne .draw
 	rts
 .draw	
+	; maybe we don't need to write all 4 field of oam every time
+        ; just update the y position and don't touch the rest since the
+        ; objlist doesn't change. we only need to write the chr index and
+        ; attr once when loading the level.
+        ; on the other hand i don't wanna limit myself to static levels
+        ; with object that don't change or move around and this doesn't 
+        ; take processing time anyway so...
 	clc		; Set Y pos
         asl
         asl
@@ -54,21 +61,15 @@ UpdateSprites: subroutine
         sbc tmp0
         cmp #120
         bcc .onscreen
+        ; it's not in the viewport. put it offscreen and go to next obj
         lda #$ff
         sta $210,y
-        iny
-        iny
-        iny
-        iny
+        
         cpy #252
         bcs .spritedone
-        inx
-        cpx #30
-        bcs .spritedone
-        bcc .next
 .onscreen
 	asl
-	sta func0	; if is on screen, load the data for the object
+	sta func0	; is on screen, load the data for the object
         
         inx
 	lda objlist,x

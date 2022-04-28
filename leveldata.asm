@@ -1,29 +1,7 @@
 
 Levels:
 LVL0:
-	LEVEL_HEADER LVL1, 3, 6, 5
-        BLK 13, 53, 15, 5
-        BLK 3, 56, 15, 2
-        FIL 0, 0
-        
-        BLK 17, 49, 5, 1
-        BLK 10, 45, 9, 1
-        BLK 3, 45, 3, 1
-        
-        BLK 7, 40, 6, 1
-        BLK 2, 42, 1, 1
-        BLK 20, 40, 8, 1
-        
-        BLK 27, 36, 1, 1
-        BLK 27, 32, 1, 1
-        BLK 27, 28, 1, 1
-        
-        BLK 7, 26, 15, 1
-        BLK 3, 26, 6, 1
-        FIL 0, 4
-        
-LVL1:
-	LEVEL_HEADER LVL2, 0, 2, 5
+	LEVEL_HEADER LVL1, 0, 2, 5
         BLK 3, 13, 15, 2
         HOK 10, 3, 0
         HOK 24, 6, 0
@@ -46,6 +24,30 @@ LVL1:
         BLK 24, 53, 4, 4
         
         HOK 15, 47, 0
+
+LVL1:
+	LEVEL_HEADER LVL2, 3, 6, 5
+        BLK 13, 53, 15, 5
+        BLK 3, 56, 15, 2
+        FIL 0, 0
+        
+        BLK 17, 49, 5, 1
+        BLK 10, 45, 9, 1
+        BLK 3, 45, 3, 1
+        
+        BLK 7, 40, 6, 1
+        BLK 2, 42, 1, 1
+        BLK 20, 40, 8, 1
+        
+        BLK 27, 36, 1, 1
+        BLK 27, 32, 1, 1
+        BLK 27, 28, 1, 1
+        
+        BLK 7, 26, 15, 1
+        BLK 3, 26, 6, 1
+        FIL 0, 4
+        
+
 
 LVL2:
 	LEVEL_HEADER LVL3, 3, 5, 4

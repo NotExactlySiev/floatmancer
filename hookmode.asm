@@ -168,6 +168,8 @@ Release: subroutine
 
 ; finds the closest hook to the player that is also in range, and loads its position and index
 ; if none are found puts -1
+; wait... why is this function looking in the oam for hooks? that seems very dumb!
+; there will be weird shit happening with offscreen hooks. TODO: fix this
 FindCloseHook: subroutine
 	ldx hookidx
         lda #$30
