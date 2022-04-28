@@ -31,43 +31,42 @@ NormalMode: subroutine
         bit flags
         beq .end
        
-        lda vx0
-        bpl .decelok
-.left   cmp #>((-PASSIVE_DECEL)>>8)
-        bcc .decelok
-        bne .decelzero
-        lda vx1
-        cmp #>(-PASSIVE_DECEL)
-        bcc .decelok
-        bne .decelzero
+; EXPERIMENTAL - testing a different decel method
+
+	lda ax0
+        bne .npassive
+	lda ax1
+        bne .npassive
+        lda ax2
+        bne .npassive
+	
+        lda vx0		; shift right and sign extend to get 1/2
+        cmp #$80
+        ror vx0
+	ror vx1
+        ror vx2
+        
+        ldx vx0
+        ldy vx1
         lda vx2
-        cmp #<(-PASSIVE_DECEL)
-        bcc .decelok
-.decelzero
-        lda #0
-        sta vx0
-        sta vx1
+        
+        cpx #$80	; shift right and sign extend again to get 1/4
+        ror vx0
+	ror vx1
+        ror vx2
+        
+        clc		; add together to get 75% of the original velocity
+        adc vx2
         sta vx2
-        sta ax0
-        sta ax1
-        sta ax2
-       
-        jmp .end
+        tya
+        adc vx1
+        sta vx1
+        txa
+        adc vx0
+        sta vx0 
+.npassive
 
-.decelok
-	lda #>(PASSIVE_DECEL>>8)
-        sta ax0
-        lda #>PASSIVE_DECEL
-        sta ax1
-        lda #<PASSIVE_DECEL
-        sta ax2
-        lda vx0
-        bmi .right
-        jsr NegativeAclX      	  
-.right
 .end
-
-
 	jmp .airdone
 
 .air
@@ -133,6 +132,10 @@ SetVelPos:
         lda px0,x
         adc vx0,x
         sta px0,x
+        
+        lda px1,x
+        adc #0		; evil hack! if velocity is -1 it doesn't change anything
+        sta px1,x
         
         cpx #0
         beq .pdone
