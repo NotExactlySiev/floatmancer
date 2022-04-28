@@ -3,8 +3,9 @@ ControlInput: subroutine
         and padedge
         and #$20
         beq .lvlend
-	lda #1
-        sta func0
+	ldx lvl
+        inx
+        stx func0
         jsr FindLevel
 
         ldx #2
@@ -197,9 +198,10 @@ PlayInput: subroutine
 .nchange        
         
         ; now both buffer and coyote timers are set, check if can jump
-        lda flags
-        and #$20
+        lda #$20
+        bit flags
         bne .njumpstart
+        bvs .njumpstart
         lda flags
         and #$08
         bne .njumpstart

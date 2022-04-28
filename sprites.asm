@@ -18,6 +18,16 @@ UpdatePlayer: subroutine
         and #$40
         sta $202
 .nrotate        
+
+	lda frame
+        beq .nbobbing
+	cmp #$6
+        bcs .nbobbing
+        and #1
+        bne .nbobbing
+        dec $200
+.nbobbing
+
         rts
 
 ; handles scrolling the sprites on the screen. hero sprite handled seperately

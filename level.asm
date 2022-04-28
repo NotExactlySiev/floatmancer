@@ -175,7 +175,10 @@ NextItem:
 	
         ; upper nybble fully checked. cheking lower nybble now to narrow it down
         lda func2
-        and #$c0
+        bmi .nflag
+        
+        
+.nflag
         
 	
 
@@ -216,11 +219,10 @@ DrawSpike: subroutine
         sta $0,x
        
         ldx func5
-        lda func2	; set the horizontal or vertical direction of deadly ocol
-        cmp #2
-        lda #%01000000
-        bcs .ver
         lda #%10000000
+        bit func2	; set the horizontal or vertical direction of deadly ocol
+        beq .ver
+        lsr
 .ver
         ora $3,x
         sta $3,x

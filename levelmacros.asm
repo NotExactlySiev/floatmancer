@@ -23,6 +23,10 @@
         .byte {4}
         ENDM
         
+        MAC FLG ; x y color
+        .byte {1} | $60
+        .byte {2} | {3}<<6
+        ENDM
         
         ; 10000 - 10011
         MAC BNC ; x y direction

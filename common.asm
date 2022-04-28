@@ -21,6 +21,7 @@ InitPlay: subroutine
         stx vx0
         stx vx2
         stx vy0  
+        stx frame
         inx
         stx loop
         stx physics
