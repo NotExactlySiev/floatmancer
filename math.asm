@@ -1,3 +1,16 @@
+CalcAbs: subroutine	; number in ax, returns in ax
+	ora #0
+        bpl .done
+        sta tmp0
+        lda #0
+        sec
+        sbc $700,x
+        tax
+        lda #0
+        sbc tmp0
+.done
+	rts
+
 CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         lda #0
         sta func3

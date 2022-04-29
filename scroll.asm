@@ -72,6 +72,6 @@ Scroll:
 	
 
 .scrolldone
-	jsr UpdateSprites       
+	;jsr UpdateSprites       
 .scrollover
 	rts

@@ -5,21 +5,28 @@
 	include "vars.asm"
 
 
-;; Physics Constants
-UP_GRAVITY	= $007000
+; physics values
+UP_GRAVITY	= $006000
 DOWN_GRAVITY	= $003500
 MAX_FALL	= $056010 ; doesn't do anything yet :/
 JUMP_FORCE	= $035000
+FLING_FORCE_H	= 6
+FLING_FORCE_V	= 6
 WALK_ACCEL	= $006a80
+AIR_ACCEL	= $003080
 MAX_WALK	= $009cc0
+AIR_ACCEL_LIMIT	= $009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
 HOOK_SWING	= 27
 HOOK_RANGE	= 60
-MAX_JUMP	= 9
+
+; frame times
+MAX_JUMP	= 9 ; how many frames you can hold jump for
 COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
-MARGIN		= $8
+BHOP_WINDOW	= 2 ; not implemented yet
 
-WINDUP_TIME	= $1
+
+WINDUP_TIME	= $1 ; jump delay
 
 SIN_HEAD	= $c0
 PYTAN_HEAD	= $e0
@@ -30,6 +37,7 @@ BACKUP_OFFSET	= $10
 SCROLL_THOLD	= 90
 SCREEN_HEIGHT	= 240
 SCREEN_WIDTH	= 256
+MARGIN		= 8
 
 MENU_ITEMS	= 3
 
@@ -100,6 +108,7 @@ NMIHandler:
         lda frame
         sta $201
 
+	jsr UpdateSprites
 
         bit flags
         bmi .nosearch
@@ -128,7 +137,6 @@ NMIHandler:
 .physdone
 
 	jsr UpdateScroll
-	
         ;checking if the player has fallen outside the level        
 	lda py0
         cmp #239
@@ -235,10 +243,11 @@ SEQ_FadeOut:
 SEQ_FadeIn:
 	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
 SEQ_ResetLevel:
-	.byte $40, $01, $45, $01, $41, $00
+	.byte $40, $45, $41, $00
 SEQ_Death:
 	; i stopped changing the state and it stopped randomly scrolling at death
 	; .byte $60, state
+        ; TODO: death animation
 	.byte $42, $00
 SEQ_PlayerStop:	; i don't think we need this
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00

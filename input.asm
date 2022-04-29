@@ -107,33 +107,96 @@ PlayInput: subroutine
 	;; Walking
 	lda #2
         bit pad
-        beq .nLeft
+        beq NotLeft
         
+PressedLeft: subroutine
+        bit flags
+        bvs .air
+.ground        
 	lda #<(-WALK_ACCEL)
         sta ax2
         lda #>(-WALK_ACCEL)
         sta ax1  
 	lda #>((-WALK_ACCEL)>>8)
         sta ax0
+        bvc .done
         
-	jmp .flag
-.nLeft
+.air
+	; if leftward speed is above limit, further acceleration is not allowed
+	lda vx0
+        bpl .accel
+        cmp #>(-AIR_ACCEL_LIMIT>>8)
+        bcs .accel
+        bne .done
+        lda vx1
+        cmp #>(-AIR_ACCEL_LIMIT)
+        bcs .accel
+        bne .done
+        lda vx2
+        cmp #<(-AIR_ACCEL_LIMIT)
+        bcc .done
+        
+.accel
+	lda #<(-AIR_ACCEL)
+        sta ax2
+        lda #>(-AIR_ACCEL)
+        sta ax1  
+	lda #>(-AIR_ACCEL>>8)
+        sta ax0
+
+.done
+
+	jmp SetWalkFlag
+        
+NotLeft
 	lda #1
         bit pad
-        beq .nRight
+        beq NotRight
 
+PressedRight: subroutine
+	bit flags
+        bvs .air
+.ground
 	lda #<(WALK_ACCEL)
         sta ax2
         lda #>(WALK_ACCEL)
         sta ax1  
 	lda #>(WALK_ACCEL>>8)
         sta ax0
+        bvc .done
+        
+.air
+	; if rightward speed is above limit, further acceleration is not allowed
+	lda vx0
+        bmi .accel
+        cmp #>(AIR_ACCEL_LIMIT>>8)
+        bcc .accel
+        bne .done
+        lda vx1
+        cmp #>(AIR_ACCEL_LIMIT)
+        bcc .accel
+        bne .done
+        lda vx2
+        cmp #<(AIR_ACCEL_LIMIT)
+        bcs .done
+        
+.accel
 
-.flag	lda #$3
+	lda #<(AIR_ACCEL)
+        sta ax2
+        lda #>(AIR_ACCEL)
+        sta ax1  
+	lda #>(AIR_ACCEL>>8)
+        sta ax0
+        
+.done
+
+SetWalkFlag:
+	lda #$3
 	ora flags
         sta flags
-.nRight
-        
+
+NotRight  
 	lda pad
         and padedge
         and #%00000001

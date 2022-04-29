@@ -145,6 +145,9 @@ SetVelPos:
 .pdone
 	; TODO: this part could be better
         
+        bit flags
+        bvs .mhend
+        
 	lda vx0
         bpl .mright
 .mleft	cmp #>((-MAX_WALK)>>8)

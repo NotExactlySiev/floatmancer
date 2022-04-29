@@ -155,7 +155,114 @@ Release: subroutine
         sta ax0
         sta ax1
         sta ax2
+
+	; TODO: only give extra velocity if omega is above some threshold
+        lda omega0
+        ldx omega1
+        jsr CalcAbs
+        cmp #1
+        bcc .nextra
+        bne .extra
+        cpx #$80
+        bcc .nextra
         
+.nextra
+	jmp .extradone
+.extra
+
+	; vertical extra velocity is easy, just calculate and subtract
+	lda angle0
+        and #$1F
+        sec
+        sbc #$40
+        sta func0
+        lda angle1
+        sta func1
+        lda #FLING_FORCE_V
+        sta func2
+        jsr CalcSin
+
+	lda #0
+        sec
+        ror func6
+        ror func7
+        ror
+
+
+	clc
+        adc vy2
+        sta vy2
+        lda vy1
+        adc func7
+        sta vy1
+        lda vy0
+        adc func6
+        sta vy0
+        
+
+	; horizontal depends on direction
+	; cos(angle-90) = sin(180-angle)
+        
+        sec
+        lda angle0
+        sta func0
+        lda angle1
+        sta func1
+        lda #FLING_FORCE_H
+        sta func2
+        jsr CalcSin
+
+	; calculate the horizontal direction of extra velocity
+	lda angle0
+        asl
+        eor angle0
+        and #$80
+        bne .left
+	; then divide the result by 4 and add
+.right
+	
+      	lda #0
+	lsr func6
+        ror func7
+        ror
+        lsr func6
+        ror func7
+        ror 
+        lsr func6
+        ror func7
+        ror 
+        lsr func6
+        ror func7
+        ror 
+        lsr func6
+        ror func7
+        ror 
+        
+        clc
+        adc vx2
+        sta vx2
+        lda vx1
+        adc func7
+        sta vx1
+        lda vx0
+        adc func6
+        sta vx0
+        jmp .extradone  
+        
+.left
+	sec
+        lda vx2
+        sbc func7
+        sta vx2
+        lda vx1
+        sbc func6
+        sta vx1    
+        lda vx0
+        sbc #0
+        sta vx0
+
+.extradone
+
         lda #$7f
         and flags
         sta flags
@@ -185,6 +292,7 @@ FindCloseHook: subroutine
         
         cmp #$30
         beq .ishook
+.skipone
         inx
         inx
         inx
@@ -192,7 +300,13 @@ FindCloseHook: subroutine
         jmp .nexthook
         
 .ishook
-	dex		; y at y pos, x at x pos of the hook
+	dex
+        lda $210,x
+        cmp #$FE
+        bne .onscreen
+        inx
+        bne .skipone
+.onscreen
         txa
         tay
         inx
