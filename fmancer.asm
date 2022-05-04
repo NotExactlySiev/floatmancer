@@ -5,6 +5,13 @@
 	include "vars.asm"
 
 
+; turning certain mechanics on and off
+ENABLE_FLING	= 0
+ENABLE_COOLDOWN	= 0 ; not implemented yet
+ENABLE_GLIDE	= 0 ; not implemented yet
+LIMIT_FALLSPEED	= 0 ; 
+
+
 ; physics values
 UP_GRAVITY	= $006000
 DOWN_GRAVITY	= $003500
@@ -13,7 +20,7 @@ JUMP_FORCE	= $035000
 FLING_FORCE_H	= 6
 FLING_FORCE_V	= 6
 WALK_ACCEL	= $006a80
-AIR_ACCEL	= $003080
+AIR_ACCEL	= $006080
 MAX_WALK	= $009cc0
 AIR_ACCEL_LIMIT	= $009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
 HOOK_SWING	= 27
@@ -175,12 +182,12 @@ PlayerDeath: subroutine
         ;jmp NMIEnd
         rts
         
-        
+    	include "math.asm"
+
 	include "common.asm"
         include "physics.asm"
 	include "hookmode.asm"   
 	include "collision.asm"
-	include "math.asm"
         include "scroll.asm"	
 	include "text.asm"
 

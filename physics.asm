@@ -144,10 +144,17 @@ SetVelPos:
         
 .pdone
 	; TODO: this part could be better
-        
+        ; limiting walk speed to maximum
         bit flags
         bvs .mhend
         
+      
+ IF 1
+	; faster but repeating code
+ 	; TODO: write a CMP24 macro, it could even accept arbiterily large ints
+        
+        ;LIMITMAG vx0,vx1,vx2,MAX_WALK
+
 	lda vx0
         bpl .mright
 .mleft	cmp #>((-MAX_WALK)>>8)
@@ -187,7 +194,44 @@ SetVelPos:
         lda #<(MAX_WALK)
         sta vx2
 
+ ELSE
+ 	; using absolute value so we there's less code
+ 	lda vx0
+        ldx vx1
+        ldy vx2
+        jsr CalcAbs24
+        
+        cmp #>(MAX_WALK>>8)
+        bcc .nl
+	bne .fix
+        cpx #>(MAX_WALK)
+        bcc .nl
+        bne .fix
+        cpy #<(MAX_WALK)
+	bcc .nl
+.fix
+	bit vx0
+	bpl .pos
+.neg
+        lda #<(-MAX_WALK)
+        sta vx2
+        lda #>(-MAX_WALK)
+        sta vx1
+	lda #>((-MAX_WALK)>>8)
+        sta vx0
+	bmi .nl
+.pos
+        lda #<(MAX_WALK)
+        sta vx2
+        lda #>(MAX_WALK)
+        sta vx1
+	lda #>(MAX_WALK>>8)
+        sta vx0
+.nl
+
+ ENDIF
 .mhend
+ 	
 	rts
 
 

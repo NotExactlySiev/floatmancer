@@ -1,9 +1,70 @@
-CalcAbs: subroutine	; number in ax, returns in ax
+	; clamps a 24 bit signed number to [-MAX, MAX] for given 24 bit MAX immediate value
+	MAC LIMITMAG
+        lda {1}
+        bpl .pos
+.neg
+	cmp #>((-{4})>>8)
+	bcs .end
+        bne .limleft
+        lda {2}
+        cmp #>(-{4})
+        bcs .end
+        bne .limleft
+        lda {3}
+        cmp #<(-{4})
+        bcs .end
+.limleft
+	lda #>((-{4})>>8)
+        sta {1}
+        lda #>(-{4})
+        sta {2}
+        lda #<(-{4})
+        sta {3}
+	jmp .end
+
+.pos	cmp #>({4}>>8)
+	bcc .end
+     	bne .mhfixright
+        lda {2}
+        cmp #>({4})
+        bcc .end
+        bne .mhfixright
+        lda {3}
+        cmp #<({4})
+        bcc .end
+.mhfixright
+	lda #>({4}>>8)
+        sta {1}
+        lda #>({4})
+        sta {2}
+        lda #<({4})
+        sta {3}
+.end
+        ENDM
+ 
+
+CalcAbs16: subroutine	; number in ax, returns in ax
 	ora #0
         bpl .done
         sta tmp0
         lda #0
         sec
+        sbc $700,x
+        tax
+        lda #0
+        sbc tmp0
+.done
+	rts
+
+CalcAbs24: subroutine	; number in axy, returns in axy
+	ora #0
+        bpl .done
+	sta tmp0
+        lda #0
+        sec
+        sbc $700,y
+        tay
+        lda #0
         sbc $700,x
         tax
         lda #0

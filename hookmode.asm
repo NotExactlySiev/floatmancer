@@ -156,6 +156,7 @@ Release: subroutine
         sta ax1
         sta ax2
 
+ IF ENABLE_FLING
 	; TODO: only give extra velocity if omega is above some threshold
         lda omega0
         ldx omega1
@@ -262,6 +263,9 @@ Release: subroutine
         sta vx0
 
 .extradone
+
+ ENDIF
+ 
 
         lda #$7f
         and flags

@@ -50,6 +50,31 @@ sqidx	= $18
 ;;; STATE VARIABLES ;;; 19-50
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; LEVEL GENERATION
+blknum	= $20
+filbyte	= $21
+
+blkptr1	= $22
+blkptr2	= $23
+
+sidestmp = $24
+
+
+;;; MENU
+select	= $20
+
+code0	= $21
+code1	= $22
+code2	= $23
+code3	= $24
+typing	= $25
+codeidx	= $26
+
+world	= $27
+
+
+options	= $80
+
 
 ;;; GAME
 
@@ -105,30 +130,6 @@ flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | ------- | 
 ; $40-$4E are the same but from the previous frame
 
 
-;;; LEVEL GENERATION
-blknum	= $20
-filbyte	= $21
-
-blkptr1	= $22
-blkptr2	= $23
-
-sidestmp = $24
-
-
-;;; MENU
-select	= $20
-
-code0	= $21
-code1	= $22
-code2	= $23
-code3	= $24
-typing	= $25
-codeidx	= $26
-
-world	= $27
-
-
-options	= $80
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;
