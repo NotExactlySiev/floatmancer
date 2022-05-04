@@ -171,8 +171,9 @@ SetVel:
         sta vx0
 .nl
 
-	
-	;; no velocity value should be outside (-4, 4)
+
+
+	;; not limiting the absolute maximum speed can cause collision to break
 
 	lda vx0
         bmi .hchneg

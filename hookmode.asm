@@ -16,29 +16,23 @@ HookMode: subroutine
         sta func0
         lda angle1
 	sta func1
-        jsr CalcSin
+        jsr CalcSinAndMultiply
         
         ldx #0
-        lda func6
+        lda func5
         bpl .pos
-    	ldx #$ff    
+    	dex   
 .pos
-        stx func5
-        
-        rol func7
-        rol func6
-        rol func7
-        rol func6
-        
+        stx func4        
         
         clc
-        lda func7
+        lda func6
 	adc omega2
         sta omega2
-        lda func6
+        lda func5
         adc omega1
         sta omega1
-        lda func5
+        lda func4
         adc omega0
         sta omega0
 
@@ -109,9 +103,9 @@ UpdateAngularPosition: subroutine
         lda angle1
         sta func1
         
-        jsr CalcSin
+        jsr CalcSinAndMultiply
         
-        lda func6
+        lda func5
         sta relpy0
         clc
         adc hookpy
@@ -124,9 +118,9 @@ UpdateAngularPosition: subroutine
         lda angle1
         sta func1
         
-	jsr CalcSin
+	jsr CalcSinAndMultiply
         
-        lda func6
+        lda func5
         sta relpx0
         clc
         adc hookpx
@@ -156,7 +150,7 @@ Release: subroutine
         sta ax1
         sta ax2
 
- IF ENABLE_FLING
+ IF ENABLE_FLING ; TODO: this is mainly incomplete
 	; TODO: only give extra velocity if omega is above some threshold
         lda omega0
         ldx omega1
@@ -181,7 +175,7 @@ Release: subroutine
         sta func1
         lda #FLING_FORCE_V
         sta func2
-        jsr CalcSin
+        jsr CalcSinAndMultiply
 
 	lda #0
         sec
@@ -211,7 +205,7 @@ Release: subroutine
         sta func1
         lda #FLING_FORCE_H
         sta func2
-        jsr CalcSin
+        jsr CalcSinAndMultiply
 
 	; calculate the horizontal direction of extra velocity
 	lda angle0

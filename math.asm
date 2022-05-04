@@ -72,9 +72,10 @@ CalcAbs24: subroutine	; number in axy, returns in axy
 .done
 	rts
 
-CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
-        lda #0
-        sta func3
+
+
+CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 result = multiplier*sin(angle)
+        ldy #0
 
         lda func0
         bpl .check1
@@ -89,8 +90,7 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         adc #0
         sta func0
         
-        lda #1
-        sta func3
+        iny
         
 .check1	lda func0
 	asl
@@ -115,47 +115,85 @@ CalcSin: subroutine	; 0-2 angle0, angle1, multiplier -> 6-7 sin value
         bne .nright
         
         ; if it's 90 degrees
-        lda func2
-        sta func6
-        lda #0
-        sta func7
+        ; return 10000
+        ldx #1
+        stx func5
+        dex
+        stx func6
+        stx func7
         rts
         
 .nright ; else
-        lda func2
-        lsr
-        ora #SIN_HEAD
-        sta func5
-
-        lda func1
-        asl    
+	tya
+        pha
+        
+        ; look up the sine value
         lda func0
-        asl
-        asl
-	sta func4
-
-
-        ldy #0
-        lda (func4),y
-        sta func6
-        iny
-        lda (func4),y
-        sta func7
-
+        rol func1
+        rol
+        rol func1
+        rol
+        tay
+        
+        lda SineHigh,y
+        sta tmp1
+        lda SineLow,y
+	sta tmp2
 .lookupover
-	       
-        lda func3
-        beq .positive
-	clc
-        lda func7
-        eor #$ff
-        adc #1
+
+	lda #0
+        sta tmp0
+        sta func5
+        sta func6
         sta func7
-        lda func6
-        eor #$ff
-        adc #0
-        sta func6                
-.positive        
+        
+        ldy func2
+	
+        ; it's multiplication time! 16 bit value is in tmp0-tmp2. shift and add
+.loop
+	lsr func2
+        bcc .shift
+        
+        clc
+        lda tmp2
+        adc func7
+        sta func7
+        lda tmp1
+        adc func6
+        sta func6
+        lda tmp0
+        adc func5
+        sta func5
+        
+	lda func2
+.shift
+	beq .done
+	asl tmp2
+        rol tmp1
+        rol tmp0
+        jmp .loop
+.done        
+	
+        sty func2
+	
+	; negate it if angle was mirrored
+	pla
+        beq .positive
+        
+        ldx #0
+        txa
+        sec
+	sbc func7
+        sta func7
+        txa
+        sbc func6
+        sta func6
+        txa
+        sbc func5
+        sta func5
+        
+.positive
+
 	rts
 
 ; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6-7 result

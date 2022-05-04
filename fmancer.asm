@@ -6,11 +6,12 @@
 
 
 ; turning certain mechanics on and off
+; TODO: implement all of these, so we can try different combinaitons of mechanicas
+; and see what works, removing the rest
 ENABLE_FLING	= 0
 ENABLE_COOLDOWN	= 0 ; not implemented yet
 ENABLE_GLIDE	= 0 ; not implemented yet
-LIMIT_FALLSPEED	= 0 ; 
-LIMIT_AIRSPEED	= 0 ;
+ENABLE_BHOP	= 0 ; not implemented yet
 
 ; physics values
 UP_GRAVITY	= $006000
@@ -24,7 +25,7 @@ AIR_ACCEL	= $006080
 MAX_WALK	= $010cc0
 MAX_SPEED	= 4 ; absolute max speed value permitted by the engine
 AIR_ACCEL_LIMIT	= $009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
-HOOK_SWING	= 27
+HOOK_SWING	= 108
 HOOK_RANGE	= 60
 
 
@@ -261,7 +262,7 @@ SEQ_Death:
 SEQ_PlayerStop:	; i don't think we need this
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ_InitLevel:
-	.byte $28, $20, $25, $26, $27, $23, $22, $29, $00
+	.byte $28, $20, $25, $26, $27, $22, $29, $00
 
 
 Animations:
