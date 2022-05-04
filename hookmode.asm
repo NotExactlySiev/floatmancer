@@ -106,10 +106,12 @@ UpdateAngularPosition: subroutine
         jsr CalcSinAndMultiply
         
         lda func5
-        sta relpy0
+        ;ta relpy0
         clc
         adc hookpy
         sta py0
+        lda func6
+        sta py1
         
         lda angle0
         clc
@@ -121,10 +123,13 @@ UpdateAngularPosition: subroutine
 	jsr CalcSinAndMultiply
         
         lda func5
-        sta relpx0
+        ;sta relpx0
         clc
         adc hookpx
         sta px0
+        lda func6
+        sta px1
+        
         rts
 
 
@@ -137,6 +142,36 @@ Release: subroutine
         sbc px0+BACKUP_OFFSET
         sta vx0
         
+ IF ENABLE_UNFLING
+        lda vx0
+        cmp #$80
+        ror vx0
+        ror vx1
+        ror vx2
+        
+        lda vx0
+        cmp #$80
+        ror
+        sta func0
+        lda vx1
+        ror
+        sta func1
+        lda vx2
+        ror
+        
+        clc
+        adc vx2
+        sta vx2
+        lda func1
+        adc vx1
+        sta vx1
+        lda func0
+        adc vx0
+        sta vx0
+        
+ ENDIF
+ 
+ 
         sec
         lda py1
         sbc py1+BACKUP_OFFSET
@@ -144,7 +179,7 @@ Release: subroutine
         lda py0
         sbc py0+BACKUP_OFFSET
         sta vy0
-                
+
         lda #0
         sta ax0
         sta ax1
@@ -334,7 +369,6 @@ FindCloseHook: subroutine
         tay
         
         lda func6
-        and #$fe
         cmp radius
         bcc .isclose
         inx
@@ -389,7 +423,7 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda py0+BACKUP_OFFSET
         sec
         sbc hookpy+BACKUP_OFFSET
-        sta relpy0+BACKUP_OFFSET
+        ;sta relpy0+BACKUP_OFFSET
         sta func1
         
         jsr CalcAtan
@@ -407,7 +441,7 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda py0
         sec
         sbc hookpy
-        sta relpy0
+        ;ta relpy0
         sta func1
         	
 	jsr CalcAtan

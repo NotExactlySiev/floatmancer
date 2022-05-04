@@ -114,7 +114,7 @@ relpx0	= $32	; x and y distance from the hook. 8 bit
 
 py0	= $33	; in relation to other objects on the screen, doesn't account for scroll
 py1	= $34
-relpy0	= $35
+;relpy0	= $35 ; <- hold the fuck on... what actually is the purpose of these values? they're never used!
 
 angle0	= $36	; angle from the hook. 24 bit (should be 16?)
 angle1	= $37

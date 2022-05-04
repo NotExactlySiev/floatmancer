@@ -3,6 +3,8 @@
 ; magnitude, resulting in a 24 bit value, the top 16 bits of which
 ; will be used.
 
+; sine values for fixed point angles 0x00.00-0x3F.C0, step=0x00.40
+
 	org (SIN_HEAD<<8)
 
 SineHigh:
