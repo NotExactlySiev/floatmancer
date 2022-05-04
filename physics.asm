@@ -110,10 +110,10 @@ NormalMode: subroutine
 .airdone
 
 
-	;;; Values have been adjusted. Finalizing physics calc
+	;;; acceleration values have been adjusted. updating velocity
 
 	ldx #3
-SetVelPos:
+SetVel:
 	clc
 	lda vx2,x
         adc ax2,x
@@ -124,77 +124,21 @@ SetVelPos:
         lda vx0,x
         adc ax0,x
         sta vx0,x
-
-        clc
-        lda px1,x
-        adc vx1,x
-        sta px1,x
-        lda px0,x
-        adc vx0,x
-        sta px0,x
-        
-        lda px1,x
-        adc #0		; evil hack! if velocity is -1 it doesn't change anything
-        sta px1,x
         
         cpx #0
-        beq .pdone
+        beq .vdone
         ldx #0
-        jmp SetVelPos
+        jmp SetVel
         
-.pdone
-	; TODO: this part could be better
+.vdone
+
+	; adjusting velocity values
+
         ; limiting walk speed to maximum
         bit flags
-        bvs .mhend
+        bvs .nl
         
       
- IF 1
-	; faster but repeating code
- 	; TODO: write a CMP24 macro, it could even accept arbiterily large ints
-        
-        ;LIMITMAG vx0,vx1,vx2,MAX_WALK
-
-	lda vx0
-        bpl .mright
-.mleft	cmp #>((-MAX_WALK)>>8)
-	bcs .mhend
-        bne .mhfixleft
-        lda vx1
-        cmp #>(-MAX_WALK)
-        bcs .mhend
-        bne .mhfixleft
-        lda vx2
-        cmp #<(-MAX_WALK)
-        bcs .mhend
-.mhfixleft
-	lda #>((-MAX_WALK)>>8)
-        sta vx0
-        lda #>(-MAX_WALK)
-        sta vx1
-        lda #<(-MAX_WALK)
-        sta vx2
-	jmp .mhend
-
-.mright	cmp #>(MAX_WALK>>8)
-	bcc .mhend
-     	bne .mhfixright
-        lda vx1
-        cmp #>(MAX_WALK)
-        bcc .mhend
-        bne .mhfixright
-        lda vx2
-        cmp #<(MAX_WALK)
-        bcc .mhend
-.mhfixright
-	lda #>(MAX_WALK>>8)
-        sta vx0
-        lda #>(MAX_WALK)
-        sta vx1
-        lda #<(MAX_WALK)
-        sta vx2
-
- ELSE
  	; using absolute value so we there's less code
  	lda vx0
         ldx vx1
@@ -213,25 +157,78 @@ SetVelPos:
 	bit vx0
 	bpl .pos
 .neg
-        lda #<(-MAX_WALK)
-        sta vx2
-        lda #>(-MAX_WALK)
-        sta vx1
+        ldy #<(-MAX_WALK)
+        ldx #>(-MAX_WALK)
 	lda #>((-MAX_WALK)>>8)
-        sta vx0
-	bmi .nl
+	bmi .write
 .pos
-        lda #<(MAX_WALK)
-        sta vx2
-        lda #>(MAX_WALK)
-        sta vx1
+        ldy #<(MAX_WALK)
+        ldx #>(MAX_WALK)
 	lda #>(MAX_WALK>>8)
+.write
+	sty vx2
+        stx vx1
         sta vx0
 .nl
 
- ENDIF
-.mhend
- 	
+	
+	;; no velocity value should be outside (-4, 4)
+
+	lda vx0
+        bmi .hchneg
+.hchpos        
+	cmp #MAX_SPEED
+        bcc .hchdone
+	lda #MAX_SPEED
+        sta vx0
+        bne .hchdone
+.hchneg
+	cmp #256-MAX_SPEED+1
+        bcs .hchdone
+        lda #256-MAX_SPEED
+        sta vx0
+.hchdone
+
+	lda vy0
+        bmi .hcvneg
+.hcvpos        
+	cmp #MAX_SPEED
+        bcc .hcvdone
+	lda #MAX_SPEED
+        sta vy0
+        bne .hcvdone
+.hcvneg
+	cmp #256-MAX_SPEED+1
+        bcs .hcvdone
+        lda #256-MAX_SPEED
+        sta vy0
+.hcvdone
+
+
+	;;; velocity values have been adjusted. updating position
+
+	ldx #3
+SetPos:
+
+        clc
+        lda px1,x
+        adc vx1,x
+        sta px1,x
+        lda px0,x
+        adc vx0,x
+        sta px0,x
+        
+        lda px1,x
+        adc #0		; evil hack! if velocity is -1 it doesn't change anything
+        sta px1,x
+        
+        cpx #0
+        beq .pdone
+        ldx #0
+        jmp SetPos
+        
+.pdone
+
 	rts
 
 

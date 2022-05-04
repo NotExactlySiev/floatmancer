@@ -264,7 +264,7 @@ Release: subroutine
 
 .extradone
 
- ENDIF
+ ENDIF ; end of fling
  
 
         lda #$7f
