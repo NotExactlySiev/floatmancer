@@ -126,7 +126,11 @@ hookpy	= $3B
 frame	= $3C	; character's animation frame index
 
 scroll	= $3D	; screen scroll. [0, 240]
-flags	= $3E	; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
+flags	= $3E ; hook mode | on air | on ceiling | direction | jumping | ------- | moving | active moving
+scrollx	= $400
+roomtran	= $401
+
+	
 ; $40-$4E are the same but from the previous frame
 
 

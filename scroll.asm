@@ -1,4 +1,24 @@
 UpdateScroll: subroutine
+	;; Horizontal
+
+	; TEMP: testing room transitions
+	lda scrollx
+        cmp #$fb
+        bne .ndone
+        lda #0
+        sta scrollx
+.ndone
+        cmp #$80
+	ror 
+        sta scrollx
+        cmp #$80
+        ror
+        clc
+        adc scrollx
+        sta scrollx
+
+
+	;; Vertical
 	; scrolls if the character passes a threshhold distance from the bottom or top of the screen
         lda #SCREEN_HEIGHT-SCROLL_THOLD
 	cmp py0

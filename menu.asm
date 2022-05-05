@@ -1,5 +1,4 @@
 LoadMenu: subroutine
-	
         jsr ClearState
         
         ldx #$3f

@@ -8,25 +8,26 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
         lsr
         lsr
         cmp #$3		; first check collision with the two walls
+        sec ; disabling walls for now. TEMP
         bcc .wall
        	cmp #29
+        clc ; disabling walls for now. TEMP
         bcc .nwall
 .wall
 	lda #1
         rts
-.nwall   
+.nwall
 
         sta func7
 
         lda func0	; set pixel positions to grid positions. adjust for scrolling
         clc
         adc scroll
-        ror		; nine bit addition result. throw away 0-2, keep carry
+        ror		; nine bit addition result. throw away bits 0-2, keep carry
         lsr
         lsr
         sta func6
         
-
         
         ldx #0
         

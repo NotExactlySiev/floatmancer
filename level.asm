@@ -68,10 +68,11 @@ ClearLevel: subroutine
 LoadLevel: subroutine	; load level data and metadata from level pointer        
         ldy #0
         lda (lvlptr),y
+        and #$c0
+        sta tmp0
         lsr
         lsr
-        ora (lvlptr),y
-        and #$f0
+        ora tmp0
         sta scroll
         
         lda (lvlptr),y
@@ -107,7 +108,11 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
 
 	rts
 
-
+GoToLevel: subroutine
+	jsr FindLevel
+        jsr ClearLevel
+        jsr LoadLevel
+        rts
 
 RenderLevel: subroutine	; draw the background parts of the level, load the collision
 			; and object (sprite) data into appropriate tables
@@ -122,11 +127,11 @@ RenderLevel: subroutine	; draw the background parts of the level, load the colli
         stx func0
         stx func1
         stx func5
-        jsr DrawWall
+        ;jsr DrawWall
         ldx #29
         stx func1        
         asl func4
-        jsr DrawWall
+        ;jsr DrawWall
         
 	ldy #0
 NextItem:

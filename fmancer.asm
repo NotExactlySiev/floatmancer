@@ -1,4 +1,3 @@
-
 	include "nesdefs.dasm"	
 	include "levelmacros.asm"
 	include "constants.inc"        
@@ -14,7 +13,6 @@
 Start:	
 	include "init.asm"
 
-
 	;;; MAIN LOOP
 .endless	
         jmp .endless
@@ -23,13 +21,24 @@ NMIHandler:
 	jsr SequenceFrame
         jsr ReadPad	; putting this after diable nmi causes bugs :/
         
+        ;temporary solution until i find something better
+        lda roomtran
+        beq .ntran
+        lda #0
+        sta roomtran
+        ldx #5
+        jsr PlaySequence
+.ntran
+        
         lda state
         bne .ntransition
         rti
 .ntransition
         
         ; disable nmi, set nametable
-        lda #0
+	
+        ;lda #0
+	lda scrollx
         sta PPU_SCROLL
         ldx #$08
         lda scroll
@@ -52,8 +61,8 @@ NMIHandler:
         jsr MenuInput
 	jmp NMIEnd
 
-
 .playing
+
 	;; PPU WRITES
         jsr UpdatePlayer
         
@@ -110,7 +119,36 @@ NMIHandler:
         jmp NMIEnd
 .noutside
 
-NMIEnd:    
+	ldy sqidx
+        lda sequence,y
+        bne .nroom
+	; checking for room transition
+        lda px0
+        cmp #5
+        bcs .nleft
+	ldx lvl
+        inx
+        stx func0
+        jsr FindLevel
+        lda #$7F
+        sta scrollx
+        sta $401
+        bne NMIEnd
+.nleft
+	cmp #256-5
+        bcc .nright
+	ldx lvl
+        dex
+        stx func0
+        jsr FindLevel
+        lda #$80
+        sta scrollx
+        sta $401
+.nright
+
+.nroom
+
+NMIEnd:
 	; enable nmi, set nametable
         ldx #$88
         lda scroll
@@ -190,7 +228,7 @@ CallTableHi:
 CallTableLo:
 	.byte <(ClearLevel-1), <(SetDarkness-1), <(InitPlay-1), <(UpdateSprites-1)
         .byte <(ClearState-1), <(ClearDMA-1), <(LoadLevel-1), <(RenderLevel-1)
-        .byte <(DisablePPU-1), <(EnablePPU-1), 0, 0				; DO NOT wait after disabling ppu
+        .byte <(DisablePPU-1), <(EnablePPU-1), 0, 0	; DO NOT wait after disabling ppu
         .byte 0, 0, 0, 0
 
 
@@ -201,6 +239,7 @@ SequencesTable:
         .byte SEQ_Death-Sequences
         .byte SEQ_PlayerStop-Sequences
         .byte SEQ_InitLevel-Sequences
+	.byte SEQ6_DATA-Sequences
 Sequences:
 SEQ_FadeOut:
 	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
@@ -213,10 +252,12 @@ SEQ_Death:
 	; .byte $60, state
         ; TODO: death animation
 	.byte $42, $00
-SEQ_PlayerStop:	; i don't think we need this
+SEQ_PlayerStop:	; this is pause
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
-SEQ_InitLevel:
-	.byte $28, $20, $25, $26, $27, $22, $29, $00
+SEQ_InitLevel: ; no fadeout
+	.byte $28, $20, $25, $26, $27, $22, $01, $29, $00
+SEQ6_DATA:
+	.byte $0
 
 
 Animations:
@@ -249,7 +290,8 @@ MenuOptions:
 TXT_Credits:
         dc "A@GAME@BY@SIEV", 0
 
-	;;; VECTORS  
+	;;; VECTORS
+      
 	NES_VECTORS
 
 

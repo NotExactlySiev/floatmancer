@@ -6,6 +6,8 @@ ENABLE_UNFLING	= 1 ; reduce speed at release (if above threshold)
 ENABLE_COOLDOWN	= 0 ; not implemented yet
 ENABLE_GLIDE	= 0 ; not implemented yet
 ENABLE_BHOP	= 0 ; not implemented yet
+ENABLE_AIR_RES	= 0 ; not implemented yet
+LIMIT_ROT	= 0 ; not implemented yet
 
 ; physics values
 UP_GRAVITY	= $006000

@@ -190,21 +190,22 @@ SetVel:
         sta vx0
 .hchdone
 
+ IF 1
 	lda vy0
         bmi .hcvneg
 .hcvpos        
-	cmp #MAX_SPEED
+	cmp #MAX_SPEED+3
         bcc .hcvdone
-	lda #MAX_SPEED
+	lda #MAX_SPEED+3
         sta vy0
         bne .hcvdone
 .hcvneg
-	cmp #256-MAX_SPEED+1
+	cmp #256-(MAX_SPEED+3)+1
         bcs .hcvdone
-        lda #256-MAX_SPEED
+        lda #256-(MAX_SPEED+3)
         sta vy0
 .hcvdone
-
+ ENDIF
 
 	;;; velocity values have been adjusted. updating position
 
