@@ -82,6 +82,23 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         stx lvlsize
         
         iny
+        lda $401 ; don't do this if we're in a room transition
+        beq .fromdata
+        lda px0
+        bmi .right
+	eor #$ff
+        sec
+        sbc #$4
+        bne .set
+.right
+        eor #$ff
+	clc
+	adc #$4
+.set
+        sta px0
+        jmp .posdone
+.fromdata
+
         lda (lvlptr),y
         and #$1f
         asl
@@ -91,8 +108,10 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         lda (lvlptr),y
         and #$e0
         sta py0
-        
-        ldy lvlsize
+ 
+.posdone
+
+	ldy lvlsize
         iny
         ldx lvlsize
         dex   

@@ -1,5 +1,4 @@
 ;;; Code for handling scripted events
-
 SequenceFrame: subroutine
 	ldx sqtimer
         dex

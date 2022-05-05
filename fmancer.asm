@@ -21,14 +21,6 @@ NMIHandler:
 	jsr SequenceFrame
         jsr ReadPad	; putting this after diable nmi causes bugs :/
         
-        ;temporary solution until i find something better
-        lda roomtran
-        beq .ntran
-        lda #0
-        sta roomtran
-        ldx #5
-        jsr PlaySequence
-.ntran
         
         lda state
         bne .ntransition
@@ -123,29 +115,26 @@ NMIHandler:
         lda sequence,y
         bne .nroom
 	; checking for room transition
+        ldx lvl
+
         lda px0
         cmp #5
         bcs .nleft
-	ldx lvl
         inx
-        stx func0
-        jsr FindLevel
         lda #$7F
-        sta scrollx
-        sta $401
-        bne NMIEnd
+        bne .tran
 .nleft
 	cmp #256-5
-        bcc .nright
-	ldx lvl
+        bcc .nroom
         dex
+        lda #$80
+.tran
+        sta scrollx
         stx func0
         jsr FindLevel
-        lda #$80
-        sta scrollx
-        sta $401
-.nright
-
+        ldx #SEQ_ROOMTRAN
+        jsr PlaySequence
+        inc $401
 .nroom
 
 NMIEnd:
@@ -200,65 +189,8 @@ PlayerDeath: subroutine
 
         ;;; DATA
         
-        ;; color data
-CastlePalette:
-	.hex 0f
-        .hex 102d00
-        .hex 2d1a30
-        .hex 0b1a07
-        .hex 0b1a07
-        .hex 041320
-        .hex 041903
-        .hex 24152d
-        .hex 111111
-        
-HueShift:	; hues to shift into for each dark color before going to black
-	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
-DarkTable:	; where the palettes of each darkness degree are located
-	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
 
-
-	;; sequence data
-CallTableHi:
-	.byte >(ClearLevel-1), >(SetDarkness-1), >(InitPlay-1), >(UpdateSprites-1)
-        .byte >(ClearState-1), >(ClearDMA-1), >(LoadLevel-1), >(RenderLevel-1)
-        .byte >(DisablePPU-1), >(EnablePPU-1), 0, 0
-        .byte 0, 0, 0, 0
-
-CallTableLo:
-	.byte <(ClearLevel-1), <(SetDarkness-1), <(InitPlay-1), <(UpdateSprites-1)
-        .byte <(ClearState-1), <(ClearDMA-1), <(LoadLevel-1), <(RenderLevel-1)
-        .byte <(DisablePPU-1), <(EnablePPU-1), 0, 0	; DO NOT wait after disabling ppu
-        .byte 0, 0, 0, 0
-
-
-SequencesTable:
-	.byte SEQ_FadeOut-Sequences
-        .byte SEQ_FadeIn-Sequences
-        .byte SEQ_ResetLevel-Sequences
-        .byte SEQ_Death-Sequences
-        .byte SEQ_PlayerStop-Sequences
-        .byte SEQ_InitLevel-Sequences
-	.byte SEQ6_DATA-Sequences
-Sequences:
-SEQ_FadeOut:
-	.byte $61, $13, $21, $02, $82, $21, $02, $83, $21, $02, $84, $21, $00
-SEQ_FadeIn:
-	.byte $63, $13, $21, $02, $82, $21, $02, $81, $21, $02, $80, $21, $00
-SEQ_ResetLevel:
-	.byte $40, $45, $41, $00
-SEQ_Death:
-	; i stopped changing the state and it stopped randomly scrolling at death
-	; .byte $60, state
-        ; TODO: death animation
-	.byte $42, $00
-SEQ_PlayerStop:	; this is pause
-	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
-SEQ_InitLevel: ; no fadeout
-	.byte $28, $20, $25, $26, $27, $22, $01, $29, $00
-SEQ6_DATA:
-	.byte $0
-
+	include "sequencedata.asm"
 
 Animations:
 ANIM_Idle:
@@ -277,7 +209,25 @@ ANIM_Run:
         org SIN_HEAD<<8
         include "sinetable.asm"    
 	include "pythtantable.asm"
+
+        ;; color data
+CastlePalette:
+	.hex 0f
+        .hex 102d00
+        .hex 2d1a30
+        .hex 0b1a07
+        .hex 0b1a07
+        .hex 041320
+        .hex 041903
+        .hex 24152d
+        .hex 111111
         
+HueShift:	; hues to shift into for each dark color before going to black
+	.byte 1, 15, 1, 4, 15, 4, 7, 15, 15, 8, 15, 12, 15, 15, 15, 15
+DarkTable:	; where the palettes of each darkness degree are located
+	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
+
+	;; texts
 Text:
 Worlds:
         dc "TSACGNUJ"

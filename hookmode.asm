@@ -417,13 +417,11 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         lda px0+BACKUP_OFFSET	; attaching. calculate angle at t and t-dt, subtract to get omega
         sec
         sbc hookpx+BACKUP_OFFSET
-        sta relpx0+BACKUP_OFFSET
         sta func0
         
         lda py0+BACKUP_OFFSET
         sec
         sbc hookpy+BACKUP_OFFSET
-        ;sta relpy0+BACKUP_OFFSET
         sta func1
         
         jsr CalcAtan
@@ -435,13 +433,11 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
 	lda px0
         sec
         sbc hookpx
-        sta relpx0
         sta func0
         
         lda py0
         sec
         sbc hookpy
-        ;ta relpy0
         sta func1
         	
 	jsr CalcAtan

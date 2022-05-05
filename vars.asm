@@ -51,13 +51,13 @@ sqidx	= $18
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; LEVEL GENERATION
-blknum	= $20
-filbyte	= $21
+blknum	= $40
+filbyte	= $41
 
-blkptr1	= $22
-blkptr2	= $23
+blkptr1	= $42
+blkptr2	= $43
 
-sidestmp = $24
+sidestmp = $44
 
 
 ;;; MENU
@@ -110,11 +110,9 @@ hookidx	= $2F	; hook index in oam dma
 
 px0	= $30
 px1	= $31
-relpx0	= $32	; x and y distance from the hook. 8 bit
 
 py0	= $33	; in relation to other objects on the screen, doesn't account for scroll
 py1	= $34
-;relpy0	= $35 ; <- hold the fuck on... what actually is the purpose of these values? they're never used!
 
 angle0	= $36	; angle from the hook. 24 bit (should be 16?)
 angle1	= $37

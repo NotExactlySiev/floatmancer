@@ -8,10 +8,12 @@ ControlInput: subroutine
         stx func0
         jsr FindLevel
 
-        ldx #2
+        ldx #SEQ_JUMPLVL
         jsr PlaySequence
         
 .lvlend
+
+
 	lda pad
         and padedge
         and #$10
