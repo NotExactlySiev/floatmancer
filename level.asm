@@ -51,7 +51,7 @@ ClearLevel: subroutine
         dex
         bne .loop
         
-        ldx #$20
+        ldx #$50
 .clearzp
         sta $0,x
         inx
@@ -84,19 +84,9 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         iny
         lda $401 ; don't do this if we're in a room transition
         beq .fromdata
-        lda px0
-        bmi .right
-	eor #$ff
-        sec
-        sbc #$4
-        bne .set
-.right
-        eor #$ff
-	clc
-	adc #$4
-.set
-        sta px0
-        jmp .posdone
+	lda #0
+        sta $401
+        beq .posdone
 .fromdata
 
         lda (lvlptr),y

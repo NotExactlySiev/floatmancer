@@ -111,21 +111,23 @@ NMIHandler:
         jmp NMIEnd
 .noutside
 
-	ldy sqidx
-        lda sequence,y
-        bne .nroom
-	; checking for room transition
-        ldx lvl
-
+	; room transition when crosses screen boundry
+	lda px0+BACKUP_OFFSET
+        eor px0
+        bpl .nroom
         lda px0
-        cmp #5
-        bcs .nleft
+        asl
+        eor px0
+        bmi .nroom
+        
+        ldx lvl
+	
+        lda px0
+        bpl .toright
         inx
         lda #$7F
         bne .tran
-.nleft
-	cmp #256-5
-        bcc .nroom
+.toright
         dex
         lda #$80
 .tran
@@ -136,6 +138,7 @@ NMIHandler:
         jsr PlaySequence
         inc $401
 .nroom
+
 
 NMIEnd:
 	; enable nmi, set nametable

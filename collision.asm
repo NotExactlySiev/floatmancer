@@ -126,7 +126,8 @@ NormalCollision: subroutine
                         ; ended up here by having vertical velocity, and will later be added to the y position
                         ; value which will end up pushing the player down.
 .checkup
-	lda #3
+	lda #5		; i changed this from 3 to 5 and it seems to work better now
+        		; why was it so low to begin with?
 	jsr UpCollision
         beq .nceiling
         bmi .nceiling

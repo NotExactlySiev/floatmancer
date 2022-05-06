@@ -107,6 +107,7 @@ omega2	= $2E
 hookidx	= $2F	; hook index in oam dma
 
 ; set 2 variables - backed up every frame
+BACKUP_OFFSET	= $10
 
 px0	= $30
 px1	= $31
