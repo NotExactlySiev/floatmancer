@@ -32,7 +32,7 @@ NormalMode: subroutine
         beq .end
        
 ; EXPERIMENTAL - testing a different decel method
-
+.decel
 	lda ax0
         bne .npassive
 	lda ax1
@@ -107,6 +107,48 @@ NormalMode: subroutine
 .nojump
 
 
+ IF ENABLE_AIR_RES
+        ; the old ground decel system should work fine here
+        ; the new ground decel system is way too fast for air decel
+        ; also we should really face the problems we had with the old one
+        ; here, it should work just fine i think since it's only applied mid air
+	
+        ; we only have passive decel if movement controls aren't pressed
+        lda pad
+        and #$3
+        bne .resdone
+        
+	bit vx0
+        bpl .right
+        
+        clc
+        lda vx2
+        adc #<(AIR_RES)
+        sta vx2
+        lda vx1
+        adc #>(AIR_RES)
+        sta vx1
+        lda vx0
+        adc #>(AIR_RES>>8)
+        sta vx0
+        jmp .resdone
+          
+.right
+	clc
+        lda vx2
+        adc #<(-AIR_RES)
+        sta vx2
+        lda vx1
+        adc #>(-AIR_RES)
+        sta vx1
+        lda vx0
+        adc #>((-AIR_RES)>>8)
+        sta vx0
+
+.resdone
+
+ ENDIF
+ 
 .airdone
 
 

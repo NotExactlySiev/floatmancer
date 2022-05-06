@@ -51,6 +51,11 @@ HookMode: subroutine
         
         jsr UpdateAngularPosition
 
+
+	;; TODO: hook mode collision needs a serious rework
+        ;; 	 we need some sort of momentum that converts into deltaradius
+        ;;	 and is somehow related to downward velocity
+        
 	;; normal hook mode collision
 	; hitbox is smaller while swinging
  IF 1
@@ -96,7 +101,7 @@ HookMode: subroutine
  ENDIF       
 
 	
-
+ IF 0
 	; trying stretch method where radius can change
         ; for simplicity's sake let's say it doesn't happen when you're on ground
         
@@ -143,7 +148,7 @@ HookMode: subroutine
 .nstretch
 
 .done
-
+ ENDIF
 
         rts
 

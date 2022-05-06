@@ -1,21 +1,22 @@
 UpdateScroll: subroutine
 	;; Horizontal
 
-	; TEMP: testing room transitions
 	lda scrollx
-        cmp #$fb
-        bne .ndone
-        lda #0
-        sta scrollx
-.ndone
         cmp #$80
 	ror 
-        sta scrollx
+        tax
         cmp #$80
         ror
         clc
-        adc scrollx
-        sta scrollx
+        adc $700,x
+        tax
+	bpl .pos
+        inx
+        bne .done
+.pos	
+	dex
+.done
+        stx scrollx
 
 
 	;; Vertical

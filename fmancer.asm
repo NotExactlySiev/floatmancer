@@ -30,8 +30,9 @@ NMIHandler:
         ; disable nmi, set nametable
 	
         ;lda #0
-	lda scrollx
-        sta PPU_SCROLL
+	ldx scrollx
+        inx
+        stx PPU_SCROLL
         ldx #$08
         lda scroll
         cmp #240
