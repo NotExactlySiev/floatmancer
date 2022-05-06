@@ -51,8 +51,9 @@ HookMode: subroutine
         
         jsr UpdateAngularPosition
 
+	;; normal hook mode collision
 	; hitbox is smaller while swinging
-
+ IF 1
 	lda py0
 	sec
         sbc py0+BACKUP_OFFSET
@@ -76,7 +77,7 @@ HookMode: subroutine
         jsr FrontCollision
         bne .undo
 	
-        rts
+        beq .coldone
 
 .undo
 	clc
@@ -91,7 +92,59 @@ HookMode: subroutine
         sta omega1
         sta omega2
         jsr UpdateAngularPosition
+.coldone
+ ENDIF       
+
+	
+
+	; trying stretch method where radius can change
+        ; for simplicity's sake let's say it doesn't happen when you're on ground
         
+        ; wait, the hitbox needs to be a bit bigger for this part
+        ldy omega0
+        lda angle0
+        sec
+        sbc #$40
+        tax
+        bmi .fine
+     	dey   
+.fine        
+        eor $700,y
+        bpl .nstretch
+.moving
+	sty tmp0
+        txa
+        asl
+        bpl .right
+        lda flags
+        ora #$10
+        sta flags
+        bne .check
+.right 
+        lda flags
+        and #$ef
+        sta flags
+
+.check
+        lda #4
+        jsr FrontCollision
+        beq .nstretch
+        
+        lda angle0
+        asl
+        eor tmp0
+        bmi .short
+        inc radius
+        bne .done
+        
+.short
+	dec radius
+        
+.nstretch
+
+.done
+
+
         rts
 
 UpdateAngularPosition: subroutine

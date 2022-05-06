@@ -279,6 +279,4 @@ FrontCollision: subroutine
         sta func0
 
 	jsr CheckCollision	; BOTTOM left/right
-	bne .yes
-        lda #0
 .yes	rts
