@@ -212,7 +212,6 @@ ANIM_Run:
         ; math look up tables
         org SIN_HEAD<<8
         include "sinetable.asm"    
-	include "pythtantable.asm"
 
         ;; color data
 CastlePalette:
@@ -232,6 +231,7 @@ DarkTable:	; where the palettes of each darkness degree are located
 	.byte basepalette, basepalette+25, basepalette+50, basepalette+75, basepalette+100
 
 	;; texts
+	org $ff00
 Text:
 Worlds:
         dc "TSACGNUJ"

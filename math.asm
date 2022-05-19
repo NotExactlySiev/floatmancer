@@ -196,71 +196,121 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 
 
 	rts
 
-; for pytanlookups, 0-1 legs, 2-3 rowcol, 4-5 ptrs, 6-7 result
-
+; for x and y returns r=sqrt(x*x + y*y), since we have the angle of the vector
+; we can just calculate it with r = |x|*(1/cos(t)) or r = |y|*(1/cos(90 - t)), whichever
+; one's more accurate
+; input x,y in f0-f1, 8 bit positive
+; output r in f7 8 bit
+; TODO: can we make radius 16 bit? how much of a difference would it make?
 CalcRadius: subroutine
 	txa
         pha
-
+        ; if x=0 then r=y and vice versa
 	lda func0
-        bpl .pos0
-        eor #$ff
-        clc
-        adc #1
-.pos0	sta func0
-        
-
+	beq .zero
 	lda func1
-        bpl .pos1
-	eor #$ff
-        clc
-        adc #1
-.pos1	sta func1
-
-        
-        ldx func0
-        ldy func1
-        clc
-        cpx func1
-        bcc .reverse
-        stx func2
-        sty func3
-        jmp .fixdone
-.reverse
-	dex
-        dey
-	stx func3
-        sty func2
-        
-.fixdone
-	lda func3
-	clc
-        cmp #62
-        bcc .colok
-	lda #$ff
-        sta func6
-        pla
+        beq .zero
+        jmp .nzero
+.zero
+	lda func0
+        ora func1
+        sta func7
+	pla
         tax
         rts
-.colok	
-	lda func2
-        clc
-        cmp #62
-        bcc .rowok       
-        lda #$ff
-        sta func6
-        pla
-        tax
-        rts    
-.rowok  
 
-	jsr PyTanLookup
+.nzero
+	; TODO: maybe we can combine the lookup part of this with the one for sine?
+        
+	pha
+        sta func1
+        
+        lda func0
+	pha
+        sta func0
+        
+        jsr CalcAtan
+
+        pla
+        sta func0
+        pla
+        sta func1
+
+        ldx #0
+        ; if t is above 45 degrees, use 90-t and multiply the result by y
+        lda func6
+        cmp #$20
+        bcc .below
+	
+        sec
+        lda #$0
+        sbc func7
+        sta func7
+        lda #$40
+        sbc func6
+        sta func6
+	inx ; remember that we flipped the angle
+.below
+        
+        rol func7
+        rol
+        rol func7
+        rol
+        rol func7
+        rol
+        
+        ; get ready for lookup and multiplication
+        ldy #0
+        sty func5
+        sty func6
+        sty func7
+        iny
+        sty func4
+        
+        tay
+        dey
+        
+        ; collect the 24 bit results
+        lda InvCosHigh,y
+        sta func3
+        lda InvCosLow,y
+        sta func2
+        
+        ; and multiply it by x (or y)
+        ; note: x,y are < 64 so this will not overflow
+        lda func0,x
+        sta tmp0
+        
+.loop
+	lsr tmp0
+        bcc .shift
+        
+        clc
+        lda func2
+        adc func5
+        sta func5
+        lda func3
+        adc func6
+        sta func6
+        lda func4
+        adc func7
+        sta func7
+        
+	lda func2
+.shift
+	beq .done
+	asl func2
+        rol func3
+        rol func4
+        jmp .loop
+.done  
+        
 
 	pla
         tax
         rts
 
-CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
+CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used.
 	txa
         pha
         
@@ -480,7 +530,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         rol func3
         
         clc
-	lda #SIN_HEAD+2
+	lda #>AtanTable
 	adc func3
 	sta func3
 
@@ -532,29 +582,4 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         
         pla
         tax
-        rts
-        
-        
-PyTanLookup: subroutine
-	lda func2
-        lsr
-        ora #PYTAN_HEAD
-        sta func5
-        lda func2
-        and #$1
-        clc
-        ror
-        ror
-        ror
-        ora func3
-        clc
-        asl
-        sta func4
-        
-        ldy #0
-        lda (func4),y
-        sta func6
-        iny
-        lda (func4),y
-        sta func7
         rts

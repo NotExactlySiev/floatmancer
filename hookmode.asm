@@ -409,6 +409,14 @@ FindCloseHook: subroutine
         sbc $210,y
 	sec
         sbc #4
+        ; Abs
+        bpl .ypos
+        eor #$ff
+        sec
+        adc #0
+.ypos
+        cmp #HOOK_RANGE
+        bcs .nclose
         sta func0
      
         sec
@@ -416,6 +424,14 @@ FindCloseHook: subroutine
         sbc $210,x
         sec
         sbc #4
+        ; Abs
+        bpl .xpos
+        eor #$ff
+        sec
+        adc #0
+.xpos
+        cmp #HOOK_RANGE
+        bcs .nclose
         sta func1
 	
         tya
@@ -426,9 +442,10 @@ FindCloseHook: subroutine
         pla
         tay
         
-        lda func6
+        lda func7
         cmp radius
         bcc .isclose
+.nclose
         inx
         inx		; ... | [y] [] [] [] | [] [x] ...
         bcs .nexthook
