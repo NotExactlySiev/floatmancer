@@ -17,10 +17,10 @@ CharacterAnimation: subroutine
         lda #$10
         bne .spritedone
 .jwindup
-	lda #$0
+	lda #$4
         ldx vy0
         bmi .upwards
-	lda #$3
+	lda #$4
 .upwards
 	bne .spritedone
 

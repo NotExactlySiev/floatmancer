@@ -38,7 +38,7 @@ SEQ3_Data:
 	; .byte $60, state
         ; TODO: death animation
 	.byte $42, $00
-SEQ4_Data:	; this is pause
+SEQ4_Data:
 	.byte $60, $95, $02, $67, $3C, $02, $88, $01, $60, $26, $60, $27, $00
 SEQ5_Data: ; no fadeout
 	.byte $28, $20, $25, $26, $27, $22, $01, $29, $00

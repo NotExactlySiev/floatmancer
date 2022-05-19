@@ -18,17 +18,17 @@ JUMP_FORCE	= $035000
 FLING_FORCE_H	= 6
 FLING_FORCE_V	= 6
 WALK_ACCEL	= $006a80
-AIR_ACCEL	= $006080
+AIR_ACCEL	= $004100 ;$006080
 AIR_RES		= $000600
-MAX_WALK	= $010cc0
+MAX_WALK	= $00D000 ;$010cc0
 MAX_SPEED	= 4 ; absolute max speed value permitted by the engine
-AIR_ACCEL_LIMIT	= $009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
+AIR_ACCEL_LIMIT	= $00C800 ;$009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
 HOOK_SWING	= 108
-HOOK_RANGE	= 60
+HOOK_RANGE	= 48
 
 
 ; frame times
-MAX_JUMP	= 9 ; how many frames you can hold jump for
+MAX_JUMP	= 8 ; how many frames you can hold jump for
 COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 BHOP_WINDOW	= 2 ; not implemented yet

@@ -265,10 +265,11 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         pha
         
         lda #0
-        sta func7
-                
-        lda #0
+        sta tmp1
         sta tmp3
+        sta func7
+        sta func2	; set offset at the start of the table
+        sta func3
         
         lda func0
         bpl .horok
@@ -297,47 +298,198 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 rowcol, 4-5 ptrs, 6-7 result, tmp3 flags
         bne .n45
         lda #$20
         sta func6
-        bne .lookupdone
+	beq .njmp
+	jmp .lookupdone	
+.njmp
 .n45     
-        dec func0
-        bpl .nright
+        lda func0
+        bne .nright
 	lda #$40
         sta func6
         lda #$10
         ora tmp3
         sta tmp3
-        bne .lookupdone
+	beq .njmp1
+	jmp .lookupdone	
+.njmp1
 .nright
-        dec func1
-	bpl .nzero
+        lda func1
+	bne .nzero
         lda #$0
         sta func6
         lda #$10
         ora tmp3
         sta tmp3
-        beq .lookupdone
+	bne .njmp2
+	jmp .lookupdone	
+.njmp2
 .nzero
 
-        bcs .orderok
+.divide
+	lda func0
+        lsr
+        bcs .lookup
         lda func1
-        sta func2
-        lda func0
-        sta func3
-        lda #$10
+        lsr
+        bcs .swap
+        lsr func0
+        sta func1
+	jmp .divide
+        
+.swap   
+
+        rol ; undo the shift and swap
+        ldx func0
+        stx func1
+        tax
+        lda #$10 ; reminder that we swapped
         ora tmp3
         sta tmp3
-        jmp .orderdone
-.orderok
-	lda func1
-	sta func3
-        lda func0
-        sta func2
-.orderdone
+        txa
+        lsr
+.lookup     
+        ldy #0
+	; now that we have them in correct format and order, we need to
+        ; calculate the offset for x, using this formula:
+        ; r = (x - 1) >> 1  (but we've already decremented one)
+        ; offset = N/2 * r + T(r-1)
+        ; where T(n) is the nth triangular number
+        ; where N is the size of the LUT
+	; x is already divided by two
+        sta func0
+        tax
+        ; and right off the bat if r = 0 then offset = 0
+        beq .offdone
 	
+        ; we multiply it by size of the table divided by two
+        ; in this case a multiplication by 50/2 = 25
+        sta func4
+        lda #0
+        sta func5
+        
+        clc
+        lda func4
+        adc func2
+        sta func2
+        lda func5
+        adc func3
+        sta func3
+        
+        asl func4
+        rol func5
+        asl func4
+        rol func5
+        asl func4
+        rol func5
+        
+        clc
+        lda func4
+        adc func2
+        sta func2
+        lda func5
+        adc func3
+        sta func3
+        
+        asl func4
+        rol func5
+        
+        clc
+        lda func4
+        adc func2
+        sta func2
+        lda func5
+        adc func3
+        sta func3
+        
+        ; now to calculate T(r-1) = (r*(r-1))/2
+        
+        sec
+        lda func0
+        sta func7
+        lda #0
+        sta func6
+        sta func5
+        sta tmp0
+        sta tmp1
+       
+       	lda func0
+        sbc #1
+        sta func4
+        sta tmp2 ; save r-1 for later
+        
 
-	jsr PyTanLookup
+.loop
+	lsr func4
+        bcc .shift
+        
+        clc
+        lda func7
+        adc tmp1
+        sta tmp1
+        lda func6
+        adc tmp0
+        sta tmp0
+        
+	lda func4
+.shift
+	beq .offdone
+        asl func7
+        rol func6
+        jmp .loop      
+.offdone
 
+	lsr tmp0
+        ror tmp1
 
+	clc
+	lda tmp1
+        adc func2
+        sta func2
+        lda tmp0
+        adc func3
+        sta func3
+
+	; x offset is now added to 2-3
+
+	; now add y offset (row index) to it and read the result off the table
+        lda tmp2
+        asl
+        cmp func1
+        bcc .after
+      	ldx func1 ; i = y - 1
+        dex
+        txa
+        jmp .indexdone
+.after
+        lda func1 ; i = y/2 + r - 1
+        lsr
+        clc
+        adc tmp2
+        
+.indexdone
+
+        clc
+        adc func2
+        sta func2
+        lda #0
+	adc func3
+        sta func3
+
+	; now multiply the whole thing by 2 because values are 16 bit
+	asl func2
+        rol func3
+        
+        clc
+	lda #SIN_HEAD+2
+	adc func3
+	sta func3
+
+	lda (func2),y
+        sta func6
+        iny
+        lda (func2),y
+        sta func7
+        
 .lookupdone
 
         asl tmp3

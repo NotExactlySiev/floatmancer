@@ -1,12 +1,12 @@
 DisablePPU: subroutine
-	lda #0
+	lda #00
         sta PPU_MASK
         lda #$08
         sta PPU_CTRL
 	rts
         
 EnablePPU: subroutine
-	lda #$18
+	lda #$1E
         sta PPU_MASK
         lda #$18
         sta PPU_CTRL

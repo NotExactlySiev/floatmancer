@@ -25,5 +25,5 @@
         ; enable rendering, nmi
         lda #$88
         sta PPU_CTRL
-        lda #$18
+        lda #$1E
         sta PPU_MASK
