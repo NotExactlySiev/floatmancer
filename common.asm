@@ -66,7 +66,7 @@ ReadPad: subroutine
 	rts    
 
 
-	; use this to jsr to indirect address, index x from 
+; use this to jsr to indirect address, index x from 
 CallFromTable: subroutine
 	lda CallTableHi,x
         pha
@@ -74,7 +74,7 @@ CallFromTable: subroutine
         pha
         rts
 
-	; clears DMA from x onwards
+; clears DMA from x onwards
 ClearDMA: subroutine
 	lda #0
 .loop
@@ -93,7 +93,7 @@ FindEmptyZp: subroutine
 .found  rts
 
 
-	; finds the first zero byte in page A after AY
+; finds the first zero byte in page A after AY
 FindEmpty: subroutine
 	sta tmp3
 	lda #0

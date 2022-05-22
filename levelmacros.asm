@@ -1,14 +1,28 @@
 
 	MAC LEVEL_HEADER
 .here:
-        .byte {2}<<6 | {1}-.here-3
+        .byte {2}<<6 | {1}-.here-4
         .byte {3}<<5 | {4}
         ENDM
-
+        
+        MAC EXIT ; side room offset
+          IF {2} >= 1
+          .byte {1}<<6 | {3]<<3 | {2}-1
+          ELSE
+          .byte {1}<<6 | {3]<<3 | ({2}&%111)
+          ENDIF
+        ENDM
+        
+        MAC LEVEL_DATA
+        .byte %00110000 ; other bytes are reserved for future use
+        ENDM
+        
 	; 00000 - 00011
         MAC FIL ; select sides
         .byte {1}<<3 | {2}
         ENDM
+        
+
 
 	; 00100 - 00111
 	MAC BLK ; x y width height

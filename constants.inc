@@ -36,8 +36,6 @@ BHOP_WINDOW	= 2 ; not implemented yet
 
 WINDUP_TIME	= $1 ; jump delay
 
-SIN_HEAD	= $c0
-PYTAN_HEAD	= $e0
 LEVEL_HEAD	= $98
 
 SCROLL_THOLD	= 90

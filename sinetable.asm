@@ -7,7 +7,7 @@
 
 ; Note: these tables should always be aligned to the page
 
-	org (SIN_HEAD<<8)
+	org $F000
 
 SineHigh:
         ; high byte

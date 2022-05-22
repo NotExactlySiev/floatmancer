@@ -28,8 +28,6 @@ NMIHandler:
 .ntransition
         
         ; disable nmi, set nametable
-	
-        ;lda #0
 	ldx scrollx
         inx
         stx PPU_SCROLL

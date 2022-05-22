@@ -20,7 +20,7 @@ FindLevel: subroutine ; find lvlptr for lvl at func0
         lda (lvlptr),y
         and #$3f
         clc
-        adc #3
+        adc #4
         clc
         adc lvlptr
         sta lvlptr
@@ -67,6 +67,7 @@ ClearLevel: subroutine
 
 LoadLevel: subroutine	; load level data and metadata from level pointer        
         ldy #0
+        sty tmp1
         lda (lvlptr),y
         and #$c0
         sta tmp0
@@ -80,7 +81,7 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         tax
         inx
         stx lvlsize
-        
+
         iny
         lda $401 ; don't do this if we're in a room transition
         beq .fromdata
@@ -101,7 +102,64 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
  
 .posdone
 
-	ldy lvlsize
+        ; now read level exits
+        ldx #0
+.exits
+	iny
+        lda (lvlptr),y
+        sty tmp3
+        tay
+	and #%00111000
+        cmp #%00110000
+        beq .exitsdone
+        
+        dec lvlsize ; exits are not part of level data
+        inc tmp1
+        sta tmp0
+        
+        tya
+        rol
+        rol
+        rol
+        and #$3
+        sta exits,x
+        
+
+	; extract room offset
+	tya
+        and #$7
+        tay
+        and #$4
+        beq .pos
+    	tya
+        ora #$f8
+	bne .roomdone       
+.pos
+        inx
+        txa
+.roomdone
+	sta exits+8,x; temporary
+        
+        lda tmp0
+        lsr
+        lsr
+        lsr
+        sta exits+16,x
+        
+        inx
+       	ldy tmp3
+	jmp .exits
+        
+        
+        
+.exitsdone
+
+	; and finally load level data
+	lda lvlsize
+        clc
+        adc tmp1
+        tay
+        iny
         iny
         ldx lvlsize
         dex   
