@@ -119,19 +119,29 @@ NMIHandler:
         eor px0
         bmi .nroom
         
-        ldx lvl
-	
+        ldx #2
+
+	ldy #$7f
         lda px0
-        bpl .toright
+        bmi .toleft
         inx
-        lda #$7F
-        bne .tran
-.toright
+        iny
+.toleft
+	sty scrollx
+	txa
+        
+        ldx #$8
+.next        
         dex
-        lda #$80
-.tran
-        sta scrollx
-        stx func0
+        bmi .doordone
+        cmp exits,x
+	bne .next
+	lda exits+8,x
+.doordone
+	
+        clc
+        adc lvl
+	sta func0
         jsr FindLevel
         ldx #SEQ_ROOMTRAN
         jsr PlaySequence

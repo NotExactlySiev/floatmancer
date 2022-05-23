@@ -3,10 +3,9 @@ Levels:
 
 LVL_1:
 	LEVEL_HEADER LVL0, 3, 4, 12
-        .byte 2<<6 | 0<<3 | 0
-        ;EXIT 2, 1, 0
-        LEVEL_DATA
+        EXIT 2, 0, 0
         
+        LEVEL_DATA
         BLK 15, 44, 15, 1
         BLK 0, 48, 15, 2
 

@@ -110,7 +110,7 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         sty tmp3
         tay
 	and #%00111000
-        cmp #%00110000
+        cmp #%00100000
         beq .exitsdone
         
         dec lvlsize ; exits are not part of level data
@@ -133,10 +133,10 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         beq .pos
     	tya
         ora #$f8
-	bne .roomdone       
+	bne .roomdone
 .pos
-        inx
-        txa
+        iny
+        tya
 .roomdone
 	sta exits+8,x; temporary
         

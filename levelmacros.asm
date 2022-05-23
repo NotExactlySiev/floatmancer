@@ -14,7 +14,7 @@
         ENDM
         
         MAC LEVEL_DATA
-        .byte %00110000 ; other bytes are reserved for future use
+        .byte %00100000 ; other bytes are reserved for future use
         ENDM
         
 	; 00000 - 00011
