@@ -68,6 +68,8 @@ ClearLevel: subroutine
 LoadLevel: subroutine	; load level data and metadata from level pointer        
         ldy #0
         sty tmp1
+        lda $3ff
+        bne .scrolldone
         lda (lvlptr),y
         and #$c0
         sta tmp0
@@ -75,7 +77,11 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         lsr
         ora tmp0
         sta scroll
-        
+        ; TODO: read new calculated scroll value from some variable if this
+        ; is a room transition
+.scrolldone
+
+
         lda (lvlptr),y
         and #$3f
         tax
@@ -83,10 +89,10 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         stx lvlsize
 
         iny
-        lda $401 ; don't do this if we're in a room transition
+        lda $3FF ; don't do this if we're in a room transition
         beq .fromdata
 	lda #0
-        sta $401
+        sta $3FF
         beq .posdone
 .fromdata
 
@@ -252,8 +258,8 @@ NextItem:
         
 .nflag
         
-	
-
+        
+        
         jmp NextItem
 
 

@@ -136,16 +136,21 @@ NMIHandler:
         bmi .doordone
         cmp exits,x
 	bne .next
-	lda exits+8,x
-.doordone
-	
+	lda exits_room,x
+.doordone	
         clc
         adc lvl
 	sta func0
         jsr FindLevel
+
+	lda exits_off,x
+	clc
+        adc scrollx
+        sta scrollx
+        
         ldx #SEQ_ROOMTRAN
         jsr PlaySequence
-        inc $401
+        inc $3FF ; TODO: name this var
 .nroom
 
 

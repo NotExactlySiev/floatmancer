@@ -3,7 +3,8 @@ Levels:
 
 LVL_1:
 	LEVEL_HEADER LVL0, 3, 4, 12
-        EXIT 2, 0, 0
+        ;EXIT 2, 1, 0, 0
+        .byte 2<<6 | 0<<3 | 1-1
         
         LEVEL_DATA
         BLK 15, 44, 15, 1
@@ -11,9 +12,10 @@ LVL_1:
 
 LVL0:
 	LEVEL_HEADER LVL1, 0, 2, 5
+        ;EXIT 3, 1, 1, 0
+        .byte 3<<6 | 0<<3 | ((1^$ff)+1)&%111
         
         LEVEL_DATA
-        
         BLK 3, 13, 15, 2
         HOK 10, 3, 0
         HOK 24, 6, 0

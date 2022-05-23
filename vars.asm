@@ -149,3 +149,5 @@ basepalette	= $170 ; - $1EE
 
 sequence	= $310
 exits		= $400
+exits_room	= $408
+exits_off	= $410

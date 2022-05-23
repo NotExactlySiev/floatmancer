@@ -5,11 +5,11 @@
         .byte {3}<<5 | {4}
         ENDM
         
-        MAC EXIT ; side room offset
-          IF {2} >= 1
-          .byte {1}<<6 | {3]<<3 | {2}-1
-          ELSE
-          .byte {1}<<6 | {3]<<3 | ({2}&%111)
+        MAC EXIT ; side room direction offset
+          IF {3} == 0
+          .byte {1}<<6 | {4]<<3 | {2}-1
+          ELSE IF {3} == 1
+          .byte {1}<<6 | {4]<<3 | (({2}^$ff)+1)&%111
           ENDIF
         ENDM
         
