@@ -31,10 +31,7 @@ CheckCollision:		; check for collision, 0-1 yx pixels, 6-7 yx tiles
         
         ldx #0
         
-.checkrect        
-        lda collist,x
-.ndone
-
+.checkrect
 	lda func6	; check the tile with ALL of the collision blocks
         cmp collist,x
         bcc .not1

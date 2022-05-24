@@ -23,17 +23,27 @@ Levels:
 
 LVL_1:
 	LEVEL_HEADER LVL0, 3, 4, 12
-        EXIT 2, 4, 0
+        EXIT 2, 4, 4
+        EXIT 3, 5, 3
         
         LEVEL_DATA
-        BLK 15, 44, 15, 1
-        BLK 0, 48, 15, 2
+        BLK 1, 1, 15, 3
+        BLK 1, 48, 15, 1
+        BLK 29, 40, 2, 6
+        BLK 15, 44, 15, 2
+        FIL 0, 3
+        HOK 23, 47, 0
+        BLK 1, 54, 13, 2
+        ;BLK 24, 37, 4, 4
+        ;BLK 10, 40, 15, 1
+        ;FIL 0, 3
 
 LVL0:
 	LEVEL_HEADER LVL1, 0, 2, 5
-        EXIT 3, 3, 3
+        EXIT 3, 3, 2
         
         LEVEL_DATA
+        BLK 30, 1, 1, 15
         BLK 3, 13, 15, 2
         HOK 10, 3, 0
         HOK 24, 6, 0
@@ -59,17 +69,24 @@ LVL0:
 
 LVL1:
 	LEVEL_HEADER LVL2, 3, 6, 5
+        EXIT 2, 2, 3
+        
+        LEVEL_DATA
+        BLK 0, 40, 2, 6
+        BLK 1, 44, 4, 2
+        FIL 0, 3
+        
         BLK 13, 53, 15, 5
         BLK 3, 56, 15, 2
         FIL 0, 0
         
         BLK 17, 49, 5, 1
         BLK 10, 45, 9, 1
-        BLK 3, 45, 3, 1
         
-        BLK 7, 40, 6, 1
-        BLK 2, 42, 1, 1
-        BLK 20, 40, 8, 1
+        
+        ;BLK 7, 40, 6, 1
+        ;BLK 2, 42, 1, 1
+        ;BLK 20, 40, 8, 1
         
         BLK 27, 36, 1, 1
         BLK 27, 32, 1, 1
@@ -83,6 +100,8 @@ LVL1:
 
 LVL2:
 	LEVEL_HEADER LVL3, 3, 5, 4
+        
+        LEVEL_DATA
         BLK 3, 56, 3, 2
         
         BLK 27, 56, 1, 2
@@ -96,6 +115,8 @@ LVL2:
 
 LVL3:
 	LEVEL_HEADER LVL4, 0, 5, 5
+        
+        LEVEL_DATA
         BLK 1, 28, 15, 1
         BLK 14, 28, 15, 1
         FIL 0, 4

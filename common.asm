@@ -106,24 +106,6 @@ FindEmpty: subroutine
 .found	rts
 
 
-; reverses horizontal acceleration
-NegativeAclX: subroutine
-	clc
-        lda ax2
-        eor #$ff
-        adc #1
-        sta ax2
-        lda ax1
-        eor #$ff
-        adc #0
-        sta ax1
-        lda ax0
-        eor #$ff
-        adc #0
-        sta ax0
-        rts
-
-
 ClearRAM: subroutine
 	lda #0
         tax

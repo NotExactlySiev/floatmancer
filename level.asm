@@ -487,6 +487,10 @@ DrawBlock:
         lda lvldat,y	; put block data in collist
         and #$1f
         sta func1
+        bne .nzero
+        lda #1 
+.nzero
+        
         sta $0,x
 
 	iny
@@ -494,6 +498,9 @@ DrawBlock:
         lda lvldat,y
         and #$3f
         sta func0
+        bne .nzero1
+        lda #1 
+.nzero1
 	sta $0,x
         
         inx

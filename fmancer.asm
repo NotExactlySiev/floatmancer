@@ -110,53 +110,84 @@ NMIHandler:
         jmp NMIEnd
 .noutside
 
+	ldx #2
+        ldy #$7F
 	; room transition when crosses screen boundry
-	lda px0+BACKUP_OFFSET
-        eor px0
-        bpl .nroom
-        lda px0
-        asl
-        eor px0
-        bmi .nroom
-        
-        ldx #2
+	lda px0
+        cmp #LEFT_BOUND
+        bcc .toleft
+        cmp #RIGHT_BOUND
+        bcs .toright     
+        bcc .ntran
 
-	ldy #$7f
-        lda px0
-        bmi .toleft
-        inx
+.toright
+	inx
         iny
 .toleft
-	sty scrollx
+	sty tmp3
 	txa
         ; look for exits that match this direction
         ldx #$8
 .next        
         dex
-        bmi .doordone
+        bmi .nroom
         cmp exits,x
 	bne .next
 	lda exits_room,x
-.doordone	
+	
         clc
         adc lvl
 	sta func0
+        
         ; now check if offset works
-        lda exits_off,x
+        lda scroll
+        lsr
+        lsr
+        clc
+        adc exits_off,x ; this only overflows if offset is negative
+        ; in fact, if it doesn't overflow when offset is negative, it should
+        ; be considered an underflow
+        cmp #$3C+1
+        bcc .nover
+        sec
+        sbc #$3C
         asl
         asl
         asl
-	clc
-        adc scroll
+        clc
+        adc py0
+        ; now if this one over or underflows the exit shouldn't work since it
+        ; leads the player out of bounds
+	; OH MY GOD I JUST REALIZED WHAT THE OVERFLOW FLAG IS FOR
+        bvs .next
+        
+        sta py0
+        lda #$3C
+.nover
+        asl
+        asl
         sta scroll
         
-        
+
         jsr FindLevel
+
+	lda tmp3
+        sta scrollx
 
         ldx #SEQ_ROOMTRAN
         jsr PlaySequence
         inc $3FF ; TODO: name this var
+        lda px0
+        eor #$ff
+        sta px0
 .nroom
+	ldx #LEFT_BOUND
+	lda px0
+        bpl .pushleft
+        ldx #RIGHT_BOUND
+.pushleft
+        stx px0
+.ntran
 
 
 NMIEnd:

@@ -8,6 +8,7 @@ ENABLE_GLIDE	= 0 ; not implemented yet
 ENABLE_BHOP	= 0 ; not implemented yet
 ENABLE_AIR_RES	= 1 ; slow down mid air if not directly controlled
 ENABLE_STRETCH	= 0 ; radius changes when on hook and colliding
+ENABLE_ROPE_JMP	= 0 ; not implemented yet, small window after let go when you can jump
 LIMIT_ROT	= 0 ; not implemented yet
 
 ; physics values
@@ -33,6 +34,9 @@ COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 BHOP_WINDOW	= 2 ; not implemented yet
 
+
+LEFT_BOUND	= $8
+RIGHT_BOUND	= $F8
 
 WINDUP_TIME	= $1 ; jump delay
 
