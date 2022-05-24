@@ -303,8 +303,7 @@ CalcRadius: subroutine
         rol func3
         rol func4
         jmp .loop
-.done  
-        
+.done
 
 	pla
         tax

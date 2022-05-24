@@ -129,7 +129,7 @@ NMIHandler:
 .toleft
 	sty scrollx
 	txa
-        
+        ; look for exits that match this direction
         ldx #$8
 .next        
         dex
@@ -141,13 +141,18 @@ NMIHandler:
         clc
         adc lvl
 	sta func0
+        ; now check if offset works
+        lda exits_off,x
+        asl
+        asl
+        asl
+	clc
+        adc scroll
+        sta scroll
+        
+        
         jsr FindLevel
 
-	lda exits_off,x
-	clc
-        adc scrollx
-        sta scrollx
-        
         ldx #SEQ_ROOMTRAN
         jsr PlaySequence
         inc $3FF ; TODO: name this var
@@ -249,7 +254,7 @@ Text:
 Worlds:
         dc "TSACGNUJ"
 MenuOptions:
-	dc "]    LE^", 0, "CODE@@[[[[", 0, "SPEEDRUN", 0
+	dc "]    LE^", 0, "CODE@@[[[[[[", 0, "SPEEDRUN", 0
 
         dc "PRESS A TO JUMP", 0
 	dc "PRESS AND HOLD B WHEN CLOSE TO THE", 27, "PURPLE HOOK TO SWING FROM IT", 0

@@ -61,7 +61,7 @@ LoadMenu: subroutine
         lda #<TXT_Credits
         jsr DrawText
         
-        ldx #27
+        ldx #29
 .loop
 	lda MenuOptions,x
         sta options,x

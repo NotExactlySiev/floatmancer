@@ -40,7 +40,7 @@ ClearLevel: subroutine
         sta PPU_ADDR
         lda #0
         sta PPU_ADDR
-            
+        ;lda #$c5
         ldx #$ff
 .loop   
 	ldy #12
@@ -116,7 +116,7 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         sty tmp3
         tay
 	and #%00111000
-        cmp #%00100000
+        cmp #%00111000
         beq .exitsdone
         
         dec lvlsize ; exits are not part of level data
@@ -131,32 +131,22 @@ LoadLevel: subroutine	; load level data and metadata from level pointer
         sta exits,x
         
 
-	; extract room offset
+	; extract target room
 	tya
         and #$7
-        tay
-        and #$4
-        beq .pos
-    	tya
-        ora #$f8
-	bne .roomdone
-.pos
-        iny
+	cmp #4
+        sbc #3
+	sta exits+8,x
+        
         tya
-.roomdone
-	sta exits+8,x; temporary
-        
-        lda tmp0
-        lsr
-        lsr
-        lsr
+	and #%00111000
+        sec
+        sbc #3<<3
         sta exits+16,x
-        
+        ; TODO: is adding a constant offset better than storing signed values? probably!
         inx
        	ldy tmp3
 	jmp .exits
-        
-        
         
 .exitsdone
 

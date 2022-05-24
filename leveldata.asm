@@ -1,10 +1,29 @@
+; stupid dasm doesn't understand my macros so here's how exit data works:
+; EXIT A, B, C
+; where A is which side of the room this exit is on: 0 up, 1 down, 2 left, 3 right
+; and B is what room it leads to relative to the current one:
+; 	0 = -4
+; 	1 = -3
+; 	2 = -2
+; 	3 = -1
+; 	4 = 1
+; 	5 = 2
+; 	6 = 3
+; 	7 = 4
+; and finally C is the height difference between the rooms / 64
+; 	0 = -3
+; 	1 = -2
+; 	2 = -1
+; 	3 = 0
+; 	4 = 1
+; 	5 = 2
+; 	6 = 3
 
 Levels:
 
 LVL_1:
 	LEVEL_HEADER LVL0, 3, 4, 12
-        ;EXIT 2, 1, 0, 0
-        .byte 2<<6 | 0<<3 | 1-1
+        EXIT 2, 4, 0
         
         LEVEL_DATA
         BLK 15, 44, 15, 1
@@ -12,8 +31,7 @@ LVL_1:
 
 LVL0:
 	LEVEL_HEADER LVL1, 0, 2, 5
-        ;EXIT 3, 1, 1, 0
-        .byte 3<<6 | 0<<3 | ((1^$ff)+1)&%111
+        EXIT 3, 3, 3
         
         LEVEL_DATA
         BLK 3, 13, 15, 2

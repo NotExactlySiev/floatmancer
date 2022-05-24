@@ -5,16 +5,12 @@
         .byte {3}<<5 | {4}
         ENDM
         
-        MAC EXIT ; side room direction offset
-          IF {3} == 0
-          .byte {1}<<6 | {4]<<3 | {2}-1
-          ELSE IF {3} == 1
-          .byte {1}<<6 | {4]<<3 | (({2}^$ff)+1)&%111
-          ENDIF
+        MAC EXIT ; side room offset
+        .byte {2} | {1}<<6 | {3}<<3
         ENDM
         
         MAC LEVEL_DATA
-        .byte %00100000 ; other bytes are reserved for future use
+        .byte %00111000 ; other bytes are reserved for future use
         ENDM
         
 	; 00000 - 00011
