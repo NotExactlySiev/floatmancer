@@ -58,6 +58,14 @@ ClearLevel: subroutine
         bne .clearzp
         ldx #$ff
         stx hookidx
+        ; clear exit data
+        ldy #$8
+        txa
+.clearexits
+	sta exits,y
+        dey
+        bpl .clearexits
+        
         inx
         stx PPU_ADDR
         sta PPU_ADDR

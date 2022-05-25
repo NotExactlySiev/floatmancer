@@ -19,28 +19,35 @@
 ; 	5 = 2
 ; 	6 = 3
 
+UP	= 0
+DOWN	= 1
+LEFT	= 2
+RIGHT	= 3
+
 Levels:
 
-LVL_1:
+LVL_1: ; spawn
 	LEVEL_HEADER LVL0, 3, 4, 12
-        EXIT 2, 4, 4
-        EXIT 3, 5, 3
+        EXIT LEFT, 4, 3
+        EXIT RIGHT, 5, 3
         
         LEVEL_DATA
+        BLK 0, 40, 1, 9
+	BLK 1, 48, 15, 1
+        FIL 0, 3	; the left L
         BLK 1, 1, 15, 3
-        BLK 1, 48, 15, 1
         BLK 29, 40, 2, 6
         BLK 15, 44, 15, 2
         FIL 0, 3
         HOK 23, 47, 0
-        BLK 1, 54, 13, 2
+        BLK 0, 54, 14, 2 ; hard to reach platform
         ;BLK 24, 37, 4, 4
         ;BLK 10, 40, 15, 1
         ;FIL 0, 3
 
-LVL0:
+LVL0: ; left room
 	LEVEL_HEADER LVL1, 0, 2, 5
-        EXIT 3, 3, 2
+        EXIT RIGHT, 3, 2
         
         LEVEL_DATA
         BLK 30, 1, 1, 15
@@ -67,9 +74,9 @@ LVL0:
         
         HOK 15, 47, 0
 
-LVL1:
+LVL1: ; right room
 	LEVEL_HEADER LVL2, 3, 6, 5
-        EXIT 2, 2, 3
+        EXIT LEFT, 2, 3
         
         LEVEL_DATA
         BLK 0, 40, 2, 6

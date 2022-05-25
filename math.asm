@@ -314,6 +314,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
         pha
         
         lda #0
+        sta tmp0
         sta tmp1
         sta tmp3
         sta func7
@@ -347,9 +348,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
         bne .n45
         lda #$20
         sta func6
-	beq .njmp
 	jmp .lookupdone	
-.njmp
 .n45     
         lda func0
         bne .nright
@@ -358,9 +357,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
         lda #$10
         ora tmp3
         sta tmp3
-	beq .njmp1
 	jmp .lookupdone	
-.njmp1
 .nright
         lda func1
 	bne .nzero
@@ -369,9 +366,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
         lda #$10
         ora tmp3
         sta tmp3
-	bne .njmp2
 	jmp .lookupdone	
-.njmp2
 .nzero
 
 .divide
@@ -543,6 +538,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
 
         asl tmp3
         bpl .nmirrorh
+        lda func7
 	eor #$ff
         clc
         adc #1
@@ -569,6 +565,7 @@ CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used
 
 	asl tmp3
         bmi .nmirrorxy
+        lda func7
         eor #$ff
         clc
         adc #1
