@@ -54,6 +54,13 @@ NMIHandler:
 
 .playing
 
+        bit anim
+        beq .nanim
+	jsr CharacterAnimation
+.nanim        
+        lda frame
+        sta $201
+        
 	;; PPU WRITES
         jsr UpdatePlayer
         
@@ -65,12 +72,7 @@ NMIHandler:
 .gameloop
                 
 	;; GAME LOOP
-        bit anim
-        beq .nanim
-	jsr CharacterAnimation
-.nanim        
-        lda frame
-        sta $201
+
 
 	jsr UpdateSprites
 
@@ -241,7 +243,6 @@ PlayerDeath: subroutine
 	include "sprites.asm"
 
         ;;; DATA
-        
 
 	include "sequencedata.asm"
 

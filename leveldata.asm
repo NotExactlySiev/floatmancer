@@ -19,6 +19,16 @@
 ; 	5 = 2
 ; 	6 = 3
 
+; FIL border styles are:
+;	0 = none
+;	1 = ||
+;	2 = ^
+;	3 = V
+;	4 = =
+;	5 = all (why do we have this one?)
+;	6 = <
+;	7 = >
+
 UP	= 0
 DOWN	= 1
 LEFT	= 2
@@ -83,9 +93,7 @@ LVL1: ; right room
         BLK 1, 44, 4, 2
         FIL 0, 3
         
-        BLK 13, 53, 15, 5
-        BLK 3, 56, 15, 2
-        FIL 0, 0
+        
         
         BLK 17, 49, 5, 1
         BLK 10, 45, 9, 1
@@ -95,14 +103,22 @@ LVL1: ; right room
         ;BLK 2, 42, 1, 1
         ;BLK 20, 40, 8, 1
         
-        BLK 27, 36, 1, 1
-        BLK 27, 32, 1, 1
-        BLK 27, 28, 1, 1
+        
+        
+        BLK 27, 31, 1, 1
+        BLK 27, 35, 1, 1
+        BLK 27, 39, 1, 15
+        BLK 13, 53, 15, 5
+        FIL 0, 7
+        BLK 3, 56, 15, 2
+        FIL 0, 0
         
         BLK 7, 26, 15, 1
         BLK 3, 26, 6, 1
         FIL 0, 4
         
+        HOK 10, 32, 0
+        HOK 19, 32, 0
 
 
 LVL2:

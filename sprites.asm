@@ -39,6 +39,10 @@ UpdateSprites: subroutine
 	lda scroll
         lsr
         sta tmp0
+        
+        lda scrollx
+        lsr
+        sta tmp1
 
 	ldx #0 ; object list
         ldy #0 ; oam
@@ -53,9 +57,8 @@ UpdateSprites: subroutine
         ; attr once when loading the level.
         ; on the other hand i don't wanna limit myself to static levels
         ; with object that don't change or move around and this doesn't 
-        ; take processing time anyway so...
-	clc		; Set Y pos
-        asl
+        ; take processing time anyway so...	
+        asl	; Set Y pos
         asl
 	sec
         sbc tmp0
@@ -76,9 +79,10 @@ UpdateSprites: subroutine
         sta func1
         inx
         lda objlist,x
-        clc
         asl
         asl
+        sec
+        sbc tmp1 ; this is a temporaty solution
         asl
         sta func2
         inx
