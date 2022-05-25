@@ -174,7 +174,8 @@ NMIHandler:
         jsr FindLevel
 
 	lda tmp3
-        sta scrollx
+        eor #%01110000	; reducing the intensity
+        sta scrollx	; or remove this line for a hard cut
 
         ldx #SEQ_ROOMTRAN
         jsr PlaySequence
