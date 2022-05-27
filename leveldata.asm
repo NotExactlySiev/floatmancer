@@ -112,8 +112,8 @@ LVL1: ; right room
         BLK 3, 26, 6, 1
         FIL 0, 4
         
-        HOK 10, 32, 0
-        HOK 19, 32, 0
+        HOK 9, 33, 0
+        HOK 18, 33, 0
 
 
 LVL2:

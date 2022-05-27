@@ -170,7 +170,6 @@ NMIHandler:
         asl
         sta scroll
         
-
         jsr FindLevel
 
 	lda tmp3

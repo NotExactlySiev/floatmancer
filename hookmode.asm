@@ -67,6 +67,10 @@ HookMode: subroutine
         bmi .up
         lda #7
         jsr DownCollision
+        beq .nground
+        jsr Release
+        rts
+.nground
         bvc .vchecked
 .up
 	lda #4
@@ -376,6 +380,12 @@ FindCloseHook: subroutine
 
 	lda #$ff
         sta radius
+        
+        bit flags
+        bvs .nground
+        rts
+.nground
+        
         ldx #1		; [] [x] [] [] | [] ...
 .nexthook        
 	lda $210,x
