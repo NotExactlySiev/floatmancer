@@ -50,6 +50,7 @@ LVL_1: ; spawn
         BLK 15, 44, 15, 2
         FIL 0, 3
         HOK 23, 47, 0
+        HOK 9, 41, 0
         BLK 0, 54, 14, 2 ; hard to reach platform
         ;BLK 24, 37, 4, 4
         ;BLK 10, 40, 15, 1

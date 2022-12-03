@@ -40,8 +40,20 @@ NormalMode: subroutine
         lda ax2
         bne .npassive
 	
-        lda vx0		; shift right and sign extend to get 1/2
-        cmp #$80
+        lda vx0		; if slower than 1 subpixel per frame then fully stop
+        cmp #$FF
+        bne .nsmall
+        ldx vx1	
+        cpx #$FF
+        bne .nsmall
+        inx
+        stx vx0
+        stx vx1
+        stx vx2
+.nsmall
+
+	lda vx0
+        cmp #$80	; shift right and sign extend to get 1/2
         ror vx0
 	ror vx1
         ror vx2
@@ -63,7 +75,7 @@ NormalMode: subroutine
         sta vx1
         txa
         adc vx0
-        sta vx0 
+        sta vx0
 .npassive
 
 .end
