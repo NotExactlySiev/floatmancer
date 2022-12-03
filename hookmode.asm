@@ -51,6 +51,32 @@ HookMode: subroutine
         
         jsr UpdateAngularPosition
 
+	; drawing some cool shit while hooked
+        ldx hookidx
+        lda $200+$F,x
+        clc
+        adc $200
+        ror
+        sta $2FC
+        
+        lda $203+$F,x
+        clc
+        adc $203
+        ror
+        sta $2FF
+        
+        lda angle0
+        clc
+        adc #%00001000
+	and #%01110000
+        lsr
+        lsr
+        lsr
+        lsr
+        ora #$D0
+        sta $2FD
+        lda #2
+        sta $2FE
 
 	;; TODO: hook mode collision needs a serious rework
         ;; 	 we need some sort of momentum that converts into deltaradius

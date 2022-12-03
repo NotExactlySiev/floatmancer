@@ -6,13 +6,13 @@ ENABLE_UNFLING	= 1 ; reduce speed at release (if above threshold)
 ENABLE_COOLDOWN	= 0 ; not implemented yet
 ENABLE_GLIDE	= 0 ; not implemented yet
 ENABLE_BHOP	= 0 ; not implemented yet
-ENABLE_AIR_RES	= 1 ; slow down mid air if not directly controlled
+ENABLE_AIR_RES	= 0 ; slow down mid air if not directly controlled
 ENABLE_STRETCH	= 0 ; radius changes when on hook and colliding
 ENABLE_ROPE_JMP	= 0 ; not implemented yet, small window after let go when you can jump
 LIMIT_ROT	= 0 ; not implemented yet
 
 ; physics values
-	IF 0 ; original
+	IF 1 ; original
 UP_GRAVITY	= $006000
 DOWN_GRAVITY	= $003500
 MAX_FALL	= $056010 ; doesn't do anything yet :/
@@ -27,28 +27,31 @@ MAX_SPEED	= 4 ; absolute max speed value permitted by the engine
 AIR_ACCEL_LIMIT	= $00C800 ;$009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
 HOOK_SWING	= 108
 HOOK_RANGE	= 48
+MAX_JUMP	= 8 ; how many frames you can hold jump for
+
 	ELSE ; experimental
 UP_GRAVITY	= $006000
 DOWN_GRAVITY	= $003500
-MAX_FALL	= $056010 ; doesn't do anything yet :/
+MAX_FALL	= $056010
 JUMP_FORCE	= $028800
 FLING_FORCE_H	= 6
 FLING_FORCE_V	= 6
 WALK_ACCEL	= $006a80
-AIR_ACCEL	= $004100 ;$006080
+AIR_ACCEL	= $004100
 AIR_RES		= $000600
-MAX_WALK	= $00B800 ;$00D000 ;$010cc0
-MAX_SPEED	= 4 ; absolute max speed value permitted by the engine
-AIR_ACCEL_LIMIT	= $00C800 ;$009cc0 ; you are not allowed to accelerate on air if your velocity is higher than this
+MAX_WALK	= $00B800
+MAX_SPEED	= 4
+AIR_ACCEL_LIMIT	= $00C800
 HOOK_SWING	= 108
-HOOK_RANGE	= 48
+HOOK_RANGE	= 33
+MAX_JUMP	= 8
+
 	ENDIF
         
 
 
 
 ; frame times
-MAX_JUMP	= 9 ; how many frames you can hold jump for
 COYOTE_TIME	= 5
 BUFFER_WINDOW	= 3
 BHOP_WINDOW	= 2 ; not implemented yet

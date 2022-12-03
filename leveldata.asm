@@ -37,7 +37,7 @@ RIGHT	= 3
 Levels:
 
 LVL_1: ; spawn
-	LEVEL_HEADER LVL0, 3, 4, 12
+	LEVEL_HEADER LVL0, 3, 3, 20
         EXIT LEFT, 4, 3
         EXIT RIGHT, 5, 3
         
