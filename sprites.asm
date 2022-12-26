@@ -1,12 +1,18 @@
 UpdatePlayer: subroutine
+	lda py1
+        asl
         lda py0
-        sec
-        sbc #5
+        ;sec
+        ;sbc #5
+        sbc #4
         sta $200
         
+        lda px1
+        asl
         lda px0
-        sec
-        sbc #4
+        ;sec
+        ;sbc #4
+        sbc #3
         sta $203
         
         lda #1
