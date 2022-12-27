@@ -74,22 +74,19 @@ CalcAbs24: subroutine	; number in axy, returns in axy
 
 
 
-CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 result = multiplier*sin(angle)
+CalcSinAndMultiply: subroutine ; 0-1 angle, 2-3 multiplier -> 4-7 result = multiplier*sin(angle)
         ldy #0
 
         lda func0
         bpl .check1
-        
-        lda func1
-        eor #$ff
-        clc
-        adc #1
+
+	sec
+	tya
+        sbc func1
         sta func1
-        lda func0
-        eor #$ff
-        adc #0
+        tya
+        sbc func0
         sta func0
-        
         iny
         
 .check1	lda func0
@@ -117,8 +114,9 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 
         ; if it's 90 degrees
         ; return 10000
         ldx #1
-        stx func5
+        stx func4
         dex
+        stx func5
         stx func6
         stx func7
         rts
@@ -136,45 +134,57 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 
         tay
         
         lda SineHigh,y
-        sta tmp1
+        sta tmp2
         lda SineLow,y
-	sta tmp2
+	sta tmp3
 .lookupover
 
 	lda #0
         sta tmp0
+        sta tmp1
+        sta func4
         sta func5
         sta func6
         sta func7
         
         ldy func2
-	
+        ldx func3
+	; TODO: this code is repeated. 8x16 multiply can be a subroutine or macro
         ; it's multiplication time! 16 bit value is in tmp0-tmp2. shift and add
 .loop
 	lsr func2
+        ror func3
         bcc .shift
         
         clc
-        lda tmp2
+        lda tmp3
         adc func7
         sta func7
-        lda tmp1
+        lda tmp2
         adc func6
         sta func6
-        lda tmp0
+        lda tmp1
         adc func5
         sta func5
+        lda tmp0
+        adc func4
+        sta func4
         
-	lda func2
+	lda func3
 .shift
-	beq .done
-	asl tmp2
+	bne .ndone
+	lda func2
+        beq .done
+.ndone
+        asl tmp3
+	rol tmp2
         rol tmp1
         rol tmp0
         jmp .loop
 .done        
 	
         sty func2
+        stx func3
 	
 	; negate it if angle was mirrored
 	pla
@@ -191,6 +201,9 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 
         txa
         sbc func5
         sta func5
+        txa
+        sbc func4
+        sta func4
         
 .positive
 
@@ -342,7 +355,10 @@ CalcRadius: subroutine
         
 	lda func1
 .shift
-	beq .done
+	bne .ndone
+        lda func0
+        beq .done
+.ndone
 	asl tmp3
         rol tmp2
         rol tmp1

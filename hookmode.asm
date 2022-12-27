@@ -9,6 +9,8 @@ HookMode: subroutine
 
 	lda #HOOK_SWING
         sta func2
+        lda #0
+        sta func3
         
         lda angle0
         clc
@@ -19,20 +21,17 @@ HookMode: subroutine
         jsr CalcSinAndMultiply
         
         ldx #0
-        lda func5
+        lda func4
         bpl .pos
-    	dex   
+    	dex
 .pos
-        stx func4
+        stx func7
         
         clc
-;        lda func6
-;	 adc omega2
-;        sta omega2
-        lda func5
+        lda func4
         adc omega1
         sta omega1
-        lda func4
+        lda func7
         adc omega0
         sta omega0
 
@@ -183,8 +182,10 @@ HookMode: subroutine
         rts
 
 UpdateAngularPosition: subroutine
-	;lda radius
-        ;sta func2
+	lda radius0
+        sta func2
+        lda radius1
+        sta func3
         
         lda angle0
         sta func0
@@ -193,12 +194,11 @@ UpdateAngularPosition: subroutine
         
         jsr CalcSinAndMultiply
         
-        lda func5
-        ;ta relpy0
+        lda func4
         clc
         adc hookpy
         sta py0
-        lda func6
+        lda func5
         sta py1
         
         lda angle0
@@ -210,12 +210,11 @@ UpdateAngularPosition: subroutine
         
 	jsr CalcSinAndMultiply
         
-        lda func5
-        ;sta relpx0
+        lda func4
         clc
         adc hookpx
         sta px0
-        lda func6
+        lda func5
         sta px1
         
         rts
@@ -328,6 +327,7 @@ Release: subroutine
         sta func1
         lda #FLING_FORCE_H
         sta func2
+        lda #FLING_FORCE_L
         jsr CalcSinAndMultiply
 
 	; calculate the horizontal direction of extra velocity
@@ -495,7 +495,7 @@ FindCloseHook: subroutine
         tay
         
         lda func4
-        cmp radius0
+        cmp radius0 ; TODO: this comparison is 8 bit only
         bcc .isclose
 .nclose
         inx
