@@ -199,38 +199,74 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2 multiplier / 3 mirror flag -> 5-7 
 ; for x and y returns r=sqrt(x*x + y*y), since we have the angle of the vector
 ; we can just calculate it with r = |x|*(1/cos(t)) or r = |y|*(1/cos(90 - t)), whichever
 ; one's more accurate
-; input x,y in f0-f1, 8 bit positive
-; output r in f7 8 bit
-; TODO: can we make radius 16 bit? how much of a difference would it make?
+; input x,y in f0-f1 and f1-f2, 16 bit positive
+; output r in f4-f5, rounded from 18 sigfigs by callee
 CalcRadius: subroutine
 	txa
         pha
-        ; if x=0 then r=y and vice versa
-	lda func0
-	beq .zero
+        
+        ldx #0
+        stx func6
+        
+        ; back the inputs up and round them for atan
 	lda func1
-        beq .zero
-        jmp .nzero
-.zero
+        pha
+        asl
+        
+        lda func0
+        pha
+        adc #0
+        sta func0
+
+        lda func3
+        pha
+        asl
+        
+        lda func2
+        pha
+        adc #0
+        sta func1
+
+        
+        ; if y=0 then r=x and vice versa
+        beq .yzero
 	lda func0
-        ora func1
-        sta func7
+	beq .xzero
+
+        jmp .nzero
+.yzero
+	pla
+        pla
+        
+        pla
+        sta func4
+        pla
+        sta func5
+        
+        jmp .zerodone
+.xzero
+	pla
+        sta func4
+        pla
+        sta func5
+        
+        pla
+        pla
+        
+        
+.zerodone
 	pla
         tax
         rts
 
 .nzero
-	; TODO: maybe we can combine the lookup part of this with the one for sine?
-        
-	pha
-        sta func1
-        
-        lda func0
-	pha
-        sta func0
-        
-        jsr CalcAtan
 
+        jsr CalcAtan
+        
+        pla
+        sta func2
+        pla
+        sta func3
         pla
         sta func0
         pla
@@ -250,6 +286,7 @@ CalcRadius: subroutine
         sbc func6
         sta func6
 	inx ; remember that we flipped the angle
+        inx ; this is inefficient. x and y should be h h l l
 .below
         
         rol func7
@@ -261,49 +298,65 @@ CalcRadius: subroutine
         
         ; get ready for lookup and multiplication
         ldy #0
+        sty func4
         sty func5
         sty func6
         sty func7
+        sty tmp0
         iny
-        sty func4
+        sty tmp1
         
         tay
         dey
         
         ; collect the 24 bit results
         lda InvCosHigh,y
-        sta func3
+        sta tmp2
         lda InvCosLow,y
-        sta func2
+        sta tmp3
         
         ; and multiply it by x (or y)
         ; note: x,y are < 64 so this will not overflow
         lda func0,x
-        sta tmp0
-        
+        sta func0
+        lda func1,x ; we should store them h h l l not h l h l
+        sta func1
 .loop
-	lsr tmp0
+	lsr func0
+        ror func1
         bcc .shift
         
         clc
-        lda func2
-        adc func5
-        sta func5
-        lda func3
-        adc func6
-        sta func6
-        lda func4
+        lda tmp3
         adc func7
         sta func7
+        lda tmp2
+        adc func6
+        sta func6
+        lda tmp1
+        adc func5
+        sta func5
+        lda tmp0
+        adc func4
+        sta func4
         
-	lda func2
+	lda func1
 .shift
 	beq .done
-	asl func2
-        rol func3
-        rol func4
+	asl tmp3
+        rol tmp2
+        rol tmp1
+        rol tmp0
         jmp .loop
 .done
+	; round the result to 16 sigfigs
+	asl func6
+        lda func5
+        adc #0
+        sta func5
+        lda func4
+        adc #0
+        sta func4
 
 	pla
         tax

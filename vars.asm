@@ -103,7 +103,7 @@ vy1	= $2A
 vy2	= $2B
 omega0	= $2C	; angular momentum. 24 bit (should be 16?)
 omega1	= $2D
-omega2	= $2E
+;omega2	= $2E
 hookidx	= $2F	; hook index in oam dma
 
 ; set 2 variables - backed up every frame
@@ -117,8 +117,9 @@ py1	= $34
 
 angle0	= $36	; angle from the hook. 24 bit (should be 16?)
 angle1	= $37
-angle2	= $38
-radius	= $39	; radius from the hook. 8 bit (but actually 7)
+;angle2	= $38
+radius0	= $38
+radius1	= $39	; radius from the hook. 8 bit (but actually 7)
 hookpx	= $3A	; hook pixel position. 8 bit
 hookpy	= $3B
 

@@ -23,12 +23,12 @@ HookMode: subroutine
         bpl .pos
     	dex   
 .pos
-        stx func4        
+        stx func4
         
         clc
-        lda func6
-	adc omega2
-        sta omega2
+;        lda func6
+;	 adc omega2
+;        sta omega2
         lda func5
         adc omega1
         sta omega1
@@ -39,9 +39,9 @@ HookMode: subroutine
 	; adjusting rotation speed
 
         clc
-        lda angle2
-        adc omega2
-        sta angle2
+;        lda angle2
+;        adc omega2
+;        sta angle2
         lda angle1
         adc omega1
         sta angle1
@@ -120,12 +120,12 @@ HookMode: subroutine
         sta angle0
         lda angle1+BACKUP_OFFSET
         sta angle1
-        lda angle2+BACKUP_OFFSET
-        sta angle2
+;        lda angle2+BACKUP_OFFSET
+;        sta angle2
         lda #0
         sta omega0
         sta omega1
-        sta omega2
+;        sta omega2
         jsr UpdateAngularPosition
 .coldone
  ENDIF       
@@ -169,11 +169,11 @@ HookMode: subroutine
         asl
         eor tmp0
         bmi .short
-        inc radius
+        inc radius0
         bne .done
         
 .short
-	dec radius
+	dec radius0
         
 .nstretch
 
@@ -183,8 +183,8 @@ HookMode: subroutine
         rts
 
 UpdateAngularPosition: subroutine
-	lda radius
-        sta func2
+	;lda radius
+        ;sta func2
         
         lda angle0
         sta func0
@@ -405,7 +405,7 @@ FindCloseHook: subroutine
 	
 
 	lda #$ff
-        sta radius
+        sta radius0
         
         bit flags
         bvs .nground
@@ -415,7 +415,9 @@ FindCloseHook: subroutine
         ldx #1		; [] [x] [] [] | [] ...
 .nexthook        
 	lda $210,x
-	beq .out
+	bne .continue
+        jmp .out
+.continue
         
         cmp #$30
         beq .ishook
@@ -440,35 +442,49 @@ FindCloseHook: subroutine
         inx
         inx		; .. | [y] [] [] [x] | ...
         
+        
         sec
         lda py0
         sbc $210,y
 	sec
         sbc #4
+        sta func0
         ; Abs
         bpl .ypos
-        eor #$ff
+        
         sec
-        adc #0
+        lda #0
+        sbc py1
+        sta func1
+        lda #0
+        sbc func0
 .ypos
         cmp #HOOK_RANGE
         bcs .nclose
         sta func0
      
+        lda px1
+        sta func3
+        
         sec
         lda px0
         sbc $210,x
         sec
         sbc #4
+        sta func2
         ; Abs
         bpl .xpos
-        eor #$ff
+        
         sec
-        adc #0
+        lda #0
+        sbc px1
+        sta func3
+        lda #0
+        sbc func2
 .xpos
         cmp #HOOK_RANGE
         bcs .nclose
-        sta func1
+        sta func2
 	
         tya
         pha
@@ -478,15 +494,17 @@ FindCloseHook: subroutine
         pla
         tay
         
-        lda func7
-        cmp radius
+        lda func4
+        cmp radius0
         bcc .isclose
 .nclose
         inx
         inx		; ... | [y] [] [] [] | [] [x] ...
         bcs .nexthook
 .isclose
-        sta radius	; still .. | [y] [] [] [x] | ...
+        sta radius0	; still .. | [y] [] [] [x] | ...
+        lda func5
+        sta radius1
         lda $210,y
         clc
         adc #4
@@ -508,7 +526,7 @@ FindCloseHook: subroutine
         jmp .nexthook
         
 .out
-	lda radius
+	lda radius0
         cmp #HOOK_RANGE
         bcc .close
         lda #$ff
