@@ -286,6 +286,7 @@ NotRight
 
 	;; Hooking
         bit flags
+        bvc .hookend
         bpl .nrelease
         lda pad
         eor #$ff
