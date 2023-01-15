@@ -134,7 +134,11 @@ roomtran	= $421
 ; $40-$4E are the same but from the previous frame
 
 
-
+; timer test
+sec0	= $40
+sec1	= $41
+mil0	= $42
+foff	= $44
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TABLES AND DATA ;;;

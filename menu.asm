@@ -80,7 +80,54 @@ LoadMenu: subroutine
         
         rts
 
+MiliLow:
+	.byte 0, 2, 3, 5, 7, 8
+
 UpdateMenu: subroutine
+	; experimenting with a timer
+	ldx foff
+        inx
+        cpx #6
+        bne .nover
+        ldy mil0
+        iny
+        cpy #10
+        bcc .milnover
+        ldy sec1
+        iny
+        cpy #10
+        bne .lsecnover
+        inc sec0
+	ldy #0
+.lsecnover
+        sty sec1
+        ldy #0
+.milnover
+	sty mil0
+        ldx #0
+.nover
+        stx foff
+
+	lda #$20
+        sta PPU_ADDR
+        lda #$44
+        sta PPU_ADDR
+        lda sec0
+	ora #$70
+        sta PPU_DATA
+        lda sec1
+	ora #$70
+        sta PPU_DATA
+        lda #$61
+        sta PPU_DATA
+        lda mil0
+        ora #$70
+        sta PPU_DATA
+        ldx foff
+        lda MiliLow,x
+        ora #$70
+        sta PPU_DATA
+
 	clc
         lda world
         asl
