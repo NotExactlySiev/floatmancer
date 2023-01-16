@@ -2,14 +2,19 @@
 ; TODO: implement all of these, so we can try different combinaitons of mechanicas
 ; and see what works, removing the rest
 ENABLE_FLING	= 0
-ENABLE_UNFLING	= 1 ; reduce speed at release (if above threshold)
+ENABLE_UNFLING	= 0 ; reduce speed at release (if above threshold)
 ENABLE_COOLDOWN	= 0 ; not implemented yet
 ENABLE_GLIDE	= 0 ; not implemented yet
 ENABLE_BHOP	= 0 ; not implemented yet
 ENABLE_AIR_RES	= 0 ; slow down mid air if not directly controlled
 ENABLE_STRETCH	= 0 ; radius changes when on hook and colliding
 ENABLE_ROPE_JMP	= 0 ; not implemented yet, small window after let go when you can jump
+ENABLE_DIVE	= 0 ; not implemented yet, could incorporate with rope jump
 LIMIT_ROT	= 0 ; not implemented yet
+
+
+
+LINE		= 0
 
 ; physics values
 	IF 1 ; original

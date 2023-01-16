@@ -51,7 +51,7 @@ HookMode: subroutine
         jsr UpdateAngularPosition
 
 	; drawing some cool shit while hooked
-        
+ IF LINE
         lda hookpx
         sta func0
         lda hookpy
@@ -101,13 +101,12 @@ HookMode: subroutine
         
         sty tmp2	; offset
         tya
-        lsr
         tay
         
 
         bit tmp3
         bpl .nsw
-	lda #8
+	lda #$F
         sec
         sbc $700,y
 .nsw
@@ -171,7 +170,8 @@ HookMode: subroutine
         dex
 	bne .loop
         
-        
+ ENDIF
+ 
  IF 0
         ldx hookidx
         lda $200+$F,x
