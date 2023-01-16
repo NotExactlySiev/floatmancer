@@ -51,6 +51,128 @@ HookMode: subroutine
         jsr UpdateAngularPosition
 
 	; drawing some cool shit while hooked
+        
+        lda hookpx
+        sta func0
+        lda hookpy
+        sta func1
+        
+        lda #0
+        sta tmp3
+        sta func6
+        
+        lda py0+BACKUP_OFFSET
+        sec
+        sbc hookpy
+        sta tmp1
+        tay
+        
+        lda px0+BACKUP_OFFSET
+        sec
+        sbc hookpx
+        sta tmp0
+        
+        cmp tmp1
+        bcs .nswap ; x >= y
+	
+        sty tmp0
+        sta tmp1
+        
+        lda #$80
+        sta tmp3 ; remember that we swapped
+        
+.nswap		; x < y
+        
+        lda tmp0	; divide the bigger one by 8
+        lsr
+        lsr
+        lsr
+        tax
+        inx
+        stx func5	; count
+        
+        lda tmp1	; divide the smaller one by count
+        ldy #-1
+.divide
+	iny
+        sec
+        sbc func5
+        bpl .divide
+        
+        sty tmp2	; offset
+        tya
+        lsr
+        tay
+        
+
+        bit tmp3
+        bpl .nsw
+	lda #8
+        sec
+        sbc $700,y
+.nsw
+
+	ora #$f0
+        sta func4
+        
+        lda #8
+        tax
+        tay
+        lda tmp2
+        
+        bit tmp3
+        bpl .nsw2
+        tax
+        tya
+.nsw2
+	
+        stx func2
+        sta func3
+
+        ; 0 x0
+        ; 1 y0
+        ; 2 x step
+        ; 3 y step
+        ; 4 tile
+        ; 5 count
+        ; 6 attr
+        
+        ldx func5
+        dex
+	ldy #$ff
+.loop        
+        lda func0
+        sta $200,y
+	dey
+        
+        lda func6
+        sta $200,y
+        dey
+        
+        lda func4
+        ora #$f0
+        sta $200,y
+        dey
+        
+        lda func1
+        sta $200,y
+        dey
+        
+        lda func0
+        clc
+        adc func2
+        sta func0
+        
+        lda func1
+        clc
+        adc func3
+        sta func1
+        
+        dex
+	bne .loop
+        
+        
+ IF 0
         ldx hookidx
         lda $200+$F,x
         clc
@@ -76,7 +198,7 @@ HookMode: subroutine
         sta $2FD
         lda #2
         sta $2FE
-
+ ENDIF
 	;; TODO: hook mode collision needs a serious rework
         ;; 	 we need some sort of momentum that converts into deltaradius
         ;;	 and is somehow related to downward velocity
