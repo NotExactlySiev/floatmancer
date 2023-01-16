@@ -212,7 +212,7 @@ CalcSinAndMultiply: subroutine ; 0-1 angle, 2-3 multiplier -> 4-7 result = multi
 ; for x and y returns r=sqrt(x*x + y*y), since we have the angle of the vector
 ; we can just calculate it with r = |x|*(1/cos(t)) or r = |y|*(1/cos(90 - t)), whichever
 ; one's more accurate
-; input x,y in f0-f1 and f1-f2, 16 bit positive
+; input x,y in f0-f1 and f2-f3, 16 bit positive
 ; output r in f4-f5, rounded from 18 sigfigs by callee
 CalcRadius: subroutine
 	txa
@@ -221,24 +221,17 @@ CalcRadius: subroutine
         ldx #0
         stx func6
         
+        ; TODO: we don't need to do this for the new atan
         ; back the inputs up and round them for atan
 	lda func1
-        pha
-        asl
-        
+        pha        
         lda func0
         pha
-        adc #0
-        sta func0
 
         lda func3
-        pha
-        asl
-        
+        pha        
         lda func2
         pha
-        adc #0
-        sta func1
 
         
         ; if y=0 then r=x and vice versa
@@ -302,7 +295,7 @@ CalcRadius: subroutine
         inx ; this is inefficient. x and y should be h h l l
 .below
         
-        rol func7
+        rol func7	; we already had this in atan. return it?
         rol
         rol func7
         rol
@@ -378,273 +371,228 @@ CalcRadius: subroutine
         tax
         rts
 
-CalcAtan: subroutine	; 0-1 xy legs, 2-3 ptr, 6-7 result, all local vars are used.
+
+; x and y are 16 bit values in f0-f1 and f1-f2
+;
+CalcAtan: subroutine
 	txa
         pha
         
         lda #0
-        sta tmp0
-        sta tmp1
-        sta tmp3
-        sta func7
-        sta func2	; set offset at the start of the table
-        sta func3
+        stx tmp0
+        stx tmp1
+        stx tmp3
+        ;sta func2	; set offset at the start of the table
+        ;sta func3
         
         lda func0
         bpl .horok
-        eor #$ff
-        clc
-        adc #1
+	txa
+        sec
+        sbc func1
+        sta func1
+        txa
+        sbc func0
         sta func0
+        
         lda #$40
-        sta tmp3     
+        sta tmp3    
 .horok
 
-	lda func1
+
+	lda func2
         bpl .verok
-	eor #$ff
-        clc
-        adc #1
-        sta func1
+	txa
+        sec
+        sbc func3
+        sta func3
+        txa
+        sbc func2
+        sta func2
+        
         lda #$20
         ora tmp3
         sta tmp3
 .verok
 
-	; check for special cases before swapping
-	lda func1
-	cmp func0
-        bne .n45
-        lda #$20
-        sta func6
-	jmp .lookupdone	
-.n45     
-        lda func0
-        bne .nright
-	lda #$40
-        sta func6
-        lda #$10
-        ora tmp3
-        sta tmp3
-	jmp .lookupdone	
-.nright
-        lda func1
-	bne .nzero
-        lda #$0
-        sta func6
-        lda #$10
-        ora tmp3
-        sta tmp3
-	jmp .lookupdone	
-.nzero
 
-.divide
+	; put the smaller leg in f0-f1
 	lda func0
-        lsr
-        bcs .lookup
-        lda func1
-        lsr
-        bcs .swap
-        lsr func0
-        sta func1
-	jmp .divide
+        cmp func2
+        bcc .swapdone
+	bne .swap
+	lda func1
+        cmp func3
+        bcc .swapdone
+        bne .swap
+        ; TODO: they're equal
+.swap
+	lda func0
+        ldx func2
+        sta func2
+        stx func0
         
-.swap   
-
-        rol ; undo the shift and swap
-        ldx func0
+        lda func1
+        ldx func3
+        sta func3
         stx func1
-        tax
-        lda #$10 ; reminder that we swapped
+        
+        lda #$10	; set the flag to remember that we swapped
         ora tmp3
         sta tmp3
-        txa
-        lsr
-.lookup     
-        ldy #0
-	; now that we have them in correct format and order, we need to
-        ; calculate the offset for x, using this formula:
-        ; r = (x - 1) >> 1  (but we've already decremented one)
-        ; offset = N/2 * r + T(r-1)
-        ; where T(n) is the nth triangular number
-        ; where N is the size of the LUT
-	; x is already divided by two
+.swapdone
+
+	; now double both values until the bigger one is is [0x20, 0x40)
+.scale
+        lda #$20
+        and func2
+        bne .scaledone
+	asl func3
+        rol func2
+        asl func1
+        rol func0
+	bcc .scale
+.scaledone
+
+	; and round the results to 8 bits. the bigger one will be in [0x20, 0x40]
+        ; then put them in f0 and f1 in the same order
+        asl func1
+        lda #0
+        adc func0
         sta func0
-        tax
-        ; and right off the bat if r = 0 then offset = 0
-        beq .offdone
-	
-        ; we multiply it by size of the table divided by two
-        ; in this case a multiplication by 50/2 = 25
-        sta func4
+        
+        asl func3
         lda #0
-        sta func5
+	adc func2
+        sta func1
         
-        clc
-        lda func4
-        adc func2
-        sta func2
-        lda func5
-        adc func3
-        sta func3
+        ; in the special case that it rounds up to 0x40, halve them one time
+        ; (optimization: can integrate this and rounding in one)
+        cmp #$40
+        bne .rounddone
+        lsr func0
+	lsr func1
+.rounddone
+
+	; check for special cases
         
-        asl func4
-        rol func5
-        asl func4
-        rol func5
-        asl func4
-        rol func5
-        
-        clc
-        lda func4
-        adc func2
-        sta func2
-        lda func5
-        adc func3
-        sta func3
-        
-        asl func4
-        rol func5
-        
-        clc
-        lda func4
-        adc func2
-        sta func2
-        lda func5
-        adc func3
-        sta func3
-        
-        ; now to calculate T(r-1) = (r*(r-1))/2
-        
-        sec
-        lda func0
-        sta func7
-        lda #0
+        lda func1
+        bne .not0
         sta func6
-        sta func5
-        sta tmp0
-        sta tmp1
-       
-       	lda func0
+        sta func7
+        beq .lookupdone
+.not0
+	lda func0
+        bne .not90
+	sta func7
+        lda #$40
+        sta func6
+        bne .lookupdone
+.not90
+	cmp func1
+        bne .not45
+	lda #$20
+        sta func6
+        lda #0
+        sta func7
+        beq .lookupdone
+.not45
+
+        ; TODO: what if they're equal here? :/ checked too soon?
+        
+        lda func0
+        cmp #$2f
+        bcc .nmirror
+        
+        lda #$5e
+        sec
+        sbc func0
+        sta func0
+        lda #$1f
+        eor func1
+
+.nmirror
+        ; and finally look up. 
+	
+        lda func0	; convert to row number
+        sec
         sbc #1
-        sta func4
-        sta tmp2 ; save r-1 for later
-        
-
-.loop
-	lsr func4
-        bcc .shift
-        
-        clc
-        lda func7
-        adc tmp1
-        sta tmp1
-        lda func6
-        adc tmp0
-        sta tmp0
-        
-	lda func4
-.shift
-	beq .offdone
-        asl func7
-        rol func6
-        jmp .loop      
-.offdone
-
-	lsr tmp0
-        ror tmp1
-
-	clc
-	lda tmp1
-        adc func2
-        sta func2
-        lda tmp0
-        adc func3
-        sta func3
-
-	; x offset is now added to 2-3
-
-	; now add y offset (row index) to it and read the result off the table
-        lda tmp2
-        asl
-        cmp func1
-        bcc .after
-      	ldx func1 ; i = y - 1
-        dex
-        txa
-        jmp .indexdone
-.after
-        lda func1 ; i = y/2 + r - 1
+        tay
+        lsr
+        lsr
         lsr
         clc
-        adc tmp2
-        
-.indexdone
-
-        clc
-        adc func2
-        sta func2
-        lda #0
-	adc func3
+        adc #>AtanTable
         sta func3
-
-	; now multiply the whole thing by 2 because values are 16 bit
-	asl func2
-        rol func3
         
-        clc
-	lda #>AtanTable
-	adc func3
-	sta func3
-
-	lda (func2),y
-        sta func6
-        iny
+        tya
+        ror
+        ror
+        ror
+        ror
+        and #$e0
+        sta func0
+        
+        lda func1
+        sec
+        sbc #$20
+        ora func0
+        sta func2
+        
+        
+	ldy #0
         lda (func2),y
-        sta func7
         
+        sty func7
+        lsr
+        ror func7
+        lsr
+        ror func7
+        lsr
+        ror func7
+        sta func6
 .lookupdone
+        
+	ldx #$80
 
         asl tmp3
         bpl .nmirrorh
-        lda func7
-	eor #$ff
-        clc
-        adc #1
+        
+        tya
+        sec
+        sbc func7
         sta func7
-        lda func6
-        eor #$7f
-	adc #0
+        txa
+        sbc func6
         sta func6
 
 .nmirrorh
 
 	asl tmp3
         bpl .nmirrorv
-        lda func7
-       	eor #$ff
-        clc
-        adc #1
+        
+        tya
+        sec
+        sbc func7
         sta func7
-        lda func6
-        eor #$ff
-	adc #0
+        tya
+        sbc func6
         sta func6
 .nmirrorv
 
 	asl tmp3
         bmi .nmirrorxy
-        lda func7
-        eor #$ff
-        clc
-        adc #1
+
+	tya
+        sec
+        sbc func7
         sta func7
-        lda func6
-        eor #$3f
-	adc #0
+        lda #$40
+        sbc func6
         sta func6
 .nmirrorxy
-        
-        pla
+.done
+
+	pla
         tax
         rts

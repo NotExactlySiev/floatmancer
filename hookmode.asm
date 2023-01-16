@@ -449,7 +449,7 @@ FindCloseHook: subroutine
 	sec
         sbc #4
         sta func0
-        ; Abs
+        ; Abs		; do we need to get abs here? it happens in arctan anyway
         bpl .ypos
         
         sec
@@ -547,11 +547,15 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sec
         sbc hookpx+BACKUP_OFFSET
         sta func0
+        lda px1+BACKUP_OFFSET
+        sta func1
         
         lda py0+BACKUP_OFFSET
         sec
         sbc hookpy+BACKUP_OFFSET
-        sta func1
+        sta func2
+        lda py1+BACKUP_OFFSET
+        sta func3
         
         jsr CalcAtan
         lda func6
@@ -563,11 +567,15 @@ Attach: subroutine	; 0-1 distances, t0-t1 current hook, t2 closest distance
         sec
         sbc hookpx
         sta func0
+        lda px1
+        sta func1
         
         lda py0
         sec
         sbc hookpy
-        sta func1
+        sta func2
+        lda py1
+        sta func3
         	
 	jsr CalcAtan
 	lda func6
