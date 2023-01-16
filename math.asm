@@ -395,7 +395,7 @@ CalcAtan: subroutine
         sbc func0
         sta func0
         
-        lda #$40
+        lda #$20
         sta tmp3    
 .horok
 
@@ -410,7 +410,7 @@ CalcAtan: subroutine
         sbc func2
         sta func2
         
-        lda #$20
+        lda #$10
         ora tmp3
         sta tmp3
 .verok
@@ -437,7 +437,7 @@ CalcAtan: subroutine
         sta func3
         stx func1
         
-        lda #$10	; set the flag to remember that we swapped
+        lda #$40	; set the flag to remember that we swapped
         ora tmp3
         sta tmp3
 .swapdone
@@ -553,7 +553,18 @@ CalcAtan: subroutine
         sta func6
 .lookupdone
         
-	ldx #$80
+        
+	asl tmp3
+        bmi .nmirrorxy
+
+	tya
+        sec
+        sbc func7
+        sta func7
+        lda #$40
+        sbc func6
+        sta func6
+.nmirrorxy
 
         asl tmp3
         bpl .nmirrorh
@@ -562,7 +573,7 @@ CalcAtan: subroutine
         sec
         sbc func7
         sta func7
-        txa
+        lda #$80
         sbc func6
         sta func6
 
@@ -580,18 +591,6 @@ CalcAtan: subroutine
         sta func6
 .nmirrorv
 
-	asl tmp3
-        bmi .nmirrorxy
-
-	tya
-        sec
-        sbc func7
-        sta func7
-        lda #$40
-        sbc func6
-        sta func6
-.nmirrorxy
-.done
 
 	pla
         tax
