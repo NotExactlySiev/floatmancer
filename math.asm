@@ -477,25 +477,24 @@ CalcAtan: subroutine
 	; check for special cases
         
         lda func1
-        bne .not0
-        sta func6
-        sta func7
-        beq .lookupdone
-.not0
-	lda func0
         bne .not90
-	sta func7
+        sta func7
         lda #$40
         sta func6
-        bne .lookupdone
+        beq .lookupdone
 .not90
+	lda func0
+        bne .not0
+	sta func7
+        sta func6
+        beq .lookupdone
+.not0
 	cmp func1
         bne .not45
+        sta func7
 	lda #$20
         sta func6
-        lda #0
-        sta func7
-        beq .lookupdone
+        bne .lookupdone
 .not45
 
         ; TODO: what if they're equal here? :/ checked too soon?
