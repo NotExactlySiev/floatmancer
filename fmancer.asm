@@ -9,8 +9,7 @@
 	;;; HEADER        
 	NES_HEADER 0,2,1,0 ; mapper 0, 2 PRGs, 1 CHR, horiz. mirror
 
-        ;;; this is a teest for push
-
+        ;;; bye bye
         ;;; INIT
 Start:	
 	include "init.asm"
