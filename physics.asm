@@ -114,8 +114,8 @@ NormalMode: subroutine
         bit flags
         beq .nojump
         ldx jtimer
-        cpx #WINDUP_TIME
-        bcc .nojump
+        ;cpx #WINDUP_TIME
+        ;bcc .nojump
 	lda #<(-JUMP_FORCE)
         sta vy2
         lda #>(-JUMP_FORCE)

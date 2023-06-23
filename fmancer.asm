@@ -70,11 +70,13 @@ NMIHandler:
         bne .gameloop
         jmp NMIEnd
 .gameloop
-                
+        
+        jsr UpdateSprites
+        
 	;; GAME LOOP
 
 
-	jsr UpdateSprites
+	;jsr UpdateSprites
 
         bit flags
         bmi .nosearch

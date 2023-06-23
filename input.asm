@@ -224,26 +224,6 @@ NotRight
         sta ftimer
 .nrotate
 
- 	; 0- are we already in a jump? update the timer
- 	lda pad
-        eor #$ff
-        and padedge	; negative edge?
-        bmi .jumpend
-        lda jtimer
-        cmp #MAX_JUMP
-	beq .jumpend
-	jmp .njumpend
-.jumpend
-	lda #$f7
-        and flags
-        sta flags
-.njumpend
-
-	lda #$8
-        bit flags
-        beq .njumping
-        inc jtimer
-.njumping
  	
         ; 1- Are we trying to jump?
 	; how long is it been since pressed jump? (0-window and then inf)
@@ -291,6 +271,29 @@ NotRight
         
 .jstartdone
 	
+        
+        
+        
+ 	; 0- are we already in a jump? update the timer
+ 	lda pad
+        eor #$ff
+        and padedge	; negative edge?
+        bmi .jumpend
+        lda jtimer
+        cmp #MAX_JUMP
+	beq .jumpend
+	jmp .njumpend
+.jumpend
+	lda #$f7
+        and flags
+        sta flags
+.njumpend
+
+	lda #$8
+        bit flags
+        beq .njumping
+        inc jtimer
+.njumping
 
 	;; Hooking
         bit flags
