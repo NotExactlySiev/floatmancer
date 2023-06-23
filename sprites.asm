@@ -15,7 +15,7 @@ UpdatePlayer: subroutine
         sbc #3
         sta $203
         
-        lda #1
+        lda #FLG_WALK
         bit flags
         beq .nrotate
         lda flags
@@ -196,7 +196,7 @@ DrawHook: subroutine
         sta $210,y
         iny
         
-        lda #$30
+        lda #FLG_CEIL | FLG_HMOVE_DIR
         bit flags
         bpl .nhooked
         cpy hookidx

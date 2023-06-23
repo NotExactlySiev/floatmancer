@@ -84,6 +84,7 @@ anim	= $1A
 physics	= $1B
 
 coyote	= $1C ; how many frames ago you were on the ground?
+	      ; maybe I can reuse this for the double jump flag
 jbuffer	= $1D ; how many frames ago you pressed jump?
 jtimer	= $1E ; jump timer
 ftimer	= $1F ; frame timer

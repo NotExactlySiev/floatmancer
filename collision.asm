@@ -78,7 +78,7 @@ NormalCollision: subroutine
         bmi .air
         bpl .nair
 .air        
-        lda #$40
+        lda #FLG_AIR
         ora flags
         sta flags
 .nair
@@ -130,15 +130,15 @@ NormalCollision: subroutine
         bmi .nceiling
         bpl .ceiling
 .nceiling
-        lda #$df
+        lda #~FLG_CEIL
         and flags
         sta flags       
 .ceiling
 
 
         lda flags
-        eor #$40
-        and #$60
+        eor #FLG_AIR
+        and #FLG_AIR | FLG_CEIL
         beq .colvdone
 .updone
 
@@ -169,7 +169,7 @@ NormalCollision: subroutine
 
 	;; HORIZONTAL COLLISION
 
-        lda #$2		; no collision detection needed if hero is not moving horizontally
+        lda #FLG_HMOVE		; no collision detection needed if hero is not moving horizontally
         bit flags
         beq .colhdone
 
@@ -249,7 +249,7 @@ VerticalCheck: subroutine
 FrontCollision: subroutine
 	sta func3
 	lda flags
-        and #$10
+        and #FLG_HMOVE_DIR
 	beq .cright
 	lda #0
         sec

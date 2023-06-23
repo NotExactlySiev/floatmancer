@@ -102,7 +102,7 @@ PlayInput: subroutine
         sta ax1
         sta ax0
         
-	lda #$FA
+	lda #~(FLG_WALK | FLG_JUST_JUMPED)
         and flags
         sta flags
 
@@ -194,7 +194,7 @@ PressedRight: subroutine
 .done
 
 SetWalkFlag:
-	lda #$3
+	lda #FLG_HMOVE | FLG_WALK
 	ora flags
         sta flags
 
@@ -204,7 +204,7 @@ NotRight
         and #%00000001
         beq .nright
         lda flags+BACKUP_OFFSET
-        and #$10
+        and #FLG_HMOVE_DIR
         beq .nright
         bne .rotate
 .nright       
@@ -213,7 +213,7 @@ NotRight
         and #%00000010
         beq .nrotate
         lda flags+BACKUP_OFFSET
-        and #$10
+        and #FLG_HMOVE_DIR
         bne .nrotate
 .rotate
         lda #$8
@@ -263,12 +263,12 @@ NotRight
 .nchange        
         
         ; now both buffer and coyote timers are set, check if can jump
-        lda #$20
+        lda #FLG_CEIL
         bit flags
-        bne .njumpstart
-        bvs .njumpstart
+        bne .njumpstart		; abort if ceiling
+        ;bvs .njumpstart	; abort if on air (i think? what is bit 6?)
         lda flags
-        and #$08
+        and #FLG_JUMPING
         bne .njumpstart
         lda coyote
         cmp #COYOTE_TIME
@@ -279,7 +279,7 @@ NotRight
                 
         lda #0
         sta jtimer
-        lda #$8
+        lda #FLG_JUMPING
         ora flags
         sta flags
 .njumpstart

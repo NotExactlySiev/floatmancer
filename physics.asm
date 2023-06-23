@@ -2,8 +2,8 @@ NormalMode: subroutine
 
 	; reset vertical velocity and air flag, ready to update
 	lda flags
-        and #$bf
-        ora #$20
+        and #~FLG_AIR
+        ora #FLG_CEIL
         sta flags
         inc coyote
 
@@ -18,13 +18,16 @@ NormalMode: subroutine
 	;;; MOVEMENT
         bit flags	; hero has different physics for air and ground
         bvs .air
-        lda #$8
+        lda #FLG_JUMPING
         bit flags
         bne .air
 
+	; recharge double jump if on ground
+        
+
         ;; Ground Rules
                 
-      	lda #$1         ; do passive deceleration if not actively controlled
+      	lda #FLG_WALK         ; do passive deceleration if not actively controlled
         bit flags
         bne .end
         asl
@@ -104,7 +107,7 @@ NormalMode: subroutine
 
 .gravitydone
 
-	lda #$8			; finally set variables if jumping
+	lda #FLG_JUMPING		; finally set variables if jumping
         bit flags
         beq .nojump
         ldx jtimer
@@ -292,7 +295,7 @@ SetPos:
 
 ; sets the horizontal movement flags correctly
 CheckMovement: subroutine
-	lda #$fd
+	lda #~FLG_HMOVE
         and flags
         sta flags
 
@@ -318,16 +321,16 @@ CheckMovement: subroutine
         
 .side	
 	bmi .sideleft
-	lda #$ef
+	lda #~FLG_HMOVE_DIR
         and flags
         sta flags
         jmp .sidedone
 .sideleft
-	lda #$10
+	lda #FLG_HMOVE_DIR
         ora flags
         sta flags
 .sidedone
-	lda #$02
+	lda #FLG_HMOVE
 	ora flags
         sta flags
 
