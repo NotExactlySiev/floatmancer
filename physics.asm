@@ -5,8 +5,11 @@ NormalMode: subroutine
         and #~FLG_AIR
         ora #FLG_CEIL
         sta flags
-        inc coyote
-
+        ldx coyote
+        bmi .ncoyote
+        inx
+        stx coyote
+.ncoyote
 	;;; MOVEMENT FLAGS
 	; velocity is the movement direction. velocity zero? acceleration is movement direction
 	jsr CheckMovement

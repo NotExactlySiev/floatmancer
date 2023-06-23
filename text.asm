@@ -16,5 +16,5 @@ DrawText: subroutine
         sta PPU_DATA
         iny
         bne .print
-.out        
+.out
 	rts

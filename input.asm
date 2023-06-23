@@ -195,7 +195,7 @@ PressedRight: subroutine
         
 .done
 
-SetWalkFlag:
+SetWalkFlag: subroutine
 	lda #FLG_HMOVE | FLG_WALK
 	ora flags
         sta flags
@@ -224,11 +224,10 @@ NotRight
         sta ftimer
 .nrotate
 
-
-        ;; Jumping
-        lda pad
+ 	; 0- are we already in a jump? update the timer
+ 	lda pad
         eor #$ff
-        and padedge
+        and padedge	; negative edge?
         bmi .jumpend
         lda jtimer
         cmp #MAX_JUMP
@@ -245,42 +244,53 @@ NotRight
         beq .njumping
         inc jtimer
 .njumping
-
-
-	; how long is it been since pressed jump?
-       	lda pad			; if A is pressed, start jump buffer timer
+ 	
+        ; 1- Are we trying to jump?
+	; how long is it been since pressed jump? (0-window and then inf)
+       	lda pad
         and padedge
         bpl .nedge
-        lda #0
-        sta jbuffer
+        ldx #0
+        beq .change
 .nedge
         ldx jbuffer
         inx
         beq .nchange
-	cpx #BUFFER_WINDOW	; if we reached the end of the window, reset and stop timer
-        bcc .inwindow
+	cpx #BUFFER_WINDOW
+        bcc .change
         ldx #$ff
-.inwindow
+.change
 	stx jbuffer
 .nchange
-        
-        ; now both buffer and coyote timers are set, check if can jump
-        lda #FLG_CEIL | FLG_JUMPING	; abort if ceiling or already in a jump
+
+	
+        ldx jbuffer
+        inx
+        beq .jstartdone
+	lda #FLG_CEIL
         bit flags
-        bne .njumpstart
-        lda coyote
-        cmp #COYOTE_TIME
-        bcs .njumpstart
-        lda jbuffer
-        cmp #BUFFER_WINDOW
-        bcs .njumpstart
-                
-        lda #0
-        sta jtimer
+        bne .jstartdone
+	ldx coyote
+        cpx #COYOTE_TIME
+        lda #$81
+        bcc .jstart
+.nground
+	lda coyote
+        and #$1
+        beq .jstartdone
+	lda #$80
+.jstart
+        sta coyote
+        ldx #0
+        stx jtimer
+        dex
+        stx jbuffer
         lda #FLG_JUMPING
         ora flags
         sta flags
-.njumpstart
+        
+.jstartdone
+	
 
 	;; Hooking
         bit flags

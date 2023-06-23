@@ -71,6 +71,9 @@ NormalCollision: subroutine
 
 	lda vy0
         bmi .air
+        lda flags
+        and #FLG_JUMPING
+        bne .air
 	;; DOWNWARDS AND GROUND COLLISION
         lda #4
 	jsr DownCollision
