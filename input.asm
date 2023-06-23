@@ -1,3 +1,5 @@
+
+
 ControlInput: subroutine
 	lda pad
         and padedge
@@ -260,15 +262,11 @@ NotRight
         ldx #$ff
 .inwindow
 	stx jbuffer
-.nchange        
+.nchange
         
         ; now both buffer and coyote timers are set, check if can jump
-        lda #FLG_CEIL
+        lda #FLG_CEIL | FLG_JUMPING	; abort if ceiling or already in a jump
         bit flags
-        bne .njumpstart		; abort if ceiling
-        ;bvs .njumpstart	; abort if on air (i think? what is bit 6?)
-        lda flags
-        and #FLG_JUMPING
         bne .njumpstart
         lda coyote
         cmp #COYOTE_TIME

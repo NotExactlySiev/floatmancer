@@ -76,13 +76,14 @@ NormalCollision: subroutine
 	jsr DownCollision
         beq .air
         bmi .air
-        bpl .nair
+.nair
+        ldy #0
+        sty coyote
+        beq .downdone
 .air        
         lda #FLG_AIR
         ora flags
         sta flags
-.nair
-        sty coyote
 .downdone
 
 	;; SELF COLLISION
